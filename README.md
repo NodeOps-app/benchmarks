@@ -2,6 +2,8 @@
 
 ![Staggered TTI](./staggered_tti.svg)
 
+![Burst TTI](./burst_tti.svg)
+
 [![Benchmarks](https://github.com/computesdk/benchmarks/actions/workflows/benchmarks.yml/badge.svg)](https://github.com/computesdk/benchmarks/actions/workflows/benchmarks.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
@@ -18,7 +20,7 @@ API Request → Provisioning → Boot → Ready → First Command
 └───────────────────── TTI ─────────────────────┘
 ```
 
-Each benchmark creates a fresh sandbox, runs `echo "benchmark"`, and records wall-clock time. 10 iterations per provider, every day, fully automated.
+Each benchmark creates a fresh sandbox, runs `echo "benchmark"`, and records wall-clock time. 100 iterations per provider, every day, fully automated.
 
 **Powered by ComputeSDK** — We use [ComputeSDK](https://github.com/computesdk/computesdk), a multi-provider SDK, to test all sandbox providers with the same code. One API, multiple providers, fair comparison. Interested in multi-provider failover, sandbox packing, and warm pooling? [Check out ComputeSDK](https://github.com/computesdk/computesdk).
 
