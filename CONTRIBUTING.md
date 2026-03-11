@@ -75,14 +75,19 @@ cp env.example .env
 ### Running Tests Locally
 
 ```bash
-# Run direct mode benchmarks (requires API keys in .env)
-npm run bench:direct
+# Run all three test modes (sequential → staggered → burst)
+npm run bench
 
-# Run single provider
-npm run bench:direct:e2b
+# Run individual test modes
+npm run bench -- --mode sequential --iterations 10
+npm run bench -- --mode staggered --concurrency 10 --stagger-delay 200
+npm run bench -- --mode burst --concurrency 10
 
-# Run with custom iterations
-npm run bench:direct -- --iterations 5
+# Run a single provider
+npm run bench -- --provider e2b
+
+# Combine flags
+npm run bench -- --provider e2b --mode sequential --iterations 5
 ```
 
 ### Code Style

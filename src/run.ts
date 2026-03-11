@@ -29,7 +29,7 @@ function getArgValue(args: string[], flag: string): string | undefined {
 
 /** Resolve which modes to run */
 function getModesToRun(): BenchmarkMode[] {
-  if (!rawMode) return ['sequential', 'staggered'];
+  if (!rawMode) return ['sequential', 'staggered', 'burst'];
   const m = rawMode === 'concurrent' ? 'burst' : rawMode as BenchmarkMode;
   return [m];
 }
@@ -100,11 +100,10 @@ async function runMode(mode: BenchmarkMode, toRun: typeof providers): Promise<vo
   const outPath = path.join(resultsDir, `${timestamp}.json`);
   await writeResultsJson(results, outPath);
 
-  // Create/update latest.json symlink
+  // Copy results to latest.json
   const latestPath = path.join(resultsDir, 'latest.json');
-  try { fs.unlinkSync(latestPath); } catch { /* may not exist */ }
-  fs.symlinkSync(path.basename(outPath), latestPath);
-  console.log(`Symlink updated: ${latestPath} -> ${path.basename(outPath)}`);
+  fs.copyFileSync(outPath, latestPath);
+  console.log(`Copied latest: ${latestPath}`);
 }
 
 async function main() {
