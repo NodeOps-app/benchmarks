@@ -89,7 +89,7 @@ export async function runIteration(compute: any, timeout: number): Promise<Timin
     sandbox = await withTimeout(compute.sandbox.create(), timeout, 'Sandbox creation timed out');
 
     await withTimeout(
-      sandbox.runCommand('echo "benchmark"'),
+      sandbox.runCommand('node -v'),
       30_000,
       'First command execution timed out'
     );
