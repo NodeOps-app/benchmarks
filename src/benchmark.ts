@@ -6,15 +6,11 @@ export function percentile(sorted: number[], p: number): number {
 }
 
 export function computeStats(values: number[], trimPercent: number = 0.05): Stats {
-  if (values.length === 0) return { min: 0, max: 0, median: 0, p95: 0, p99: 0, avg: 0 };
+  if (values.length === 0) return { median: 0, p95: 0, p99: 0 };
 
   const sorted = [...values].sort((a, b) => a - b);
 
-  // min/max from the full dataset (used for display, not scoring)
-  const min = sorted[0];
-  const max = sorted[sorted.length - 1];
-
-  // Trim outliers from both ends for statistical measures
+  // Trim outliers from both ends
   const trimCount = Math.floor(sorted.length * trimPercent);
   const trimmed = trimCount > 0 && sorted.length - 2 * trimCount > 0
     ? sorted.slice(trimCount, sorted.length - trimCount)
@@ -26,12 +22,9 @@ export function computeStats(values: number[], trimPercent: number = 0.05): Stat
     : trimmed[mid];
 
   return {
-    min,
-    max,
     median,
     p95: percentile(trimmed, 95),
     p99: percentile(trimmed, 99),
-    avg: trimmed.reduce((a, b) => a + b, 0) / trimmed.length,
   };
 }
 
@@ -44,7 +37,7 @@ export async function runBenchmark(config: ProviderConfig): Promise<BenchmarkRes
     return {
       provider: name,
       iterations: [],
-      summary: { ttiMs: { min: 0, max: 0, median: 0, p95: 0, p99: 0, avg: 0 } },
+      summary: { ttiMs: { median: 0, p95: 0, p99: 0 } },
       skipped: true,
       skipReason: `Missing: ${missingVars.join(', ')}`,
     };
@@ -76,7 +69,7 @@ export async function runBenchmark(config: ProviderConfig): Promise<BenchmarkRes
     return {
       provider: name,
       iterations: results,
-      summary: { ttiMs: { min: 0, max: 0, median: 0, p95: 0, p99: 0, avg: 0 } },
+      summary: { ttiMs: { median: 0, p95: 0, p99: 0 } },
       skipped: true,
       skipReason: 'All iterations failed',
     };

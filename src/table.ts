@@ -20,8 +20,6 @@ export function printResultsTable(results: BenchmarkResult[]): void {
     pad('Provider', nameWidth),
     pad('Score', 8),
     pad('Median (s)', colWidth),
-    pad('Min (s)', colWidth),
-    pad('Max (s)', colWidth),
     pad('P95 (s)', colWidth),
     pad('P99 (s)', colWidth),
     pad('Status', 10),
@@ -30,8 +28,6 @@ export function printResultsTable(results: BenchmarkResult[]): void {
   const separator = [
     '-'.repeat(nameWidth),
     '-'.repeat(8),
-    '-'.repeat(colWidth),
-    '-'.repeat(colWidth),
     '-'.repeat(colWidth),
     '-'.repeat(colWidth),
     '-'.repeat(colWidth),
@@ -61,20 +57,16 @@ export function printResultsTable(results: BenchmarkResult[]): void {
         pad('--', colWidth),
         pad('--', colWidth),
         pad('--', colWidth),
-        pad('--', colWidth),
-        pad('--', colWidth),
         pad(`FAILED`, 10),
       ].join(' | '));
       continue;
     }
-    
+
     // Truly skipped (missing env vars, etc.)
     if (result.skipped) {
       console.log([
         pad(result.provider, nameWidth),
         pad('--', 8),
-        pad('--', colWidth),
-        pad('--', colWidth),
         pad('--', colWidth),
         pad('--', colWidth),
         pad('--', colWidth),
@@ -90,8 +82,6 @@ export function printResultsTable(results: BenchmarkResult[]): void {
       pad(result.provider, nameWidth),
       pad(score, 8),
       pad(formatSeconds(result.summary.ttiMs.median), colWidth),
-      pad(formatSeconds(result.summary.ttiMs.min), colWidth),
-      pad(formatSeconds(result.summary.ttiMs.max), colWidth),
       pad(formatSeconds(result.summary.ttiMs.p95), colWidth),
       pad(formatSeconds(result.summary.ttiMs.p99), colWidth),
       pad(`${successful}/${total} OK`, 10),
@@ -169,12 +159,9 @@ export async function writeResultsJson(results: BenchmarkResult[], outPath: stri
     })),
     summary: {
       ttiMs: {
-        min: round(r.summary.ttiMs.min),
-        max: round(r.summary.ttiMs.max),
         median: round(r.summary.ttiMs.median),
         p95: round(r.summary.ttiMs.p95),
         p99: round(r.summary.ttiMs.p99),
-        avg: round(r.summary.ttiMs.avg),
       },
     },
     ...(r.compositeScore !== undefined ? { compositeScore: round(r.compositeScore) } : {}),

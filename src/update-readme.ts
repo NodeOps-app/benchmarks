@@ -57,8 +57,6 @@ function buildTable(results: BenchmarkResult[]): string {
   lines.push('<th align="left">Provider</th>');
   lines.push('<th align="center">Score</th>');
   lines.push('<th align="center">Median TTI</th>');
-  lines.push('<th align="center">Min</th>');
-  lines.push('<th align="center">Max</th>');
   lines.push('<th align="center">P95</th>');
   lines.push('<th align="center">P99</th>');
   lines.push('<th align="center">Status</th>');
@@ -68,13 +66,13 @@ function buildTable(results: BenchmarkResult[]): string {
 
   for (const r of sorted) {
     if (r.skipped) {
-      lines.push(`<tr><td>${capitalize(r.provider)}</td><td align="center">--</td><td align="center">--</td><td align="center">--</td><td align="center">--</td><td align="center">--</td><td align="center">--</td><td align="center">Skipped</td></tr>`);
+      lines.push(`<tr><td>${capitalize(r.provider)}</td><td align="center">--</td><td align="center">--</td><td align="center">--</td><td align="center">--</td><td align="center">Skipped</td></tr>`);
     } else {
       const ok = r.iterations.filter(i => !i.error).length;
       const total = r.iterations.length;
       const score = r.compositeScore !== undefined ? r.compositeScore.toFixed(1) : '--';
       lines.push(
-        `<tr><td>${capitalize(r.provider)}</td><td align="center"><b>${score}</b></td><td align="center">${formatSeconds(r.summary.ttiMs.median)}</td><td align="center">${formatSeconds(r.summary.ttiMs.min)}</td><td align="center">${formatSeconds(r.summary.ttiMs.max)}</td><td align="center">${formatSeconds(r.summary.ttiMs.p95)}</td><td align="center">${formatSeconds(r.summary.ttiMs.p99)}</td><td align="center">${ok}/${total}</td></tr>`
+        `<tr><td>${capitalize(r.provider)}</td><td align="center"><b>${score}</b></td><td align="center">${formatSeconds(r.summary.ttiMs.median)}</td><td align="center">${formatSeconds(r.summary.ttiMs.p95)}</td><td align="center">${formatSeconds(r.summary.ttiMs.p99)}</td><td align="center">${ok}/${total}</td></tr>`
       );
     }
   }

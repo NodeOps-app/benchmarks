@@ -178,12 +178,9 @@ For each provider, we report:
 
 | Metric | Description |
 |--------|-------------|
-| **Min** | Fastest iteration (best case) |
-| **Max** | Slowest iteration (worst case) |
 | **Median** | Middle value (typical case) |
 | **P95** | 95th percentile (tail latency) |
 | **P99** | 99th percentile (extreme tail) |
-| **Average** | Arithmetic mean |
 | **Success Rate** | Iterations completed without error |
 
 We emphasize **median** as the primary metric because it's robust to outliers and represents the typical developer experience.
@@ -283,12 +280,9 @@ Each test mode generates its own SVG visualization: `sequential_tti.svg`, `stagg
       ],
       "summary": {
         "ttiMs": {
-          "min": 100.0,
-          "max": 150.0,
           "median": 125.0,
           "p95": 140.0,
-          "p99": 148.0,
-          "avg": 124.5
+          "p99": 148.0
         }
       },
       "compositeScore": 96.85,

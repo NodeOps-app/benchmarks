@@ -169,12 +169,10 @@ function generateSVG(results: BenchmarkResult[], timestamp: string, mode: string
     rank: 40,
     provider: 80,
     score: 280,
-    median: 400,
-    min: 530,
-    max: 650,
-    p95: 770,
-    p99: 890,
-    status: 1050,
+    median: 420,
+    p95: 600,
+    p99: 780,
+    status: 960,
   };
 
   const title = MODE_TITLES[mode] || 'Benchmarks';
@@ -240,8 +238,6 @@ ${sponsorImage ? `
   <text class="table-header" x="${cols.provider}" y="${tableTop + 28}">Provider</text>
   <text class="table-header" x="${cols.score}" y="${tableTop + 28}">Score</text>
   <text class="table-header" x="${cols.median}" y="${tableTop + 28}">Median TTI</text>
-  <text class="table-header" x="${cols.min}" y="${tableTop + 28}">Min</text>
-  <text class="table-header" x="${cols.max}" y="${tableTop + 28}">Max</text>
   <text class="table-header" x="${cols.p95}" y="${tableTop + 28}">P95</text>
   <text class="table-header" x="${cols.p99}" y="${tableTop + 28}">P99</text>
   <text class="table-header" x="${cols.status}" y="${tableTop + 28}">Status</text>
@@ -272,8 +268,6 @@ ${sponsorImage ? `
   <text class="row provider" x="${cols.provider}" y="${y}">${formatProviderName(r.provider)}</text>
   <text class="row median" x="${cols.score}" y="${y}">${score}</text>
   <text class="row median ${speedClass}" x="${cols.median}" y="${y}">${formatSeconds(medianMs)}</text>
-  <text class="row" x="${cols.min}" y="${y}">${formatSeconds(r.summary.ttiMs.min)}</text>
-  <text class="row" x="${cols.max}" y="${y}">${formatSeconds(r.summary.ttiMs.max)}</text>
   <text class="row" x="${cols.p95}" y="${y}">${formatSeconds(r.summary.ttiMs.p95)}</text>
   <text class="row" x="${cols.p99}" y="${y}">${formatSeconds(r.summary.ttiMs.p99)}</text>
   <text class="row status" x="${cols.status}" y="${y}">${ok}/${total}</text>

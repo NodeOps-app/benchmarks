@@ -21,12 +21,9 @@ export interface TimingResult {
 }
 
 export interface Stats {
-  min: number;
-  max: number;
   median: number;
   p95: number;
   p99: number;
-  avg: number;
 }
 
 export type BenchmarkMode = 'sequential' | 'staggered' | 'burst' | 'concurrent';
