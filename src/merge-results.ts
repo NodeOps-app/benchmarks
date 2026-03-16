@@ -123,7 +123,7 @@ async function main() {
     printResultsTable(deduped);
 
     // Write combined results
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const timestamp = new Date().toISOString().slice(0, 10);
     const subDir = modeToDir(mode);
     const resultsDir = path.resolve(ROOT, `results/${subDir}`);
     fs.mkdirSync(resultsDir, { recursive: true });

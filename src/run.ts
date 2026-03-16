@@ -92,7 +92,7 @@ async function runMode(mode: BenchmarkMode, toRun: typeof providers): Promise<vo
   printResultsTable(results);
 
   // Write JSON results to mode-specific subdirectory
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const timestamp = new Date().toISOString().slice(0, 10);
   const subDir = modeToDir(mode);
   const resultsDir = path.resolve(__dirname, `../results/${subDir}`);
   fs.mkdirSync(resultsDir, { recursive: true });
