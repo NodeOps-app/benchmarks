@@ -204,15 +204,15 @@ A 200ms median scores 98. A 4,000ms median scores 60. Anything at or above 10s s
 
 The **timingScore** is a weighted sum of individual metric scores. The **successRate** (0–1) acts as a linear multiplier — a provider with 50% success has its score halved.
 
+Before computing timing statistics, the bottom 5% and top 5% of successful iteration times are trimmed to reduce the influence of outliers caused by transient network issues or cold-start anomalies. Min and max values are still computed from the full dataset for display purposes but are not used in scoring.
+
 **Timing weights** (sum to 1.0):
 
 | Metric | Weight | Rationale |
 |--------|--------|-----------|
-| Median | 0.50 | Primary signal — typical developer experience |
-| P95 | 0.20 | Tail latency — consistency matters |
-| Max | 0.15 | Worst-case exposure |
-| P99 | 0.10 | Extreme tail |
-| Min | 0.05 | Best-case capability |
+| Median | 0.60 | Primary signal — typical developer experience |
+| P95 | 0.25 | Tail latency — consistency matters |
+| P99 | 0.15 | Extreme tail — worst-case exposure |
 
 **Why multiplicative?** A provider with lower than 100% success rate shouldn't rank above a provider with 100% success and a slightly slower median. The multiplicative penalty ensures reliability is non-negotiable — a provider must be both fast *and* reliable to score well.
 

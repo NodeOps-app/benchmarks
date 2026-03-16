@@ -8,16 +8,12 @@ export interface ScoringWeights {
   median: number;
   p95: number;
   p99: number;
-  min: number;
-  max: number;
 }
 
 export const DEFAULT_WEIGHTS: ScoringWeights = {
-  median: 0.50,
-  p95: 0.20,
-  p99: 0.10,
-  min: 0.05,
-  max: 0.15,
+  median: 0.60,
+  p95: 0.25,
+  p99: 0.15,
 };
 
 /** Absolute ceiling in ms. Anything at or above this scores 0. */
@@ -51,9 +47,7 @@ function computeTimingScore(
   return (
     weights.median * scoreMetric(stats.median) +
     weights.p95 * scoreMetric(stats.p95) +
-    weights.p99 * scoreMetric(stats.p99) +
-    weights.min * scoreMetric(stats.min) +
-    weights.max * scoreMetric(stats.max)
+    weights.p99 * scoreMetric(stats.p99)
   );
 }
 
