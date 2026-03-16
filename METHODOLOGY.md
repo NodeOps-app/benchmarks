@@ -51,7 +51,7 @@ const start = performance.now();
 const sandbox = await compute.sandbox.create();
 
 // 3. Execute a trivial command to confirm interactivity
-await sandbox.runCommand('echo "benchmark"');
+await sandbox.runCommand('node -v');
 
 // 4. Stop timer
 const ttiMs = performance.now() - start;
@@ -60,13 +60,13 @@ const ttiMs = performance.now() - start;
 await sandbox.destroy();
 ```
 
-### Why `echo "benchmark"`?
+### Why `node -v`?
 
 We use a minimal command to isolate sandbox startup time from command complexity. The command:
 - Has negligible execution time
-- Requires no file system access
 - Produces deterministic output
 - Validates the full request/response cycle
+- Confirms the Node.js runtime is available and functional
 
 ## Test Modes
 
