@@ -164,7 +164,7 @@
   <text class="row confidence-exact" x="1000" y="604">exact</text>
 
   <!-- Timestamp -->
-  <text class="timestamp" x="1176" y="688" text-anchor="end">Last updated: Mar 15, 2026</text>
+  <text class="timestamp" x="1176" y="688" text-anchor="end">Last updated: Mar 16, 2026</text>
 
   <!-- Footnotes -->
   <text class="timestamp" x="24" y="688">Eff. Cost = effective cost for 1 vCPU + 2 GB RAM / hr. Active-CPU providers (~) estimated at 25% utilization. Value Score = sqrt(benchmark x cost efficiency).</text>
