@@ -7,22 +7,16 @@ import { sortByCompositeScore, computeCompositeScores } from './scoring.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const RESULTS_DIR = path.join(ROOT, 'results');
-const SPONSORS_DIR = path.join(ROOT, 'sponsors', 'tier-1');
+const SPONSORS_DIR_TIER1 = path.join(ROOT, 'sponsors', 'tier-1');
+const SPONSORS_DIR_TIER2 = path.join(ROOT, 'sponsors', 'tier-2');
 
 /**
- * Load Tier 1 (Platform Sponsor) logos from the sponsors/tier-1/ directory.
- * Only Tier 1 sponsors appear in SVG table headers.
+ * Load all sponsor logos from both tier-1 and tier-2 directories.
  * Returns an array of { dataUri, name } for each image file found, sorted alphabetically.
  */
 function loadSponsorImages(): { dataUri: string; name: string }[] {
-  if (!fs.existsSync(SPONSORS_DIR)) return [];
-
-  const files = fs.readdirSync(SPONSORS_DIR)
-    .filter(f => /\.(png|jpe?g|svg)$/i.test(f))
-    .sort();
-
-  if (files.length === 0) return [];
-
+  const allSponsors: { dataUri: string; name: string }[] = [];
+  
   const mimeTypes: Record<string, string> = {
     '.png': 'image/png',
     '.jpg': 'image/jpeg',
@@ -30,14 +24,29 @@ function loadSponsorImages(): { dataUri: string; name: string }[] {
     '.svg': 'image/svg+xml',
   };
 
-  return files.map(file => {
-    const ext = path.extname(file).toLowerCase();
-    const mime = mimeTypes[ext] || 'image/png';
-    const raw = fs.readFileSync(path.join(SPONSORS_DIR, file));
-    const b64 = raw.toString('base64');
-    const name = path.basename(file, ext);
-    return { dataUri: `data:${mime};base64,${b64}`, name };
-  });
+  // Helper to load sponsors from a directory
+  const loadFromDir = (dir: string) => {
+    if (!fs.existsSync(dir)) return;
+    
+    const files = fs.readdirSync(dir)
+      .filter(f => /\.(png|jpe?g|svg)$/i.test(f))
+      .sort();
+
+    for (const file of files) {
+      const ext = path.extname(file).toLowerCase();
+      const mime = mimeTypes[ext] || 'image/png';
+      const raw = fs.readFileSync(path.join(dir, file));
+      const b64 = raw.toString('base64');
+      const name = path.basename(file, ext);
+      allSponsors.push({ dataUri: `data:${mime};base64,${b64}`, name });
+    }
+  };
+
+  // Load from both tiers
+  loadFromDir(SPONSORS_DIR_TIER1);
+  loadFromDir(SPONSORS_DIR_TIER2);
+
+  return allSponsors;
 }
 
 // ComputeSDK logo - the "C" path
