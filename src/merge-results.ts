@@ -1,11 +1,15 @@
 /**
  * Merge per-provider benchmark results into combined result files.
  *
- * Usage: tsx src/merge-results.ts --input <artifacts-dir>
+ * Usage: tsx src/merge-results.ts --input <artifacts-dir> [--mode storage]
  *
- * Reads latest.json files from the input directory (one per provider per mode),
- * groups them by mode, merges results, computes composite scores, and writes
- * combined files to results/<mode>/latest.json.
+ * By default, merges sandbox benchmark results: reads latest.json files from
+ * the input directory, groups by mode (sequential/staggered/burst), computes
+ * composite scores, and writes combined files to results/<mode>_tti/latest.json.
+ *
+ * With --mode storage, merges storage benchmark results instead: groups by
+ * file size (1mb/10mb/100mb), computes storage-specific composite scores,
+ * and writes combined files to results/storage/<size>/latest.json.
  */
 import fs from 'fs';
 import path from 'path';
