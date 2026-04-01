@@ -16,9 +16,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { computeCompositeScores } from './sandbox/scoring.js';
 import { computeStorageCompositeScores, sortStorageByCompositeScore } from './storage/scoring.js';
+import { computeBrowserCompositeScores, sortBrowserByCompositeScore } from './browser/scoring.js';
 import { printResultsTable, writeResultsJson } from './sandbox/table.js';
 import type { BenchmarkResult } from './sandbox/types.js';
 import type { StorageBenchmarkResult } from './storage/types.js';
+import type { BrowserBenchmarkResult } from './browser/types.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -269,7 +271,107 @@ async function mainStorage() {
   }
 }
 
-(mergeMode === 'storage' ? mainStorage() : main()).catch(err => {
+/**
+ * Print a browser results table to stdout.
+ */
+function printBrowserResultsTable(results: BrowserBenchmarkResult[]): void {
+  const sorted = sortBrowserByCompositeScore(results);
+
+  console.log(`\n${'='.repeat(110)}`);
+  console.log('  BROWSER PROVIDER BENCHMARK RESULTS');
+  console.log('='.repeat(110));
+  console.log(
+    ['Provider', 'Score', 'Create', 'Connect', 'Navigate', 'Release', 'Total', 'Status']
+      .map((h, i) => h.padEnd([14, 8, 12, 12, 12, 12, 12, 10][i]))
+      .join(' | ')
+  );
+  console.log(
+    [14, 8, 12, 12, 12, 12, 12, 10].map(w => '-'.repeat(w)).join('-+-')
+  );
+
+  for (const r of sorted) {
+    if (r.skipped) {
+      console.log([r.provider.padEnd(14), '--'.padEnd(8), '--'.padEnd(12), '--'.padEnd(12), '--'.padEnd(12), '--'.padEnd(12), '--'.padEnd(12), 'SKIPPED'.padEnd(10)].join(' | '));
+      continue;
+    }
+    const ok = r.iterations.filter(i => !i.error).length;
+    const total = r.iterations.length;
+    if (ok === 0 && total > 0) {
+      console.log([r.provider.padEnd(14), '--'.padEnd(8), '--'.padEnd(12), '--'.padEnd(12), '--'.padEnd(12), '--'.padEnd(12), '--'.padEnd(12), 'FAILED'.padEnd(10)].join(' | '));
+      continue;
+    }
+    const score = r.compositeScore !== undefined ? r.compositeScore.toFixed(1) : '--';
+    const create = (r.summary.createMs.median / 1000).toFixed(2) + 's';
+    const connect = (r.summary.connectMs.median / 1000).toFixed(2) + 's';
+    const navigate = (r.summary.navigateMs.median / 1000).toFixed(2) + 's';
+    const release = (r.summary.releaseMs.median / 1000).toFixed(2) + 's';
+    const tot = (r.summary.totalMs.median / 1000).toFixed(2) + 's';
+    console.log([r.provider.padEnd(14), score.padEnd(8), create.padEnd(12), connect.padEnd(12), navigate.padEnd(12), release.padEnd(12), tot.padEnd(12), `${ok}/${total} OK`.padEnd(10)].join(' | '));
+  }
+  console.log('='.repeat(110));
+}
+
+/**
+ * Merge browser benchmark results.
+ */
+async function mainBrowser() {
+  const jsonFiles: string[] = [];
+  function walk(dir: string) {
+    if (!fs.existsSync(dir)) return;
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.name === 'latest.json') jsonFiles.push(full);
+    }
+  }
+  walk(inputDir!);
+
+  if (jsonFiles.length === 0) {
+    console.error(`No latest.json files found in ${inputDir}`);
+    process.exit(1);
+  }
+
+  console.log(`Found ${jsonFiles.length} result files`);
+
+  // Collect all results, deduplicating by provider
+  const seen = new Map<string, { result: BrowserBenchmarkResult; fromSingleProvider: boolean }>();
+
+  for (const file of jsonFiles) {
+    const raw = JSON.parse(fs.readFileSync(file, 'utf-8')) as { results: BrowserBenchmarkResult[] };
+    const fromSingleProvider = raw.results.length === 1;
+    for (const result of raw.results) {
+      const existing = seen.get(result.provider);
+      if (!existing || (fromSingleProvider && !existing.fromSingleProvider)) {
+        seen.set(result.provider, { result, fromSingleProvider });
+      }
+    }
+  }
+
+  const deduped = Array.from(seen.values()).map(e => e.result);
+  console.log(`\nMerging ${deduped.length} provider results for mode: browser`);
+
+  // Compute composite scores
+  computeBrowserCompositeScores(deduped);
+
+  // Print table
+  printBrowserResultsTable(deduped);
+
+  // Write combined results
+  const { writeBrowserResultsJson } = await import('./browser/benchmark.js');
+  const timestamp = new Date().toISOString().slice(0, 10);
+  const resultsDir = path.resolve(ROOT, 'results/browser');
+  fs.mkdirSync(resultsDir, { recursive: true });
+
+  const outPath = path.join(resultsDir, `${timestamp}.json`);
+  await writeBrowserResultsJson(deduped, outPath);
+
+  const latestPath = path.join(resultsDir, 'latest.json');
+  fs.copyFileSync(outPath, latestPath);
+  console.log(`Copied latest: ${latestPath}`);
+}
+
+const runner = mergeMode === 'storage' ? mainStorage : mergeMode === 'browser' ? mainBrowser : main;
+runner().catch(err => {
   console.error('Merge failed:', err);
   process.exit(1);
 });
