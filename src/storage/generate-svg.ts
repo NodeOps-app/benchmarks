@@ -184,12 +184,13 @@ ${sponsorImages.length > 0 ? (() => {
     const total = r.iterations.length;
     const rank = i + 1;
     const downloadMs = r.summary.downloadMs.median;
+    const allFailed = ok === 0;
     const score = r.compositeScore !== undefined ? r.compositeScore.toFixed(1) : '--';
 
     // Color code based on download speed
-    let speedClass = 'fast';
-    if (downloadMs > 5000) speedClass = 'slow';
-    else if (downloadMs > 2000) speedClass = 'medium';
+    let speedClass = allFailed ? 'slow' : 'fast';
+    if (!allFailed && downloadMs > 5000) speedClass = 'slow';
+    else if (!allFailed && downloadMs > 2000) speedClass = 'medium';
 
     // Rank styling
     let rankClass = 'rank';
@@ -197,14 +198,18 @@ ${sponsorImages.length > 0 ? (() => {
     else if (rank === 2) rankClass = 'rank rank-2';
     else if (rank === 3) rankClass = 'rank rank-3';
 
+    const downloadDisplay = allFailed ? '--' : formatSeconds(downloadMs);
+    const throughputDisplay = allFailed ? '--' : formatMbps(r.summary.throughputMbps.median);
+    const uploadDisplay = allFailed ? '--' : formatSeconds(r.summary.uploadMs.median);
+
     svg += `
   <!-- Row ${rank} -->
   <text class="${rankClass}" x="${cols.rank}" y="${y}">${rank}</text>
   <text class="row provider" x="${cols.provider}" y="${y}">${formatProviderName(r.provider)}</text>
   <text class="row download" x="${cols.score}" y="${y}">${score}</text>
-  <text class="row download ${speedClass}" x="${cols.download}" y="${y}">${formatSeconds(downloadMs)}</text>
-  <text class="row" x="${cols.throughput}" y="${y}">${formatMbps(r.summary.throughputMbps.median)}</text>
-  <text class="row" x="${cols.upload}" y="${y}">${formatSeconds(r.summary.uploadMs.median)}</text>
+  <text class="row download ${speedClass}" x="${cols.download}" y="${y}">${downloadDisplay}</text>
+  <text class="row" x="${cols.throughput}" y="${y}">${throughputDisplay}</text>
+  <text class="row" x="${cols.upload}" y="${y}">${uploadDisplay}</text>
   <text class="row status" x="${cols.status}" y="${y}">${ok}/${total}</text>
 `;
 

@@ -266,12 +266,13 @@ ${sponsorImages.length > 0 ? (() => {
     const total = r.iterations.length;
     const rank = i + 1;
     const medianMs = r.summary.ttiMs.median;
+    const allFailed = ok === 0;
     const score = r.compositeScore !== undefined ? r.compositeScore.toFixed(1) : '--';
 
     // Color code based on speed
-    let speedClass = 'fast';
-    if (medianMs > 2000) speedClass = 'slow';
-    else if (medianMs > 1000) speedClass = 'medium';
+    let speedClass = allFailed ? 'slow' : 'fast';
+    if (!allFailed && medianMs > 2000) speedClass = 'slow';
+    else if (!allFailed && medianMs > 1000) speedClass = 'medium';
 
     // Rank styling
     let rankClass = 'rank';
@@ -279,14 +280,18 @@ ${sponsorImages.length > 0 ? (() => {
     else if (rank === 2) rankClass = 'rank rank-2';
     else if (rank === 3) rankClass = 'rank rank-3';
 
+    const medianDisplay = allFailed ? '--' : formatSeconds(medianMs);
+    const p95Display = allFailed ? '--' : formatSeconds(r.summary.ttiMs.p95);
+    const p99Display = allFailed ? '--' : formatSeconds(r.summary.ttiMs.p99);
+
     svg += `
   <!-- Row ${rank} -->
   <text class="${rankClass}" x="${cols.rank}" y="${y}">${rank}</text>
   <text class="row provider" x="${cols.provider}" y="${y}">${formatProviderName(r.provider)}</text>
   <text class="row median" x="${cols.score}" y="${y}">${score}</text>
-  <text class="row median ${speedClass}" x="${cols.median}" y="${y}">${formatSeconds(medianMs)}</text>
-  <text class="row" x="${cols.p95}" y="${y}">${formatSeconds(r.summary.ttiMs.p95)}</text>
-  <text class="row" x="${cols.p99}" y="${y}">${formatSeconds(r.summary.ttiMs.p99)}</text>
+  <text class="row median ${speedClass}" x="${cols.median}" y="${y}">${medianDisplay}</text>
+  <text class="row" x="${cols.p95}" y="${y}">${p95Display}</text>
+  <text class="row" x="${cols.p99}" y="${y}">${p99Display}</text>
   <text class="row status" x="${cols.status}" y="${y}">${ok}/${total}</text>
 `;
 

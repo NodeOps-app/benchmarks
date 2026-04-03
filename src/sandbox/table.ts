@@ -62,12 +62,13 @@ export function printResultsTable(results: BenchmarkResult[]): void {
       ? result.compositeScore.toFixed(1)
       : '--';
 
+    const allFailed = successful === 0;
     console.log([
       pad(result.provider, nameWidth),
       pad(score, 8),
-      pad(formatSeconds(result.summary.ttiMs.median), colWidth),
-      pad(formatSeconds(result.summary.ttiMs.p95), colWidth),
-      pad(formatSeconds(result.summary.ttiMs.p99), colWidth),
+      pad(allFailed ? '--' : formatSeconds(result.summary.ttiMs.median), colWidth),
+      pad(allFailed ? '--' : formatSeconds(result.summary.ttiMs.p95), colWidth),
+      pad(allFailed ? '--' : formatSeconds(result.summary.ttiMs.p99), colWidth),
       pad(`${successful}/${total} OK`, 10),
     ].join(' | '));
   }
