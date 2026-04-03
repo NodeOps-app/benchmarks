@@ -69,9 +69,13 @@ function buildTable(results: BenchmarkResult[]): string {
     } else {
       const ok = r.iterations.filter(i => !i.error).length;
       const total = r.iterations.length;
+      const allFailed = ok === 0;
       const score = r.compositeScore !== undefined ? r.compositeScore.toFixed(1) : '--';
+      const median = allFailed ? '--' : formatSeconds(r.summary.ttiMs.median);
+      const p95 = allFailed ? '--' : formatSeconds(r.summary.ttiMs.p95);
+      const p99 = allFailed ? '--' : formatSeconds(r.summary.ttiMs.p99);
       lines.push(
-        `<tr><td>${capitalize(r.provider)}</td><td align="center"><b>${score}</b></td><td align="center">${formatSeconds(r.summary.ttiMs.median)}</td><td align="center">${formatSeconds(r.summary.ttiMs.p95)}</td><td align="center">${formatSeconds(r.summary.ttiMs.p99)}</td><td align="center">${ok}/${total}</td></tr>`
+        `<tr><td>${capitalize(r.provider)}</td><td align="center"><b>${score}</b></td><td align="center">${median}</td><td align="center">${p95}</td><td align="center">${p99}</td><td align="center">${ok}/${total}</td></tr>`
       );
     }
   }
