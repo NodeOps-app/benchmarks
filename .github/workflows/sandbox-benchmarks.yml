@@ -51,7 +51,6 @@ jobs:
           - e2b
           - daytona
           - blaxel
-          - just-bash
           - modal
           - vercel
           - hopx
