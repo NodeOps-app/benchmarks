@@ -59,18 +59,16 @@ async function runBrowserIteration(
         30_000,
         'CDP connection timed out',
       );
-      let page;
-      if (useDefaultContext) {
-        // Use pre-warmed default context/page 
-        const [context] = browser.contexts();
-        if (!context) throw new Error('No default browser context found');
-        const [defaultPage] = context.pages();
-        if (!defaultPage) throw new Error('No default page found');
-        page = defaultPage;
-      } else {
-        const context = await browser.newContext();
-        page = await context.newPage();
+
+      const [context] = browser.contexts();
+      if (!context) {
+        throw new Error("No default browser context found");
       }
+      const [page] = context.pages();
+      if (!page) {
+        throw new Error("No default page found");
+      }
+
       timings.connectMs = performance.now() - connectStart;
 
       // 3. Navigate
@@ -105,7 +103,7 @@ async function runBrowserIteration(
 }
 
 export async function runBrowserBenchmark(config: BrowserProviderConfig): Promise<BrowserBenchmarkResult> {
-  const { name, iterations = 25, timeout = 120_000, requiredEnvVars, useDefaultContext } = config;
+  const { name, iterations = 25, timeout = 120_000, requiredEnvVars } = config;
 
   // Check if all required credentials are available
   const missingVars = requiredEnvVars.filter(v => !process.env[v]);
@@ -134,7 +132,7 @@ export async function runBrowserBenchmark(config: BrowserProviderConfig): Promis
   console.log('───  ───────  ───────  ──────── ───────  ───────  ──────');
 
   for (let i = 0; i < iterations; i++) {
-    const result = await runBrowserIteration(provider, timeout, useDefaultContext);
+    const result = await runBrowserIteration(provider, timeout);
     results.push(result);
 
     const pad = (n: number) => `${Math.round(n)}ms`.padStart(7);
