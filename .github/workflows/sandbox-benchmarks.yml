@@ -48,16 +48,17 @@ jobs:
       fail-fast: false
       matrix:
         provider:
-          - e2b
-          - daytona
+          - beam
           - blaxel
-          - modal
-          - vercel
-          - hopx
-          - codesandbox
-          - runloop
-          - namespace
           - cloudflare
+          - codesandbox
+          - daytona
+          - e2b
+          - hopx
+          - modal
+          - namespace
+          - runloop
+          - vercel
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
