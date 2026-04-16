@@ -9,6 +9,7 @@ import { runloop } from '@computesdk/runloop';
 import { namespace } from '@computesdk/namespace';
 import { cloudflare } from '@computesdk/cloudflare';
 import { sprites } from '@computesdk/sprites';
+import { upstash } from '@computesdk/upstash';
 import { compute } from 'computesdk';
 import type { ProviderConfig } from './types.js';
 
@@ -72,6 +73,11 @@ export const providers: ProviderConfig[] = [
     name: 'sprites',
     requiredEnvVars: ['SPRITES_TOKEN'],
     createCompute: () => sprites({ apiKey: process.env.SPRITES_TOKEN! }),
+  },
+  {
+    name: 'upstash',
+    requiredEnvVars: ['UPSTASH_BOX_API_KEY'],
+    createCompute: () => upstash({ apiKey: process.env.UPSTASH_BOX_API_KEY! }),
   },
   {
     name: 'vercel',
