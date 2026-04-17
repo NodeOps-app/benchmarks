@@ -10,6 +10,7 @@ import { runloop } from '@computesdk/runloop';
 import { namespace } from '@computesdk/namespace';
 import { cloudflare } from '@computesdk/cloudflare';
 import { sprites } from '@computesdk/sprites';
+import { upstash } from '@computesdk/upstash';
 import { compute } from 'computesdk';
 import type { ProviderConfig } from './types.js';
 
