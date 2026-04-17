@@ -85,6 +85,7 @@ export const providers: ProviderConfig[] = [
     name: 'upstash',
     requiredEnvVars: ['UPSTASH_BOX_API_KEY'],
     createCompute: () => upstash({ apiKey: process.env.UPSTASH_BOX_API_KEY! }),
+    sandboxOptions: { ephemeral: true },
   },
   {
     name: 'vercel',
