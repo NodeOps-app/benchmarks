@@ -13,6 +13,7 @@ import { cloudflare } from '@computesdk/cloudflare';
 import { sprites } from '@computesdk/sprites';
 import { upstash } from '@computesdk/upstash';
 import { compute } from 'computesdk';
+import { fcspawn } from './fcspawn-provider.js';
 import type { ProviderConfig } from './types.js';
 
 /**
@@ -22,6 +23,13 @@ import type { ProviderConfig } from './types.js';
  * Automatic mode providers route through the ComputeSDK gateway (requires COMPUTESDK_API_KEY).
  */
 export const providers: ProviderConfig[] = [
+  // --- fc-spawn (self-hosted) ---
+  {
+    name: 'fcspawn',
+    requiredEnvVars: ['FCSPAWN_URL', 'FCSPAWN_TOKEN'],
+    createCompute: () => fcspawn({ baseUrl: process.env.FCSPAWN_URL!, apiKey: process.env.FCSPAWN_TOKEN! }),
+    sandboxOptions: { shape: 's-1vcpu-256mb', rootfs: 'python-sshd' },
+  },
   // --- Direct mode (provider SDK packages) ---
   {
     name: 'archil',
