@@ -33,7 +33,6 @@ on:
 
 concurrency:
   group: benchmarks
-  cancel-in-progress: true
 
 permissions:
   contents: write
