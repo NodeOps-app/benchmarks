@@ -31,9 +31,6 @@ on:
           - staggered
           - burst
 
-concurrency:
-  group: benchmarks
-
 permissions:
   contents: write
   pull-requests: write
