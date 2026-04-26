@@ -70,11 +70,11 @@
   <text class="row median" x="280" y="208">95.5</text>
   <text class="row median fast" x="420" y="208">0.34s</text>
   <text class="row" x="600" y="208">0.38s</text>
-  <text class="row" x="780" y="208">0.39s</text>
+  <text class="row" x="780" y="208">0.38s</text>
   <text class="row status" x="960" y="208">99/100</text>
 
   <!-- Timestamp -->
-  <text class="timestamp" x="1176" y="268" text-anchor="end">Last updated: Apr 25, 2026, 11:27 AM UTC</text>
+  <text class="timestamp" x="1176" y="268" text-anchor="end">Last updated: Apr 26, 2026, 12:44 AM UTC</text>
 
   <!-- Footnote -->
   <text class="timestamp" x="24" y="282">* Uses ComputeSDK orchestrator</text>
