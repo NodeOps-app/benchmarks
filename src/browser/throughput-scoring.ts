@@ -25,7 +25,7 @@ function scoreThroughput(actionsPerSecond: number): number {
 }
 
 function scoreLatency(valueMs: number): number {
-  if (!Number.isFinite(valueMs) || valueMs <= 0) return 0;
+  if (!Number.isFinite(valueMs)) return 0;
   return Math.max(0, 100 * (1 - valueMs / LATENCY_CEILING_MS));
 }
 

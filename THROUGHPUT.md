@@ -179,7 +179,7 @@ npm run generate-browser-throughput-svg
 
 ## Scheduling
 
-The GitHub Actions workflow `browser-throughput-benchmarks.yml` runs daily at 01:00 UTC (offset from the lifecycle browser benchmark at 00:00) with 10 iterations per provider. Pull requests touching browser code run a faster 3-iteration version and post a comparison table as a PR comment.
+The GitHub Actions workflow `browser-throughput-benchmarks.yml` runs daily at 03:00 UTC (offset from the lifecycle browser benchmark at 00:00) with 10 iterations per provider. Pull requests touching browser code run a faster 3-iteration version and post a comparison table as a PR comment.
 
 ## Limitations
 

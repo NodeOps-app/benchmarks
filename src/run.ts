@@ -29,7 +29,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Parse CLI args
 const args = process.argv.slice(2);
 const providerFilter = getArgValue(args, '--provider');
-const iterations = parseInt(getArgValue(args, '--iterations') || '100', 10);
+const iterationsArg = getArgValue(args, '--iterations');
+const iterations = parseInt(iterationsArg || '100', 10);
 const rawMode = getArgValue(args, '--mode');
 const concurrency = parseInt(getArgValue(args, '--concurrency') || '100', 10);
 const storageConcurrency = parseInt(getArgValue(args, '--storage-concurrency') || '1', 10);
@@ -216,7 +217,8 @@ async function runBrowser(toRun: typeof browserProviders): Promise<void> {
   fs.mkdirSync(resultsDir, { recursive: true });
 
   const outPath = path.join(resultsDir, `${timestamp}.json`);
-  await writeBrowserResultsJson(results, outPath);
+  const timeoutMs = toRun.reduce((max, p) => Math.max(max, p.timeout ?? 120_000), 0) || 120_000;
+  await writeBrowserResultsJson(results, outPath, { timeoutMs });
 
   // Copy results to latest.json
   const latestPath = path.join(resultsDir, 'latest.json');
@@ -225,15 +227,25 @@ async function runBrowser(toRun: typeof browserProviders): Promise<void> {
 }
 
 async function runBrowserThroughput(toRun: typeof throughputProviders): Promise<void> {
+  // Throughput sessions are ~12s each, so we use a much lower default than
+  // the global iterations CLI value. Only override when --iterations was
+  // explicitly passed; otherwise let runThroughputBenchmark apply its own
+  // default (10 sessions per provider).
+  const throughputIterations = iterationsArg ? iterations : undefined;
+
   console.log('\n' + '='.repeat(70));
   console.log('  MODE: BROWSER THROUGHPUT');
-  console.log(`  Iterations per provider: ${iterations}`);
+  console.log(`  Iterations per provider: ${throughputIterations ?? 10}`);
   console.log('='.repeat(70));
 
   const results: ThroughputBenchmarkResult[] = [];
 
   for (const providerConfig of toRun) {
-    const result = await runThroughputBenchmark({ ...providerConfig, iterations });
+    const result = await runThroughputBenchmark(
+      throughputIterations !== undefined
+        ? { ...providerConfig, iterations: throughputIterations }
+        : providerConfig,
+    );
     results.push(result);
   }
 
@@ -264,7 +276,8 @@ async function runBrowserThroughput(toRun: typeof throughputProviders): Promise<
   fs.mkdirSync(resultsDir, { recursive: true });
 
   const outPath = path.join(resultsDir, `${timestamp}.json`);
-  await writeThroughputResultsJson(results, outPath);
+  const timeoutMs = toRun.reduce((max, p) => Math.max(max, p.timeout ?? 120_000), 0) || 120_000;
+  await writeThroughputResultsJson(results, outPath, { timeoutMs });
 
   // Copy results to latest.json
   const latestPath = path.join(resultsDir, 'latest.json');

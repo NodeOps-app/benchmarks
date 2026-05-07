@@ -46,7 +46,7 @@ function getArgValue(flag: string): string | undefined {
 const inputDir = getArgValue('--input');
 const mergeMode = getArgValue('--mode');
 if (!inputDir) {
-  console.error('Usage: tsx src/merge-results.ts --input <artifacts-dir> [--mode storage|browser]');
+  console.error('Usage: tsx src/merge-results.ts --input <artifacts-dir> [--mode storage|browser|browser-throughput]');
   process.exit(1);
 }
 
