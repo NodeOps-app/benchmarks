@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "timestamp": "2026-05-09T00:47:24.557Z",
+  "timestamp": "2026-05-09T07:44:14.010Z",
   "environment": {
     "node": "v24.15.0",
     "platform": "linux",
@@ -15,316 +15,317 @@
       "provider": "fcspawn",
       "iterations": [
         {
-          "ttiMs": 739.06
+          "ttiMs": 762.5
         },
         {
-          "ttiMs": 696.64
+          "ttiMs": 523.7
         },
         {
-          "ttiMs": 489.53
+          "ttiMs": 434.17
         },
         {
-          "ttiMs": 404.52
+          "ttiMs": 413.71
         },
         {
-          "ttiMs": 395.63
+          "ttiMs": 405.8
         },
         {
-          "ttiMs": 396.74
+          "ttiMs": 404.12
         },
         {
-          "ttiMs": 399.76
+          "ttiMs": 412.33
         },
         {
-          "ttiMs": 403.22
+          "ttiMs": 408.35
         },
         {
-          "ttiMs": 379.78
+          "ttiMs": 384.64
         },
         {
-          "ttiMs": 429.86
+          "ttiMs": 438.52
         },
         {
-          "ttiMs": 348.13
+          "ttiMs": 411.78
         },
         {
-          "ttiMs": 420.6
+          "ttiMs": 433.64
         },
         {
-          "ttiMs": 427.23
+          "ttiMs": 401.87
         },
         {
-          "ttiMs": 399.62
+          "ttiMs": 396.63
         },
         {
-          "ttiMs": 390.1
+          "ttiMs": 428.61
         },
         {
-          "ttiMs": 396.52
+          "ttiMs": 404.33
         },
         {
-          "ttiMs": 420.91
+          "ttiMs": 411.01
         },
         {
-          "ttiMs": 361.52
+          "ttiMs": 409.3
         },
         {
-          "ttiMs": 398.93
+          "ttiMs": 340.74
         },
         {
-          "ttiMs": 372.23
+          "ttiMs": 449.5
         },
         {
-          "ttiMs": 358.05
+          "ttiMs": 388.19
         },
         {
-          "ttiMs": 398.83
+          "ttiMs": 435.92
         },
         {
-          "ttiMs": 344.15
+          "ttiMs": 445.82
         },
         {
-          "ttiMs": 391.82
+          "ttiMs": 405.05
         },
         {
-          "ttiMs": 388.93
+          "ttiMs": 406.76
         },
         {
-          "ttiMs": 388.47
+          "ttiMs": 395.69
         },
         {
-          "ttiMs": 398.18
+          "ttiMs": 402.81
         },
         {
-          "ttiMs": 398.64
+          "ttiMs": 375.92
         },
         {
-          "ttiMs": 391.91
+          "ttiMs": 407.35
         },
         {
-          "ttiMs": 398.61
+          "ttiMs": 397.08
         },
         {
-          "ttiMs": 392.93
+          "ttiMs": 440.42
         },
         {
-          "ttiMs": 385.41
+          "ttiMs": 408.79
         },
         {
-          "ttiMs": 336.16
+          "ttiMs": 428.84
         },
         {
-          "ttiMs": 378.81
+          "ttiMs": 401.32
         },
         {
-          "ttiMs": 388.97
+          "ttiMs": 339.84
         },
         {
-          "ttiMs": 400.76
+          "ttiMs": 399.11
         },
         {
-          "ttiMs": 367.56
+          "ttiMs": 401.32
         },
         {
-          "ttiMs": 394.3
+          "ttiMs": 403.62
         },
         {
-          "ttiMs": 430.73
+          "ttiMs": 408.79
         },
         {
-          "ttiMs": 390.1
+          "ttiMs": 394.57
         },
         {
-          "ttiMs": 397.65
+          "ttiMs": 403.87
         },
         {
-          "ttiMs": 439.54
+          "ttiMs": 387.76
         },
         {
-          "ttiMs": 418.23
+          "ttiMs": 420.96
         },
         {
-          "ttiMs": 400.28
+          "ttiMs": 402.45
         },
         {
-          "ttiMs": 392.69
+          "ttiMs": 437.6
         },
         {
-          "ttiMs": 392.41
+          "ttiMs": 446.39
         },
         {
-          "ttiMs": 341.76
+          "ttiMs": 403.5
         },
         {
-          "ttiMs": 422.21
+          "ttiMs": 345.76
         },
         {
-          "ttiMs": 395.49
+          "ttiMs": 376.55
         },
         {
-          "ttiMs": 400.48
+          "ttiMs": 448.37
         },
         {
-          "ttiMs": 355.64
+          "ttiMs": 399.83
         },
         {
-          "ttiMs": 397.48
+          "ttiMs": 446.71
         },
         {
-          "ttiMs": 397.79
+          "ttiMs": 432.82
         },
         {
-          "ttiMs": 376.83
+          "ttiMs": 358.71
         },
         {
-          "ttiMs": 376.94
+          "ttiMs": 444.53
         },
         {
-          "ttiMs": 356.06
+          "ttiMs": 312.17
         },
         {
-          "ttiMs": 440.56
+          "ttiMs": 402.51
         },
         {
-          "ttiMs": 375.11
+          "ttiMs": 431.78
         },
         {
-          "ttiMs": 398.28
-        },
-        {
-          "ttiMs": 396.19
-        },
-        {
-          "ttiMs": 387.42
+          "ttiMs": 449.16
         },
         {
           "ttiMs": 0,
-          "error": "create: agent not ready: timeout waiting for agent after 391 attempts (first dial=10.425867ms, last err=dial tcp 192.168.0.14:1024: i/o timeout @ 5.000583372s): context deadline exceeded"
+          "error": "create: agent not ready: timeout waiting for agent after 390 attempts (first dial=10.179954ms, last err=dial tcp 192.168.0.14:1024: i/o timeout @ 5.001072196s): context deadline exceeded"
         },
         {
-          "ttiMs": 697.88
+          "ttiMs": 707.51
         },
         {
-          "ttiMs": 424.38
+          "ttiMs": 440.69
         },
         {
-          "ttiMs": 418.05
+          "ttiMs": 351.3
         },
         {
-          "ttiMs": 339.75
+          "ttiMs": 444.54
         },
         {
-          "ttiMs": 341.56
+          "ttiMs": 405.05
         },
         {
-          "ttiMs": 355.4
+          "ttiMs": 440.6
         },
         {
-          "ttiMs": 348.96
+          "ttiMs": 409.91
         },
         {
-          "ttiMs": 399.22
+          "ttiMs": 355.44
         },
         {
-          "ttiMs": 426.96
+          "ttiMs": 456.14
         },
         {
-          "ttiMs": 438.27
+          "ttiMs": 400.37
         },
         {
-          "ttiMs": 398.01
+          "ttiMs": 409
         },
         {
-          "ttiMs": 424.08
+          "ttiMs": 415.05
         },
         {
-          "ttiMs": 423.47
+          "ttiMs": 402.98
         },
         {
-          "ttiMs": 348.49
+          "ttiMs": 442.41
         },
         {
-          "ttiMs": 378.9
+          "ttiMs": 407.06
         },
         {
-          "ttiMs": 301.11
+          "ttiMs": 402.94
         },
         {
-          "ttiMs": 426.11
+          "ttiMs": 432.15
         },
         {
-          "ttiMs": 418.7
+          "ttiMs": 0,
+          "error": "Command failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 400.61
+          "ttiMs": 420.62
         },
         {
-          "ttiMs": 425.88
+          "ttiMs": 369.01
         },
         {
-          "ttiMs": 318.89
+          "ttiMs": 437.78
         },
         {
-          "ttiMs": 397.86
+          "ttiMs": 443.35
         },
         {
-          "ttiMs": 372.36
+          "ttiMs": 407.16
         },
         {
-          "ttiMs": 391.52
+          "ttiMs": 438.98
         },
         {
-          "ttiMs": 394.66
+          "ttiMs": 366.48
         },
         {
-          "ttiMs": 395.23
+          "ttiMs": 445.02
         },
         {
-          "ttiMs": 393.74
+          "ttiMs": 386.84
         },
         {
-          "ttiMs": 388.68
+          "ttiMs": 441.85
         },
         {
-          "ttiMs": 380.28
+          "ttiMs": 414.47
         },
         {
-          "ttiMs": 423.85
+          "ttiMs": 436.45
         },
         {
-          "ttiMs": 430.25
+          "ttiMs": 448.6
         },
         {
-          "ttiMs": 396.05
+          "ttiMs": 398.46
         },
         {
-          "ttiMs": 395.2
+          "ttiMs": 403.56
         },
         {
-          "ttiMs": 464.02
+          "ttiMs": 410.04
         },
         {
-          "ttiMs": 438.48
+          "ttiMs": 437.02
         },
         {
-          "ttiMs": 396.26
+          "ttiMs": 407.34
         },
         {
-          "ttiMs": 399.62
+          "ttiMs": 307.31
         },
         {
-          "ttiMs": 341.55
+          "ttiMs": 437.6
+        },
+        {
+          "ttiMs": 414.45
+        },
+        {
+          "ttiMs": 439.44
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 396.26,
-          "p95": 438.27,
-          "p99": 464.02
+          "median": 408.89,
+          "p95": 446.71,
+          "p99": 449.5
         }
       },
-      "compositeScore": 94.87,
-      "successRate": 0.99
+      "compositeScore": 93.84,
+      "successRate": 0.98
     }
   ]
 }
