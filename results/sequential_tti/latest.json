@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "timestamp": "2026-05-10T04:17:03.444Z",
+  "timestamp": "2026-05-10T04:26:18.029Z",
   "environment": {
     "node": "v24.15.0",
     "platform": "linux",
@@ -15,415 +15,317 @@
       "provider": "fcspawn",
       "iterations": [
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 1189.82
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 691.21
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 679.76
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 691.25
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 680.37
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 666.81
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 684.02
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 701.51
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 665.8
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 672.16
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 672.48
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 671.09
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 679.66
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 716.99
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 681.56
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 671.48
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 674.11
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 681.36
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 686.09
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 696.42
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 669.23
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 667.1
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 674.01
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 686.31
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 691.94
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 667.3
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 682.65
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 668.19
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 674.83
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 696.13
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 676.49
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 688.51
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 718.16
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 681.48
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 690.42
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 670.15
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 690.57
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 668.54
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 668.17
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 690.59
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 687.79
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 684.6
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 694.51
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 673.28
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 693.26
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 690.54
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 663.45
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 688
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 670.19
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 922.06
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 726.64
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 717.35
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 673.15
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 683.01
         },
         {
           "ttiMs": 0,
-          "error": "fetch failed"
+          "error": "create: agent not ready: timeout waiting for agent after 390 attempts (first dial=10.15671ms, last err=dial tcp 192.168.0.4:1024: i/o timeout @ 5.000871806s): context deadline exceeded"
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 783.87
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 670.27
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 644.73
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 679.41
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 667.67
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 684.09
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 670.58
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 685.05
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 681.98
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 666.03
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 670.29
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 705.65
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 670.78
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 671.8
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 663.95
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 660.03
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 671.7
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 670.54
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 675.95
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 668.26
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 669.7
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 675.87
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 709.41
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 676.84
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 666.67
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 669.17
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 719.94
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 639.53
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 676.63
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 680.18
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 672.38
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 670.33
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 669.71
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 678.18
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 669.68
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 670.92
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 712.44
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 670.4
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 701.75
         },
         {
           "ttiMs": 0,
-          "error": "fetch failed"
+          "error": "exec: {\"status\":\"fail\",\"data\":{\"id\":\"sandbox not found\"}}"
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 671.97
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 652.56
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 669.78
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 668.03
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 676.27
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 0,
-          "p95": 0,
-          "p99": 0
+          "median": 676.11,
+          "p95": 712.44,
+          "p99": 719.94
         }
       },
-      "compositeScore": 0,
-      "successRate": 0
+      "compositeScore": 91.22,
+      "successRate": 0.98
     }
   ]
 }

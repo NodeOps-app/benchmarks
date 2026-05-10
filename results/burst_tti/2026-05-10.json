@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "timestamp": "2026-05-10T04:17:03.441Z",
+  "timestamp": "2026-05-10T04:26:18.025Z",
   "environment": {
     "node": "v24.15.0",
     "platform": "linux",
@@ -15,419 +15,330 @@
       "provider": "fcspawn",
       "mode": "concurrent",
       "concurrency": 100,
-      "wallClockMs": 4334.82,
-      "timeToFirstReadyMs": 0,
+      "wallClockMs": 5698.58,
+      "timeToFirstReadyMs": 698.85,
       "iterations": [
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 702.26
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 848.71
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 839.73
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4101.45
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4067.35
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 698.85
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4075.7
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 845.95
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4057.24
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 895.3
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 888.37
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 1200.06
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 1045.44
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 1131
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 1241.95
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 1282.72
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 1534.95
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 1586.28
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 1585.47
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 1711
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 1589.81
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 1725.72
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 1735.52
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 1960.03
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 1804.09
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 1930.31
         },
         {
           "ttiMs": 0,
-          "error": "fetch failed"
+          "error": "Command failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 1984.91
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 2176.64
         },
         {
           "ttiMs": 0,
-          "error": "fetch failed"
+          "error": "Command failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 2467.48
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 2227.41
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 2298.28
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 2363.25
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 2444.46
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 2392.76
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 2469.86
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 2405.45
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 2423.91
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3364.27
         },
         {
           "ttiMs": 0,
-          "error": "fetch failed"
+          "error": "Command failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 2750.03
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 2915.77
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3473.83
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3027.49
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 2998.29
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 2770.53
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3048.16
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3974.92
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3078.83
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3365.68
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3294.97
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3143.4
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3360.81
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3128.44
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3127.64
         },
         {
           "ttiMs": 0,
-          "error": "fetch failed"
+          "error": "Command failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3118.35
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3254.64
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3758.14
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3226.25
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3420.06
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3452.48
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3427.21
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3366.84
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4490.43
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4436.94
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3690.09
         },
         {
           "ttiMs": 0,
-          "error": "fetch failed"
+          "error": "Command failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3551.33
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3657.91
         },
         {
           "ttiMs": 0,
-          "error": "fetch failed"
+          "error": "Command failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3617.65
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3884.36
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3878.35
         },
         {
           "ttiMs": 0,
-          "error": "fetch failed"
+          "error": "Command failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3976.51
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4042.84
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 3908.96
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4095.21
         },
         {
           "ttiMs": 0,
-          "error": "fetch failed"
+          "error": "Command failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4105.94
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4096.34
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4087.49
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4952.73
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4375.59
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4193.8
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4184.45
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4506.7
         },
         {
           "ttiMs": 0,
-          "error": "fetch failed"
+          "error": "Command failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4939.37
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4521.96
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4395.62
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4504.62
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4503.71
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4436.85
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4425.45
         },
         {
-          "ttiMs": 0,
-          "error": "fetch failed"
+          "ttiMs": 4410.41
         },
         {
           "ttiMs": 0,
-          "error": "fetch failed"
+          "error": "Command failed with exit code -1: Unknown error"
         },
         {
           "ttiMs": 0,
-          "error": "fetch failed"
+          "error": "exec: {\"status\":\"fail\",\"data\":{\"id\":\"sandbox not found\"}}"
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 0,
-          "p95": 0,
-          "p99": 0
+          "median": 3226.25,
+          "p95": 4436.85,
+          "p99": 4504.62
         }
       },
-      "compositeScore": 0,
-      "successRate": 0
+      "compositeScore": 55.89,
+      "successRate": 0.89
     }
   ]
 }
