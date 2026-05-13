@@ -15,7 +15,7 @@ and [one-hundred-k-mvp-checklist.md](one-hundred-k-mvp-checklist.md).
 | Same as above + `error_message` (truncated to 500 chars) | Tigris `<run_id>/raw.jsonl` | Source of truth; rebuild Postgres from this if needed |
 | Mid-run progress snapshots: done, in_flight, errors, timestamp | Tigris `<run_id>/heartbeat.json` | Overwritten every 30s |
 | Final summary (run_id, provider, attempted/succeeded, p50/p99, ended_at) | Tigris `<run_id>/meta.json` | Written once at clean exit |
-| Coordinator stdout/stderr | VM `/root/run.log` AND Tigris `<run_id>/coordinator.log` | Uploaded by the coordinator at every heartbeat (30s) and on shutdown |
+| Coordinator stdout/stderr | VM `/root/run.log` AND Tigris `<run_id>/coordinator.log` | Uploaded by the coordinator at every heartbeat (30s) and on shutdown ✅ |
 
 ---
 
@@ -23,7 +23,7 @@ and [one-hundred-k-mvp-checklist.md](one-hundred-k-mvp-checklist.md).
 
 | Data | Approach | Why it's useful |
 | --- | --- | --- |
-| **Full latency histogram (p25, p75, p95, p99, p99.9, max)** | Compute in `coordinator.ts` `complete()` block and write extra columns / fields to `runs` and `meta.json` | Tail behavior, not just p50/p99 |
+| ~~Full latency histogram (p25, p75, p95, p99, p99.9, max)~~ ✅ Landed | `latency_distribution` object in Tigris `meta.json` carries count, min, p10/p25/p50/p75/p90/p95/p99/p999, max, mean. Postgres `runs` stays p50/p99-only — meta.json is the analytical view. | — |
 | **Error-type histogram** | Already in `sandbox_results`; just expose via SQL or add columns to `runs` (`timeouts_total`, `http_errors_total`, etc.) | Quick visibility on failure modes |
 | **Ramp-phase latency segments** (first 25% vs last 25% of starts) | Bucket `sandbox_results` rows by their `started_at` offset from `runs.started_at` | Does latency degrade as concurrency climbs? |
 | **Concurrency at each point in time** | Already computable from `started_at`/`completed_at` of `sandbox_results` | Validates the ramp actually behaved as configured |
@@ -60,9 +60,8 @@ The high-value-to-cost ratio winners worth landing next:
 1. ~~**Upload `coordinator.log` to Tigris at shutdown.**~~ ✅ Landed. Coordinator
    reads `$COORDINATOR_LOG_PATH` (set by launch.sh to `/root/run.log`) and
    uploads on every heartbeat plus shutdown.
-2. **Full latency histogram in `runs` and `meta.json`.** Already have all
-   the data; just expose more percentiles + a stored sample of bucket
-   counts.
+2. ~~**Full latency histogram in `runs` and `meta.json`.**~~ ✅ Landed in Tigris
+   `meta.json`; Postgres unchanged.
 3. **Error-type histogram column on `runs`** (or just a documented SQL
    view) — `timeouts_total`, `http_errors_total`, `network_errors_total`.
 

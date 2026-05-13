@@ -131,9 +131,33 @@ async function main() {
       p99_latency_ms: pct(0.99),
     };
 
+    // Full latency distribution, written to Tigris meta.json only. Postgres
+    // keeps just p50/p99 for cheap filtering; this is for retrospective
+    // analysis of tail behaviour.
+    const latency_distribution = latencies.length === 0 ? null : {
+      count: latencies.length,
+      min_ms:  latencies[0],
+      p10_ms:  pct(0.10),
+      p25_ms:  pct(0.25),
+      p50_ms:  pct(0.50),
+      p75_ms:  pct(0.75),
+      p90_ms:  pct(0.90),
+      p95_ms:  pct(0.95),
+      p99_ms:  pct(0.99),
+      p999_ms: pct(0.999),
+      max_ms:  latencies[latencies.length - 1],
+      mean_ms: Math.round(latencies.reduce((s, v) => s + v, 0) / latencies.length),
+    };
+
     await pg.flush();
     await tigris.close();
-    await tigris.writeMeta({ ...final, run_id: RUN_ID, provider: PROVIDER, ended_at: new Date().toISOString() });
+    await tigris.writeMeta({
+      ...final,
+      latency_distribution,
+      run_id: RUN_ID,
+      provider: PROVIDER,
+      ended_at: new Date().toISOString(),
+    });
     await pg.complete(final);
     await pg.close();
 
