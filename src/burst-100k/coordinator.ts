@@ -1,4 +1,5 @@
 import { config as loadDotenv } from 'dotenv';
+import * as fs from 'node:fs';
 import { getProvider } from './providers.js';
 import { PostgresSink } from './sinks/postgres.js';
 import { TigrisSink } from './sinks/tigris.js';
@@ -61,10 +62,25 @@ async function main() {
   let lastStats: ProgressStats = { done: 0, in_flight: 0, errors: 0 };
   const latencies: number[] = [];
 
+  // Periodically upload the coordinator's own stdout/stderr (redirected to a
+  // file by launch.sh) to Tigris. Skipped silently when the env var is
+  // unset (e.g. local `npm run bench:burst-100k:local` runs).
+  const COORDINATOR_LOG_PATH = process.env.COORDINATOR_LOG_PATH;
+  const uploadLog = async (): Promise<void> => {
+    if (!COORDINATOR_LOG_PATH) return;
+    try {
+      const content = await fs.promises.readFile(COORDINATOR_LOG_PATH, 'utf-8');
+      await tigris.writeLog(content);
+    } catch (err: any) {
+      console.error('[log-upload]', err?.message ?? err);
+    }
+  };
+
   const heartbeat = setInterval(() => {
     const ts = new Date().toISOString();
     pg.heartbeat(lastStats).catch(err => console.error('[heartbeat:pg]', err.message));
     tigris.writeHeartbeat({ ...lastStats, ts }).catch(err => console.error('[heartbeat:tigris]', err.message));
+    uploadLog();
     console.log(`[heartbeat] done=${lastStats.done} in_flight=${lastStats.in_flight} errors=${lastStats.errors}`);
   }, HEARTBEAT_INTERVAL_MS);
 
@@ -79,6 +95,7 @@ async function main() {
       await tigris.close();
       await pg.fail(`Process received ${signal} at done=${lastStats.done}/${provider.concurrencyTarget}`);
       await pg.close();
+      await uploadLog();
     } catch (e: any) {
       console.error('[coordinator] shutdown flush failed:', e?.message ?? e);
     }
@@ -121,6 +138,8 @@ async function main() {
     await pg.close();
 
     console.log('[coordinator] run complete:', final);
+    // Final log upload AFTER the completion message so it ends up in Tigris.
+    await uploadLog();
   } catch (err: any) {
     clearInterval(heartbeat);
     console.error('[coordinator] run failed:', err?.message ?? err);
@@ -129,6 +148,7 @@ async function main() {
       await tigris.close();
       await pg.fail(err?.message ?? String(err));
       await pg.close();
+      await uploadLog();
     } catch (e: any) {
       console.error('[coordinator] failed to record failure:', e?.message ?? e);
     }

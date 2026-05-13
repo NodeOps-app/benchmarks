@@ -71,6 +71,15 @@ export class TigrisSink {
     }));
   }
 
+  async writeLog(content: string): Promise<void> {
+    await this.client.send(new PutObjectCommand({
+      Bucket: this.bucket,
+      Key: `${this.prefix}coordinator.log`,
+      Body: content,
+      ContentType: 'text/plain; charset=utf-8',
+    }));
+  }
+
   async close(): Promise<void> {
     this.rawStream.end();
     await this.rawUploadDone;
