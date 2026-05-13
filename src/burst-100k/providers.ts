@@ -1,5 +1,6 @@
 import { e2b } from '@computesdk/e2b';
 import { modal } from '@computesdk/modal';
+import { runloop } from '@computesdk/runloop';
 import type { BurstProviderConfig } from './types.js';
 
 /**
@@ -33,6 +34,14 @@ export const providers: BurstProviderConfig[] = [
     // Modal adapter doesn't expose a sandbox-level timeoutMs option; the
     // runner's fire-and-forget destroy after recording latency is what
     // cleans up. Worth re-verifying at full 100k scale.
+  },
+  {
+    name: 'runloop',
+    requiredEnvVars: ['RUNLOOP_API_KEY'],
+    createCompute: () => runloop({ apiKey: process.env.RUNLOOP_API_KEY! }),
+    concurrencyTarget: 100_000,
+    rampSeconds: 60,
+    perRequestTimeoutMs: 120_000,
   },
 ];
 
