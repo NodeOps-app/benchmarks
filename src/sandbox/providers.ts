@@ -1,16 +1,18 @@
 import { archil } from '@computesdk/archil';
-import { e2b } from '@computesdk/e2b';
-import { daytona } from '@computesdk/daytona';
 import { blaxel } from '@computesdk/blaxel';
-import { modal } from '@computesdk/modal';
-import { vercel } from '@computesdk/vercel';
-import { hopx } from '@computesdk/hopx';
 import { codesandbox } from '@computesdk/codesandbox';
-import { runloop } from '@computesdk/runloop';
-import { namespace } from '@computesdk/namespace';
 import { cloudflare } from '@computesdk/cloudflare';
+import { daytona } from '@computesdk/daytona';
+import { declaw } from '@computesdk/declaw';
+import { e2b } from '@computesdk/e2b';
+import { hopx } from '@computesdk/hopx';
+import { modal } from '@computesdk/modal';
+import { namespace } from '@computesdk/namespace';
+import { runloop } from '@computesdk/runloop';
 import { sprites } from '@computesdk/sprites';
+import { tensorlake } from '@computesdk/tensorlake'
 import { upstash } from '@computesdk/upstash';
+import { vercel } from '@computesdk/vercel';
 import { compute } from 'computesdk';
 import type { ProviderConfig } from './types.js';
 
@@ -51,6 +53,11 @@ export const providers: ProviderConfig[] = [
     sandboxOptions: { autoStopInterval: 15, autoDeleteInterval: 0 },
   },
   {
+    name: 'declaw',
+    requiredEnvVars: ['DECLAW_API_KEY'],
+    createCompute: () => declaw({ apiKey: process.env.DECLAW_API_KEY! }),
+  },
+  {
     name: 'e2b',
     requiredEnvVars: ['E2B_API_KEY'],
     createCompute: () => e2b({ apiKey: process.env.E2B_API_KEY! }),
@@ -80,6 +87,11 @@ export const providers: ProviderConfig[] = [
     name: 'sprites',
     requiredEnvVars: ['SPRITES_TOKEN'],
     createCompute: () => sprites({ apiKey: process.env.SPRITES_TOKEN! }),
+  },
+  {
+    name: 'tensorlake',
+    requiredEnvVars: ['TENSORLAKE_API_KEY'],
+    createCompute: () => tensorlake({ apiKey: process.env.TENSORLAKE_API_KEY! }),
   },
   {
     name: 'upstash',

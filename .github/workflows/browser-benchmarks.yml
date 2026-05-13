@@ -8,19 +8,21 @@ on:
       - 'src/run.ts'
       - 'src/merge-results.ts'
       - 'package.json'
+  schedule:
+    - cron: '0 0 * * *' # Daily at midnight UTC
   workflow_dispatch:
     inputs:
       iterations:
         description: 'Iterations per provider'
         required: false
-        default: '10'
+        default: '100'
 
 concurrency:
   group: browser-benchmarks
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 jobs:
@@ -30,27 +32,46 @@ jobs:
     timeout-minutes: 60
     strategy:
       fail-fast: false
-      # matrix:
-        #provider:
-          # - browserbase
+      matrix:
+        provider:
+          - browserbase
+          # - browseruse
+          - hyperbrowser
+          - kernel
+          - steel
+          # - steel
+          # - anchorbrowser
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: 'npm'
-      - run: npm ci
+      - name: Install dependencies
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            npm update
+          else
+            npm ci
+          fi
       - name: Clear stale results from checkout
         run: rm -rf results/browser/
       - name: Run browser benchmark
-        # env:
-          # BROWSERBASE_API_KEY: ${{ secrets.BROWSERBASE_API_KEY }}
-          # BROWSERBASE_PROJECT_ID: ${{ secrets.BROWSERBASE_PROJECT_ID }}
+        env:
+          BROWSERBASE_API_KEY: ${{ secrets.BROWSERBASE_API_KEY }}
+          BROWSERBASE_PROJECT_ID: ${{ secrets.BROWSERBASE_PROJECT_ID }}
+          # BROWSER_USE_API_KEY: ${{ secrets.BROWSER_USE_API_KEY }}
+          HYPERBROWSER_API_KEY: ${{ secrets.HYPERBROWSER_API_KEY }}
+          KERNEL_API_KEY: ${{ secrets.KERNEL_API_KEY }}
+          STEEL_API_KEY: ${{ secrets.STEEL_API_KEY }}
+          # NOTTE_API_KEY: ${{ secrets.NOTTE_API_KEY }}
+          # STEEL_API_KEY: ${{ secrets.STEEL_API_KEY }}
+          # ANCHORBROWSER_API_KEY: ${{ secrets.ANCHORBROWSER_API_KEY }}
         run: |
           npm run bench -- \
             --mode browser \
             --provider ${{ matrix.provider }} \
-            --iterations ${{ github.event.inputs.iterations || '10' }}
+            --iterations ${{ github.event_name == 'pull_request' && '10' || github.event.inputs.iterations || '100' }}
       - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4
@@ -71,7 +92,13 @@ jobs:
         with:
           node-version: 24
           cache: 'npm'
-      - run: npm ci
+      - name: Install dependencies
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            npm update
+          else
+            npm ci
+          fi
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
@@ -86,6 +113,15 @@ jobs:
           INGEST_URL: ${{ secrets.INGEST_URL }}
           INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
         run: npx tsx src/ingest.ts --type browser
+      - run: npm run generate-browser-svg
+      - name: Upload SVG as artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-benchmark-svg
+          path: browser.svg
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Post results to PR
         if: github.event_name == 'pull_request'
         continue-on-error: true
@@ -131,7 +167,7 @@ jobs:
               }
             }
 
-            body += `---\n*[View full run](${runUrl})*`;
+            body += `---\n*[View full run](${runUrl}) · SVG available as [build artifact](${runUrl}#artifacts)*`;
 
             const marker = '## Browser Benchmark Results';
             const { data: comments } = await github.rest.issues.listComments({
@@ -157,3 +193,12 @@ jobs:
                 body,
               });
             }
+      - name: Commit and push
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json browser.svg results/browser/
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "chore: update browser benchmark results [skip ci]"
+          git push
