@@ -1,0 +1,71 @@
+# Burst-100k Data Inventory
+
+What data the burst-100k benchmark captures today, what's cheap to add, and
+what's harder. Pairs with [one-hundred-k-mvp-plan.md](one-hundred-k-mvp-plan.md)
+and [one-hundred-k-mvp-checklist.md](one-hundred-k-mvp-checklist.md).
+
+---
+
+## Captured right now
+
+| Data | Where | Notes |
+| --- | --- | --- |
+| Per-run summary: provider, commit_sha, instance_id, start/end/heartbeat times, status, attempted/succeeded counts, p50/p99 latency, error_message, tigris prefix | Postgres `runs` | One row per run; easy to query |
+| Per-sandbox: started_at, completed_at, latency_ms, status (ok/timeout/http_error/network_error), http_status, error_code | Postgres `sandbox_results` | One row per sandbox attempt |
+| Same as above + `error_message` (truncated to 500 chars) | Tigris `<run_id>/raw.jsonl` | Source of truth; rebuild Postgres from this if needed |
+| Mid-run progress snapshots: done, in_flight, errors, timestamp | Tigris `<run_id>/heartbeat.json` | Overwritten every 30s |
+| Final summary (run_id, provider, attempted/succeeded, p50/p99, ended_at) | Tigris `<run_id>/meta.json` | Written once at clean exit |
+| Coordinator stdout/stderr | VM `/root/run.log` | **Dies when the VM is destroyed** — biggest gap |
+
+---
+
+## Easy to add (~minutes of work)
+
+| Data | Approach | Why it's useful |
+| --- | --- | --- |
+| **Coordinator log uploaded to Tigris** | At shutdown, `tigris.putObject('<run_id>/coordinator.log', fs.readFileSync('/root/run.log'))` | Post-mortem after VM tear-down |
+| **Full latency histogram (p25, p75, p95, p99, p99.9, max)** | Compute in `coordinator.ts` `complete()` block and write extra columns / fields to `runs` and `meta.json` | Tail behavior, not just p50/p99 |
+| **Error-type histogram** | Already in `sandbox_results`; just expose via SQL or add columns to `runs` (`timeouts_total`, `http_errors_total`, etc.) | Quick visibility on failure modes |
+| **Ramp-phase latency segments** (first 25% vs last 25% of starts) | Bucket `sandbox_results` rows by their `started_at` offset from `runs.started_at` | Does latency degrade as concurrency climbs? |
+| **Concurrency at each point in time** | Already computable from `started_at`/`completed_at` of `sandbox_results` | Validates the ramp actually behaved as configured |
+| **Sandbox IDs / region** if the adapter returns them | Add a `sandbox_id` (or `provider_metadata JSONB`) column on `sandbox_results`, extract from the sandbox object | Cross-reference against provider's own dashboards |
+
+---
+
+## Moderate effort (~hour of work each)
+
+| Data | Approach | Trade-off |
+| --- | --- | --- |
+| **VM system metrics over time** (CPU, mem, event-loop lag, open FDs, sockets) | Periodic snapshot from `os.cpus()`, `process.memoryUsage()`, `perf_hooks.monitorEventLoopDelay()`, `cat /proc/net/sockstat` → row in a new `run_metrics` table or appended to a Tigris JSONL | Catches "we're CPU-bound at 80k concurrency" or port-exhaustion symptoms during the run, not just after |
+| **DNS / TLS / TTFB breakdown per sandbox** | Hook into `undici`/`http` via `diagnostics_channel` to capture phase timings | Useful for "is this provider slow because of DNS or their backend?" — but requires bypassing the adapter abstraction |
+| **Cost estimate per run** | Track sandboxes_created × known provider rate × wall time | Pretty important for a benchmark, currently absent |
+| **Concurrent-actually-active timeline** (`active_at(t)`) | Compute from `started_at` / `completed_at` overlaps; sample every 1s and store | Verify the ramp profile matches intent |
+
+---
+
+## Harder / costlier
+
+| Data | Why hard |
+| --- | --- |
+| **Raw HTTP request/response per sandbox** (headers, body) | The `@computesdk/<provider>` adapters don't surface these. Would need to either fork the adapter or use a `dispatcher`/interceptor on `undici` |
+| **Provider-side log capture** | Requires each provider's API for fetching their server-side logs per sandbox (and per-provider auth/quotas) |
+| **VM kernel-level instrumentation** (perf, eBPF, tcpdump) | Would need privileged setup on the Wolfi VM; useful for deep network debugging |
+| **End-user experience replay** (run a workload inside the sandbox, not just measure creation) | Different benchmark concern from "burst" — closer to TTI which the daily benchmark already does |
+
+---
+
+## Recommended additions, in priority order
+
+The high-value-to-cost ratio winners worth landing first:
+
+1. **Upload `coordinator.log` to Tigris at shutdown.** Maybe 15 lines in
+   `coordinator.ts` shutdown/complete paths. Closes the "logs die with the
+   VM" gap.
+2. **Full latency histogram in `runs` and `meta.json`.** Already have all
+   the data; just expose more percentiles + a stored sample of bucket
+   counts.
+3. **Error-type histogram column on `runs`** (or just a documented SQL
+   view) — `timeouts_total`, `http_errors_total`, `network_errors_total`.
+
+Everything else is on-demand based on what specific question is hard to
+answer with the current data.

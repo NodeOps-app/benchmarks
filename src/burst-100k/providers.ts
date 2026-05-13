@@ -1,4 +1,5 @@
 import { e2b } from '@computesdk/e2b';
+import { modal } from '@computesdk/modal';
 import type { BurstProviderConfig } from './types.js';
 
 /**
@@ -18,6 +19,20 @@ export const providers: BurstProviderConfig[] = [
     // timeoutMs auto-destroys sandbox after this duration; avoids leaking
     // 100k live sandboxes if we don't explicitly destroy each one.
     sandboxOptions: { timeoutMs: 60_000 },
+  },
+  {
+    name: 'modal',
+    requiredEnvVars: ['MODAL_TOKEN_ID', 'MODAL_TOKEN_SECRET'],
+    createCompute: () => modal({
+      tokenId: process.env.MODAL_TOKEN_ID!,
+      tokenSecret: process.env.MODAL_TOKEN_SECRET!,
+    }),
+    concurrencyTarget: 100_000,
+    rampSeconds: 60,
+    perRequestTimeoutMs: 120_000,
+    // Modal adapter doesn't expose a sandbox-level timeoutMs option; the
+    // runner's fire-and-forget destroy after recording latency is what
+    // cleans up. Worth re-verifying at full 100k scale.
   },
 ];
 

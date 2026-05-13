@@ -102,7 +102,12 @@ trap 'rm -f "$STARTUP_FILE" "$CIDFILE"' EXIT
   printf 'export TIGRIS_STORAGE_BUCKET=%q\n'            "$TIGRIS_STORAGE_BUCKET"
   printf 'export TIGRIS_STORAGE_ACCESS_KEY_ID=%q\n'     "$TIGRIS_STORAGE_ACCESS_KEY_ID"
   printf 'export TIGRIS_STORAGE_SECRET_ACCESS_KEY=%q\n' "$TIGRIS_STORAGE_SECRET_ACCESS_KEY"
-  printf 'export E2B_API_KEY=%q\n'          "${E2B_API_KEY:-}"
+  # Provider-specific credentials — forward whatever's in the env. Coordinator's
+  # `requiredEnvVars` check fails fast if its provider's vars are missing.
+  for v in E2B_API_KEY MODAL_TOKEN_ID MODAL_TOKEN_SECRET DAYTONA_API_KEY CSB_API_KEY; do
+    eval "val=\${$v:-}"
+    [ -n "$val" ] && printf 'export %s=%q\n' "$v" "$val"
+  done
   if [ -n "${CONCURRENCY_TARGET:-}" ]; then
     printf 'export CONCURRENCY_TARGET=%q\n' "$CONCURRENCY_TARGET"
   fi
