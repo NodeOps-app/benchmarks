@@ -35,7 +35,7 @@ and [one-hundred-k-mvp-checklist.md](one-hundred-k-mvp-checklist.md).
 
 | Data | Approach | Trade-off |
 | --- | --- | --- |
-| **VM system metrics over time** (CPU, mem, event-loop lag, open FDs, sockets) | Periodic snapshot from `os.cpus()`, `process.memoryUsage()`, `perf_hooks.monitorEventLoopDelay()`, `cat /proc/net/sockstat` → row in a new `run_metrics` table or appended to a Tigris JSONL | Catches "we're CPU-bound at 80k concurrency" or port-exhaustion symptoms during the run, not just after |
+| ~~VM system metrics over time~~ ✅ Landed | Coordinator samples every 5s into `<run_id>/metrics.jsonl` (uploaded at every 30s heartbeat for partial-result durability + at shutdown). Captures: cumulative CPU user/system µs, RSS/heap/external MB, event-loop p50/p99/max lag (since previous sample), load averages, `/proc/self/fd` count, `/proc/net/sockstat` (TCP inuse/tw/alloc etc.). Headline numbers in `meta.json.metrics_summary` (peak RSS, peak event-loop lag, peak open FDs, peak TCP inuse/tw, total CPU). `/proc/*` fields null on non-Linux. | — |
 | **DNS / TLS / TTFB breakdown per sandbox** | Hook into `undici`/`http` via `diagnostics_channel` to capture phase timings | Useful for "is this provider slow because of DNS or their backend?" — but requires bypassing the adapter abstraction |
 | **Cost estimate per run** | Track sandboxes_created × known provider rate × wall time | Pretty important for a benchmark, currently absent |
 | **Concurrent-actually-active timeline** (`active_at(t)`) | Compute from `started_at` / `completed_at` overlaps; sample every 1s and store | Verify the ramp profile matches intent |

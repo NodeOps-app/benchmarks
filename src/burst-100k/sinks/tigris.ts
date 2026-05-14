@@ -80,6 +80,22 @@ export class TigrisSink {
     }));
   }
 
+  /**
+   * Overwrite metrics.jsonl with the full sample array on every heartbeat
+   * plus shutdown. Low-volume (~one short JSON object every 5s), so re-PUTing
+   * the whole file each heartbeat is cheap and gives partial-result durability
+   * without multipart-stream complexity.
+   */
+  async writeMetrics(samples: ReadonlyArray<unknown>): Promise<void> {
+    const body = samples.map(s => JSON.stringify(s)).join('\n') + (samples.length ? '\n' : '');
+    await this.client.send(new PutObjectCommand({
+      Bucket: this.bucket,
+      Key: `${this.prefix}metrics.jsonl`,
+      Body: body,
+      ContentType: 'application/x-ndjson',
+    }));
+  }
+
   async close(): Promise<void> {
     this.rawStream.end();
     await this.rawUploadDone;

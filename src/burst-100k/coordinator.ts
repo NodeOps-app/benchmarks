@@ -1,10 +1,12 @@
 import { config as loadDotenv } from 'dotenv';
 import * as fs from 'node:fs';
+import * as os from 'node:os';
+import { monitorEventLoopDelay } from 'node:perf_hooks';
 import { getProvider } from './providers.js';
 import { PostgresSink } from './sinks/postgres.js';
 import { TigrisSink } from './sinks/tigris.js';
 import { runBurst } from './runner.js';
-import type { ProgressStats } from './types.js';
+import type { ProgressStats, MetricsSample } from './types.js';
 
 // dotenv only matters for local invocation. In production the env is set by
 // launch.sh via `nsc ssh ... export VAR=...`.
@@ -82,11 +84,72 @@ async function main() {
     }
   };
 
+  // System-metrics sampling. Event-loop delay needs an enabled histogram;
+  // /proc/self/fd and /proc/net/sockstat are Linux-only (silent null elsewhere).
+  const METRICS_SAMPLE_MS = 5_000;
+  const eloopHist = monitorEventLoopDelay({ resolution: 20 });
+  eloopHist.enable();
+  const cpuBaseline = process.cpuUsage();
+  const metricsStartedAt = Date.now();
+  const metricsSamples: MetricsSample[] = [];
+
+  const readSockstat = (): Record<string, number> | null => {
+    try {
+      const data = fs.readFileSync('/proc/net/sockstat', 'utf-8');
+      const out: Record<string, number> = {};
+      for (const line of data.split('\n')) {
+        const idx = line.indexOf(':');
+        if (idx < 0) continue;
+        const section = line.slice(0, idx).trim().toLowerCase();
+        const parts = line.slice(idx + 1).trim().split(/\s+/);
+        for (let i = 0; i + 1 < parts.length; i += 2) {
+          const n = parseInt(parts[i + 1], 10);
+          if (!Number.isNaN(n)) out[`${section}_${parts[i]}`] = n;
+        }
+      }
+      return out;
+    } catch {
+      return null;
+    }
+  };
+  const countOpenFds = (): number | null => {
+    try { return fs.readdirSync('/proc/self/fd').length; } catch { return null; }
+  };
+  const sampleMetrics = (): void => {
+    const cpu = process.cpuUsage(cpuBaseline);
+    const mem = process.memoryUsage();
+    const load = os.loadavg();
+    const sample: MetricsSample = {
+      ts: new Date().toISOString(),
+      uptime_ms: Date.now() - metricsStartedAt,
+      cpu_user_us: cpu.user,
+      cpu_system_us: cpu.system,
+      mem_rss_mb: Math.round(mem.rss / 1024 / 1024),
+      mem_heap_used_mb: Math.round(mem.heapUsed / 1024 / 1024),
+      mem_heap_total_mb: Math.round(mem.heapTotal / 1024 / 1024),
+      mem_external_mb: Math.round(mem.external / 1024 / 1024),
+      event_loop_p50_ms: eloopHist.percentile(50) / 1e6,
+      event_loop_p99_ms: eloopHist.percentile(99) / 1e6,
+      event_loop_max_ms: eloopHist.max / 1e6,
+      loadavg_1m: load[0],
+      loadavg_5m: load[1],
+      loadavg_15m: load[2],
+      open_fds: countOpenFds(),
+      sockstat: readSockstat(),
+    };
+    eloopHist.reset();
+    metricsSamples.push(sample);
+  };
+  const metricsInterval = setInterval(sampleMetrics, METRICS_SAMPLE_MS);
+
   const heartbeat = setInterval(() => {
     const ts = new Date().toISOString();
     pg.heartbeat(lastStats).catch(err => console.error('[heartbeat:pg]', err.message));
     tigris.writeHeartbeat({ ...lastStats, ts }).catch(err => console.error('[heartbeat:tigris]', err.message));
     uploadLog();
+    if (metricsSamples.length > 0) {
+      tigris.writeMetrics(metricsSamples).catch(err => console.error('[heartbeat:metrics]', err.message));
+    }
     console.log(`[heartbeat] done=${lastStats.done} in_flight=${lastStats.in_flight} errors=${lastStats.errors}`);
   }, HEARTBEAT_INTERVAL_MS);
 
@@ -96,12 +159,14 @@ async function main() {
     shuttingDown = true;
     console.log(`[coordinator] ${signal} received; flushing...`);
     clearInterval(heartbeat);
+    clearInterval(metricsInterval);
     try {
       await pg.flush();
       await tigris.close();
       await pg.fail(`Process received ${signal} at done=${lastStats.done}/${provider.concurrencyTarget}`);
       await pg.close();
       await uploadLog();
+      if (metricsSamples.length > 0) await tigris.writeMetrics(metricsSamples);
     } catch (e: any) {
       console.error('[coordinator] shutdown flush failed:', e?.message ?? e);
     }
@@ -255,8 +320,27 @@ async function main() {
       };
     }
 
+    // System-metrics summary for the meta.json. The full series is in
+    // <run_id>/metrics.jsonl; this is the at-a-glance view.
+    clearInterval(metricsInterval);
+    sampleMetrics();
+    const metrics_summary = metricsSamples.length === 0 ? null : {
+      sample_count: metricsSamples.length,
+      sample_interval_ms: METRICS_SAMPLE_MS,
+      peak_mem_rss_mb: Math.max(...metricsSamples.map(s => s.mem_rss_mb)),
+      peak_mem_heap_used_mb: Math.max(...metricsSamples.map(s => s.mem_heap_used_mb)),
+      peak_event_loop_p99_ms: Math.max(...metricsSamples.map(s => s.event_loop_p99_ms)),
+      peak_event_loop_max_ms: Math.max(...metricsSamples.map(s => s.event_loop_max_ms)),
+      peak_open_fds: Math.max(...metricsSamples.map(s => s.open_fds ?? 0)),
+      peak_tcp_inuse: Math.max(...metricsSamples.map(s => s.sockstat?.tcp_inuse ?? 0)),
+      peak_tcp_tw: Math.max(...metricsSamples.map(s => s.sockstat?.tcp_tw ?? 0)),
+      total_cpu_user_us: metricsSamples[metricsSamples.length - 1].cpu_user_us,
+      total_cpu_system_us: metricsSamples[metricsSamples.length - 1].cpu_system_us,
+    };
+
     await pg.flush();
     await tigris.close();
+    await tigris.writeMetrics(metricsSamples);
     await tigris.writeMeta({
       ...final,
       latency_distribution,
@@ -264,6 +348,7 @@ async function main() {
       ramp_segments,
       concurrency_summary,
       concurrency_timeline,
+      metrics_summary,
       run_id: RUN_ID,
       provider: PROVIDER,
       ended_at: new Date().toISOString(),
@@ -276,6 +361,7 @@ async function main() {
     await uploadLog();
   } catch (err: any) {
     clearInterval(heartbeat);
+    clearInterval(metricsInterval);
     console.error('[coordinator] run failed:', err?.message ?? err);
     try {
       await pg.flush();
@@ -283,6 +369,7 @@ async function main() {
       await pg.fail(err?.message ?? String(err));
       await pg.close();
       await uploadLog();
+      if (metricsSamples.length > 0) await tigris.writeMetrics(metricsSamples);
     } catch (e: any) {
       console.error('[coordinator] failed to record failure:', e?.message ?? e);
     }
