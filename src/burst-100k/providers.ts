@@ -1,6 +1,7 @@
 import { e2b } from '@computesdk/e2b';
 import { modal } from '@computesdk/modal';
 import { runloop } from '@computesdk/runloop';
+import { tensorlake } from '@computesdk/tensorlake';
 import type { BurstProviderConfig } from './types.js';
 
 /**
@@ -39,6 +40,14 @@ export const providers: BurstProviderConfig[] = [
     name: 'runloop',
     requiredEnvVars: ['RUNLOOP_API_KEY'],
     createCompute: () => runloop({ apiKey: process.env.RUNLOOP_API_KEY! }),
+    concurrencyTarget: 100_000,
+    rampSeconds: 60,
+    perRequestTimeoutMs: 120_000,
+  },
+  {
+    name: 'tensorlake',
+    requiredEnvVars: ['TENSORLAKE_API_KEY'],
+    createCompute: () => tensorlake({ apiKey: process.env.TENSORLAKE_API_KEY! }),
     concurrencyTarget: 100_000,
     rampSeconds: 60,
     perRequestTimeoutMs: 120_000,
