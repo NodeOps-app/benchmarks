@@ -10,7 +10,7 @@
  *   2026-05-14T18:55:25.890Z [info ]  ━━━ run complete ━━━
  */
 
-type Level = 'info' | 'ok' | 'warn' | 'error' | 'stat' | 'debug';
+type Level = 'info' | 'ok' | 'warn' | 'error' | 'stat' | 'data' | 'debug';
 
 function write(level: Level, msg: string): void {
   const ts = new Date().toISOString();
@@ -25,6 +25,15 @@ export const log = {
   warn(msg: string): void { write('warn', msg); },
   error(msg: string): void { write('error', msg); },
   stat(msg: string): void { write('stat', msg); },
+  /**
+   * Emit a structured-data line, JSON-serialized on a single line. Intended
+   * to follow a human-readable [ok]/[error] line so a per-sandbox record is
+   * visually nested under its summary. Whatever shape is passed flows through
+   * verbatim — adding fields to the source object is enough to expose them.
+   */
+  data(obj: unknown): void {
+    write('data', typeof obj === 'string' ? obj : JSON.stringify(obj));
+  },
   debug(msg: string): void {
     if (process.env.BURST_100K_DEBUG === '1') write('debug', msg);
   },

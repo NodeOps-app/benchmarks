@@ -76,6 +76,9 @@ export async function runBurst(
         callbacks.onProgress({ done, in_flight, errors });
 
         // Per-sandbox log line — every sandbox at every N, plus every error.
+        // A nested [data] line follows with the full SandboxResult so the
+        // log file is self-contained. Adding fields to SandboxResult later
+        // auto-exposes them here.
         if (result.status === 'ok') {
           const sb = result.provider_metadata?.sandboxId
             ? ` — sandboxId=${result.provider_metadata.sandboxId}`
@@ -85,6 +88,7 @@ export async function runBurst(
           log.error(`sandbox ${idx} ${result.status} (http=${result.http_status ?? '-'} ` +
             `code=${result.error_code ?? '-'}): ${result.error_message ?? '(no message)'}`);
         }
+        log.data(result);
 
         // Milestone progress lines (~10% increments)
         if (done >= nextProgressMilestone && done < concurrencyTarget) {
