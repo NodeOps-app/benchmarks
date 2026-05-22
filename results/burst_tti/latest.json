@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "timestamp": "2026-05-22T08:03:04.331Z",
+  "timestamp": "2026-05-22T08:30:00.380Z",
   "environment": {
     "node": "v24.16.0",
     "platform": "linux",
@@ -15,419 +15,321 @@
       "provider": "fcspawn",
       "mode": "concurrent",
       "concurrency": 100,
-      "wallClockMs": 3793.27,
-      "timeToFirstReadyMs": 0,
+      "wallClockMs": 37761.86,
+      "timeToFirstReadyMs": 1260.35,
       "iterations": [
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6627.67
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6290.35
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6208.11
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6676.51
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6696.75
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5369.87
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6694.83
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5788.98
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5766.43
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6452.26
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6758.19
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6520.51
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6421.48
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6182.56
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6776.45
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6991.35
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6613.15
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6756.64
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6369.92
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6112.39
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 7158.89
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6983.8
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 1260.35
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 1294.81
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 1562.2
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 1979.66
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 1598.9
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 2045.42
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 2447.99
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 2427.5
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 2569.66
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 2324.27
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5527.14
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 3768.58
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 2608.7
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4332.97
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4209.98
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4233.88
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 2707.53
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4681.29
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 2963.86
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4142.51
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4640.22
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4737.48
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 3266.91
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4256.65
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5939.84
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5405.33
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 3618.82
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5005.23
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5554.07
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5940.13
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 3544.28
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5039.36
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4152.35
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5909.52
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4759.51
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 3963.83
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5106.39
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5695.96
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5755.43
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 3905.92
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6127.61
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5550.6
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6200.77
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6195.89
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5617.08
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4907.77
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5397.5
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5215.6
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5539.82
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6385.23
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4417.52
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5539.88
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6365.64
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5811.75
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5081.68
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5969.92
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4799.17
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5974.9
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5837.15
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5585.41
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5915.53
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4984.67
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6128.09
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4019.76
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5118.63
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6027.19
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 6130.64
         },
         {
           "ttiMs": 0,
-          "error": "create: upstream error"
+          "error": "create: internal error"
         },
         {
           "ttiMs": 0,
-          "error": "create: upstream error"
+          "error": "First command execution timed out"
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 8419.42
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 8500.56
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 8441.79
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 8362.41
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 8425.29
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 8411.25
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 8562.86
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 8318.58
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 8520.9
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 0,
-          "p95": 0,
-          "p99": 0
+          "median": 5601.25,
+          "p95": 8318.58,
+          "p99": 8425.29
         }
       },
-      "compositeScore": 0,
-      "successRate": 0
+      "compositeScore": 32.3,
+      "successRate": 0.98
     }
   ]
 }
