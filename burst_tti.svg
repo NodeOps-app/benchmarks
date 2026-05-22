@@ -74,10 +74,10 @@
   <text class="row status" x="960" y="208">0/100</text>
 
   <text class="metrics-label" x="24" y="242">BURST METRICS</text>
-  <text class="metrics-row" x="34" y="262">Fcspawn: 100 sandboxes | Wall clock: 4.13s | First ready: 0.00s</text>
+  <text class="metrics-row" x="34" y="262">Fcspawn: 100 sandboxes | Wall clock: 3.79s | First ready: 0.00s</text>
 
   <!-- Timestamp -->
-  <text class="timestamp" x="1176" y="328" text-anchor="end">Last updated: May 22, 2026, 12:53 AM UTC</text>
+  <text class="timestamp" x="1176" y="328" text-anchor="end">Last updated: May 22, 2026, 08:03 AM UTC</text>
 
   <!-- Footnote -->
   <text class="timestamp" x="24" y="342">Burst mode: 100 sandboxes launched simultaneously</text>

@@ -1,8 +1,8 @@
 {
   "version": "1.1",
-  "timestamp": "2026-05-22T00:53:18.794Z",
+  "timestamp": "2026-05-22T08:03:04.335Z",
   "environment": {
-    "node": "v24.15.0",
+    "node": "v24.16.0",
     "platform": "linux",
     "arch": "x64"
   },
@@ -16,118 +16,497 @@
       "mode": "staggered",
       "concurrency": 100,
       "staggerDelayMs": 200,
-      "wallClockMs": 19898.39,
-      "timeToFirstReadyMs": 521.01,
+      "wallClockMs": 19905.5,
+      "timeToFirstReadyMs": 177.87,
       "rampProfile": [
         {
           "launchedAt": 0,
-          "readyAt": 785.95,
-          "ttiMs": 625.31
+          "readyAt": 201.72,
+          "ttiMs": 199.06
         },
         {
-          "launchedAt": 200.09,
-          "readyAt": 821.61,
-          "ttiMs": 618.9
+          "launchedAt": 200.73,
+          "readyAt": 6678.84,
+          "ttiMs": 6475.49
         },
         {
-          "launchedAt": 401.6,
-          "readyAt": 1142.55,
-          "ttiMs": 738.61
+          "launchedAt": 401.33,
+          "readyAt": 961.87,
+          "ttiMs": 558.3
         },
         {
-          "launchedAt": 602.35,
-          "readyAt": 1546.31,
-          "ttiMs": 941.7
+          "launchedAt": 602.28,
+          "readyAt": 994.22,
+          "ttiMs": 389.37
         },
         {
-          "launchedAt": 803.28,
-          "readyAt": 1326.9,
-          "ttiMs": 521.01
+          "launchedAt": 802.59,
+          "readyAt": 1146.76,
+          "ttiMs": 341.82
         },
         {
-          "launchedAt": 1004.42,
-          "readyAt": 1610.56,
-          "ttiMs": 603.6
+          "launchedAt": 1003.46,
+          "readyAt": 1208.52,
+          "ttiMs": 202.82
         },
         {
-          "launchedAt": 1204.92,
-          "readyAt": 2270.4,
-          "ttiMs": 921.92
+          "launchedAt": 1203.14,
+          "readyAt": 1383.23,
+          "ttiMs": 178.21
         },
         {
-          "launchedAt": 1405.32,
-          "readyAt": 2605.12,
-          "ttiMs": 1063.73
+          "launchedAt": 1403.48,
+          "readyAt": 1608.61,
+          "ttiMs": 202.97
         },
         {
-          "launchedAt": 1606.7,
-          "readyAt": 3184.87,
-          "ttiMs": 1499.35
+          "launchedAt": 1604.37,
+          "readyAt": 1784.33,
+          "ttiMs": 177.87
         },
         {
-          "launchedAt": 1807.32,
-          "readyAt": 3527.64,
-          "ttiMs": 1717.93
+          "launchedAt": 1805.58,
+          "readyAt": 2098.86,
+          "ttiMs": 203.93
         },
         {
-          "launchedAt": 2008.74,
-          "readyAt": 3155.44,
-          "ttiMs": 1144.82
+          "launchedAt": 2006.48,
+          "readyAt": 2279.37,
+          "ttiMs": 270.18
         },
         {
-          "launchedAt": 2209.6,
-          "readyAt": 3423.81,
-          "ttiMs": 1211.78
+          "launchedAt": 2207.65,
+          "readyAt": 2412.54,
+          "ttiMs": 203.02
         },
         {
-          "launchedAt": 2610.37,
-          "readyAt": 3770.29,
-          "ttiMs": 1157.29
+          "launchedAt": 2408.06,
+          "readyAt": 2588.36,
+          "ttiMs": 178.18
+        },
+        {
+          "launchedAt": 2608.59,
+          "readyAt": 2813.93,
+          "ttiMs": 203.03
+        },
+        {
+          "launchedAt": 2809.48,
+          "readyAt": 2991.87,
+          "ttiMs": 179.91
+        },
+        {
+          "launchedAt": 3010.12,
+          "readyAt": 3292.49,
+          "ttiMs": 203.9
+        },
+        {
+          "launchedAt": 3210.17,
+          "readyAt": 3532.59,
+          "ttiMs": 320.41
+        },
+        {
+          "launchedAt": 3410.94,
+          "readyAt": 3599.85,
+          "ttiMs": 186.67
+        },
+        {
+          "launchedAt": 3611.06,
+          "readyAt": 3795.18,
+          "ttiMs": 182.32
+        },
+        {
+          "launchedAt": 3811.39,
+          "readyAt": 4024.25,
+          "ttiMs": 210.88
+        },
+        {
+          "launchedAt": 4010.98,
+          "readyAt": 4204.1,
+          "ttiMs": 190.72
+        },
+        {
+          "launchedAt": 4211.34,
+          "readyAt": 4399.96,
+          "ttiMs": 186.41
+        },
+        {
+          "launchedAt": 4411.16,
+          "readyAt": 4627.76,
+          "ttiMs": 214.55
+        },
+        {
+          "launchedAt": 4610.97,
+          "readyAt": 4810.71,
+          "ttiMs": 197.68
+        },
+        {
+          "launchedAt": 4810.83,
+          "readyAt": 5003.45,
+          "ttiMs": 190.37
+        },
+        {
+          "launchedAt": 5011.67,
+          "readyAt": 5231.87,
+          "ttiMs": 217.91
+        },
+        {
+          "launchedAt": 5212.39,
+          "readyAt": 5425.84,
+          "ttiMs": 211.12
+        },
+        {
+          "launchedAt": 5413.63,
+          "readyAt": 5616.1,
+          "ttiMs": 199.89
+        },
+        {
+          "launchedAt": 5614.14,
+          "readyAt": 5892.36,
+          "ttiMs": 229.77
+        },
+        {
+          "launchedAt": 5814.04,
+          "readyAt": 6151.33,
+          "ttiMs": 335.32
+        },
+        {
+          "launchedAt": 6014.62,
+          "readyAt": 6245.7,
+          "ttiMs": 228.79
+        },
+        {
+          "launchedAt": 6215.66,
+          "readyAt": 6490.43,
+          "ttiMs": 212.34
+        },
+        {
+          "launchedAt": 6416.12,
+          "readyAt": 10621.83,
+          "ttiMs": 4078.23
+        },
+        {
+          "launchedAt": 6616.5,
+          "readyAt": 8385.09,
+          "ttiMs": 1766.44
+        },
+        {
+          "launchedAt": 6819.58,
+          "readyAt": 10611.42,
+          "ttiMs": 3789.79
+        },
+        {
+          "launchedAt": 7020.35,
+          "readyAt": 11540.52,
+          "ttiMs": 4517.87
+        },
+        {
+          "launchedAt": 7422.85,
+          "readyAt": 10140.82,
+          "ttiMs": 2628.23
+        },
+        {
+          "launchedAt": 7623.37,
+          "readyAt": 12031.24,
+          "ttiMs": 4405.8
+        },
+        {
+          "launchedAt": 7824.64,
+          "readyAt": 9823.94,
+          "ttiMs": 1997.31
+        },
+        {
+          "launchedAt": 8829.89,
+          "readyAt": 11195.23,
+          "ttiMs": 2274.37
+        },
+        {
+          "launchedAt": 11436.12,
+          "readyAt": 11698.23,
+          "ttiMs": 260.04
+        },
+        {
+          "launchedAt": 11636.69,
+          "readyAt": 11897.35,
+          "ttiMs": 258.52
+        },
+        {
+          "launchedAt": 11837.82,
+          "readyAt": 12508.9,
+          "ttiMs": 669.42
+        },
+        {
+          "launchedAt": 12038.44,
+          "readyAt": 12547.84,
+          "ttiMs": 507.22
+        },
+        {
+          "launchedAt": 12238.56,
+          "readyAt": 12850.08,
+          "ttiMs": 609.3
+        },
+        {
+          "launchedAt": 12438.95,
+          "readyAt": 12924.32,
+          "ttiMs": 482.62
+        },
+        {
+          "launchedAt": 12639.16,
+          "readyAt": 13047.6,
+          "ttiMs": 406.02
+        },
+        {
+          "launchedAt": 12839.35,
+          "readyAt": 13195.37,
+          "ttiMs": 353.72
+        },
+        {
+          "launchedAt": 13039.64,
+          "readyAt": 13400.59,
+          "ttiMs": 358.72
+        },
+        {
+          "launchedAt": 13240.68,
+          "readyAt": 13555.51,
+          "ttiMs": 312.06
+        },
+        {
+          "launchedAt": 13442.19,
+          "readyAt": 13701.94,
+          "ttiMs": 257.92
+        },
+        {
+          "launchedAt": 13643.78,
+          "readyAt": 13975.47,
+          "ttiMs": 329.2
+        },
+        {
+          "launchedAt": 13844.48,
+          "readyAt": 14210,
+          "ttiMs": 363.37
+        },
+        {
+          "launchedAt": 14044.46,
+          "readyAt": 14772.34,
+          "ttiMs": 725.12
+        },
+        {
+          "launchedAt": 14244.21,
+          "readyAt": 14928.24,
+          "ttiMs": 681.98
+        },
+        {
+          "launchedAt": 14444.23,
+          "readyAt": 15168.46,
+          "ttiMs": 722.25
+        },
+        {
+          "launchedAt": 14644.5,
+          "readyAt": 15312.47,
+          "ttiMs": 665.98
+        },
+        {
+          "launchedAt": 14845.68,
+          "readyAt": 15435.74,
+          "ttiMs": 588.22
+        },
+        {
+          "launchedAt": 15046.08,
+          "readyAt": 15623.49,
+          "ttiMs": 574.85
+        },
+        {
+          "launchedAt": 15246.82,
+          "readyAt": 15679.48,
+          "ttiMs": 430.63
+        },
+        {
+          "launchedAt": 15446.93,
+          "readyAt": 15966.42,
+          "ttiMs": 517.12
+        },
+        {
+          "launchedAt": 15647.71,
+          "readyAt": 16131.42,
+          "ttiMs": 481.7
+        },
+        {
+          "launchedAt": 15848.08,
+          "readyAt": 16276.69,
+          "ttiMs": 426.68
         }
       ],
       "iterations": [
         {
-          "ttiMs": 625.31
+          "ttiMs": 199.06
         },
         {
-          "ttiMs": 618.9
+          "ttiMs": 6475.49
         },
         {
-          "ttiMs": 738.61
+          "ttiMs": 558.3
         },
         {
-          "ttiMs": 941.7
+          "ttiMs": 389.37
         },
         {
-          "ttiMs": 521.01
+          "ttiMs": 341.82
         },
         {
-          "ttiMs": 603.6
+          "ttiMs": 202.82
         },
         {
-          "ttiMs": 921.92
+          "ttiMs": 178.21
         },
         {
-          "ttiMs": 1063.73
+          "ttiMs": 202.97
         },
         {
-          "ttiMs": 1499.35
+          "ttiMs": 177.87
         },
         {
-          "ttiMs": 1717.93
+          "ttiMs": 203.93
         },
         {
-          "ttiMs": 1144.82
+          "ttiMs": 270.18
         },
         {
-          "ttiMs": 1211.78
+          "ttiMs": 203.02
+        },
+        {
+          "ttiMs": 178.18
+        },
+        {
+          "ttiMs": 203.03
+        },
+        {
+          "ttiMs": 179.91
+        },
+        {
+          "ttiMs": 203.9
+        },
+        {
+          "ttiMs": 320.41
+        },
+        {
+          "ttiMs": 186.67
+        },
+        {
+          "ttiMs": 182.32
+        },
+        {
+          "ttiMs": 210.88
+        },
+        {
+          "ttiMs": 190.72
+        },
+        {
+          "ttiMs": 186.41
+        },
+        {
+          "ttiMs": 214.55
+        },
+        {
+          "ttiMs": 197.68
+        },
+        {
+          "ttiMs": 190.37
+        },
+        {
+          "ttiMs": 217.91
+        },
+        {
+          "ttiMs": 211.12
+        },
+        {
+          "ttiMs": 199.89
+        },
+        {
+          "ttiMs": 229.77
+        },
+        {
+          "ttiMs": 335.32
+        },
+        {
+          "ttiMs": 228.79
+        },
+        {
+          "ttiMs": 212.34
+        },
+        {
+          "ttiMs": 4078.23
+        },
+        {
+          "ttiMs": 1766.44
+        },
+        {
+          "ttiMs": 3789.79
+        },
+        {
+          "ttiMs": 4517.87
         },
         {
           "ttiMs": 0,
           "error": "exec: upstream error"
         },
         {
-          "ttiMs": 1157.29
+          "ttiMs": 2628.23
+        },
+        {
+          "ttiMs": 4405.8
+        },
+        {
+          "ttiMs": 1997.31
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: upstream error"
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: upstream error"
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: upstream error"
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: upstream error"
+        },
+        {
+          "ttiMs": 2274.37
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: upstream error"
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: upstream error"
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: upstream error"
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: upstream error"
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: upstream error"
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: upstream error"
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: upstream error"
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: upstream error"
         },
         {
           "ttiMs": 0,
@@ -146,256 +525,77 @@
           "error": "create: upstream error"
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 260.04
+        },
+        {
+          "ttiMs": 258.52
+        },
+        {
+          "ttiMs": 669.42
+        },
+        {
+          "ttiMs": 507.22
+        },
+        {
+          "ttiMs": 609.3
+        },
+        {
+          "ttiMs": 482.62
+        },
+        {
+          "ttiMs": 406.02
+        },
+        {
+          "ttiMs": 353.72
+        },
+        {
+          "ttiMs": 358.72
+        },
+        {
+          "ttiMs": 312.06
+        },
+        {
+          "ttiMs": 257.92
+        },
+        {
+          "ttiMs": 329.2
+        },
+        {
+          "ttiMs": 363.37
+        },
+        {
+          "ttiMs": 725.12
+        },
+        {
+          "ttiMs": 681.98
+        },
+        {
+          "ttiMs": 722.25
+        },
+        {
+          "ttiMs": 665.98
+        },
+        {
+          "ttiMs": 588.22
+        },
+        {
+          "ttiMs": 574.85
+        },
+        {
+          "ttiMs": 430.63
+        },
+        {
+          "ttiMs": 517.12
+        },
+        {
+          "ttiMs": 481.7
+        },
+        {
+          "ttiMs": 426.68
         },
         {
           "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
-        },
-        {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "error": "exec: upstream error"
         },
         {
           "ttiMs": 0,
@@ -476,13 +676,13 @@
       ],
       "summary": {
         "ttiMs": {
-          "median": 941.7,
-          "p95": 1717.93,
-          "p99": 1717.93
+          "median": 329.2,
+          "p95": 2628.23,
+          "p99": 4078.23
         }
       },
-      "compositeScore": 11.37,
-      "successRate": 0.13
+      "compositeScore": 53.76,
+      "successRate": 0.63
     }
   ]
 }

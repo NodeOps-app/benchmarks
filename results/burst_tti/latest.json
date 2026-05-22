@@ -1,8 +1,8 @@
 {
   "version": "1.1",
-  "timestamp": "2026-05-22T00:53:18.784Z",
+  "timestamp": "2026-05-22T08:03:04.331Z",
   "environment": {
-    "node": "v24.15.0",
+    "node": "v24.16.0",
     "platform": "linux",
     "arch": "x64"
   },
@@ -15,7 +15,7 @@
       "provider": "fcspawn",
       "mode": "concurrent",
       "concurrency": 100,
-      "wallClockMs": 4127.29,
+      "wallClockMs": 3793.27,
       "timeToFirstReadyMs": 0,
       "iterations": [
         {
