@@ -41,6 +41,8 @@
     "bundle:burst-100k": "esbuild src/burst-100k/coordinator.ts --bundle --platform=node --target=node20 --format=cjs --outfile=dist/burst-100k.cjs",
     "bench:burst-100k:local": "tsx src/burst-100k/coordinator.ts",
     "bench:burst-100k:multi": "tsx scripts/burst-100k-launch-multi.ts",
+    "bench:burst-100k:sharded": "tsx scripts/burst-100k-launch-sharded.ts",
+    "bench:burst-100k:aggregate": "tsx scripts/burst-100k-aggregate.ts",
     "bench:burst-100k:watch": "tsx scripts/burst-100k-watch.ts",
     "update-readme": "tsx src/update-readme.ts",
     "generate-svg": "tsx src/sandbox/generate-svg.ts",

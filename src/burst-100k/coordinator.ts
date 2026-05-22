@@ -28,6 +28,21 @@ async function main() {
   const instance_id = process.env.INSTANCE_ID ?? 'local';
   const tigris_prefix = `s3://${TIGRIS_STORAGE_BUCKET}/${RUN_ID}/`;
 
+  // Sharded-burst metadata. Set by scripts/burst-100k-launch-sharded.ts when
+  // a logical burst is spread across multiple VMs. Unset for single-VM runs.
+  const shard = (() => {
+    const group_id = process.env.GROUP_ID;
+    const shard_index_raw = process.env.SHARD_INDEX;
+    const shard_count_raw = process.env.SHARD_COUNT;
+    if (!group_id || shard_index_raw === undefined || shard_count_raw === undefined) {
+      return undefined;
+    }
+    const shard_index = parseInt(shard_index_raw, 10);
+    const shard_count = parseInt(shard_count_raw, 10);
+    if (!Number.isFinite(shard_index) || !Number.isFinite(shard_count)) return undefined;
+    return { group_id, shard_index, shard_count };
+  })();
+
   const provider = getProvider(PROVIDER);
 
   // Allow env override of concurrencyTarget for local smoke tests.
@@ -43,6 +58,9 @@ async function main() {
   log.info(`commit_sha=${commit_sha} instance_id=${instance_id}`);
   log.info(`tigris_prefix=${tigris_prefix}`);
   if (override) log.info(`(CONCURRENCY_TARGET overridden via env)`);
+  if (shard) {
+    log.info(`shard ${shard.shard_index + 1}/${shard.shard_count} of group=${shard.group_id}`);
+  }
 
   // Validate provider-specific requiredEnvVars
   log.phase('validating environment');
@@ -61,7 +79,7 @@ async function main() {
   await pg.connect();
   log.ok('Postgres: connected');
   log.info('Postgres: bootstrapping runs row (idempotent)');
-  await pg.bootstrap(PROVIDER, commit_sha, instance_id, tigris_prefix);
+  await pg.bootstrap(PROVIDER, commit_sha, instance_id, tigris_prefix, shard);
   log.ok('Postgres: runs row in place');
 
   log.info('Tigris: opening multipart upload for raw.jsonl');
@@ -417,6 +435,7 @@ async function main() {
       run_id: RUN_ID,
       provider: PROVIDER,
       ended_at: new Date().toISOString(),
+      ...(shard ? { group_id: shard.group_id, shard_index: shard.shard_index, shard_count: shard.shard_count } : {}),
     });
     log.info('Postgres: marking run done with final stats');
     await pg.complete(final);

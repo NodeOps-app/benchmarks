@@ -24,15 +24,37 @@ export class PostgresSink {
 
   /**
    * Idempotently create the 'running' row for this run. Safe to call even if
-   * launch.sh has already inserted the row — ON CONFLICT DO NOTHING.
+   * launch.sh has already inserted the row — ON CONFLICT DO NOTHING for the
+   * INSERT, and a follow-up UPDATE so launch.sh's bare INSERT (which doesn't
+   * know about sharding metadata) is patched with group/shard fields the
+   * coordinator has from env.
    */
-  async bootstrap(provider: string, commit_sha: string, instance_id: string, tigris_prefix: string): Promise<void> {
+  async bootstrap(
+    provider: string,
+    commit_sha: string,
+    instance_id: string,
+    tigris_prefix: string,
+    shard?: { group_id: string; shard_index: number; shard_count: number },
+  ): Promise<void> {
     await this.client.query(
-      `INSERT INTO runs (id, provider, commit_sha, instance_id, started_at, status, tigris_prefix)
-       VALUES ($1, $2, $3, $4, now(), 'running', $5)
+      `INSERT INTO runs (id, provider, commit_sha, instance_id, started_at, status, tigris_prefix,
+                         group_id, shard_index, shard_count)
+       VALUES ($1, $2, $3, $4, now(), 'running', $5, $6, $7, $8)
        ON CONFLICT (id) DO NOTHING`,
-      [this.runId, provider, commit_sha, instance_id, tigris_prefix],
+      [
+        this.runId, provider, commit_sha, instance_id, tigris_prefix,
+        shard?.group_id ?? null, shard?.shard_index ?? null, shard?.shard_count ?? null,
+      ],
     );
+    if (shard) {
+      await this.client.query(
+        `UPDATE runs
+           SET group_id = $2, shard_index = $3, shard_count = $4
+         WHERE id = $1
+           AND (group_id IS NULL OR shard_index IS NULL OR shard_count IS NULL)`,
+        [this.runId, shard.group_id, shard.shard_index, shard.shard_count],
+      );
+    }
   }
 
   async write(result: SandboxResult): Promise<void> {

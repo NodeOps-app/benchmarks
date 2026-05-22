@@ -4,6 +4,15 @@
 -- statements use IF NOT EXISTS. To evolve the schema later, add a follow-up
 -- .sql file and apply it once by hand — a migration framework is overkill
 -- for two tables.
+--
+-- Concurrency note: this file is NOT safe to apply from multiple psql
+-- processes in parallel — Postgres' `CREATE TABLE/INDEX IF NOT EXISTS` is
+-- racy (two callers can pass the existence check and both try the catalog
+-- insert). The sharded launcher (burst-100k-launch-sharded.ts) applies the
+-- schema once up-front and passes SKIP_SCHEMA=1 to its children for this
+-- reason. Don't paper this over with a session-level advisory lock — pooled
+-- connection routers (Neon's `-pooler` endpoint, PgBouncer) hold session
+-- locks past the client disconnect and orphan them.
 
 CREATE TABLE IF NOT EXISTS runs (
   id                    TEXT PRIMARY KEY,           -- e.g. 20260512T143000Z-a3f8d91-e2b
@@ -37,8 +46,17 @@ ALTER TABLE runs ADD COLUMN IF NOT EXISTS network_errors     INTEGER;
 ALTER TABLE runs ADD COLUMN IF NOT EXISTS partials           INTEGER;
 ALTER TABLE runs ADD COLUMN IF NOT EXISTS readiness_failures INTEGER;
 
+-- Sharded-burst columns. A "group" is N runs (one per VM) that together
+-- form a single logical burst. Aggregated by scripts/burst-100k-aggregate.ts.
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS group_id    TEXT;
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS shard_index INTEGER;
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS shard_count INTEGER;
+
 CREATE INDEX IF NOT EXISTS runs_provider_started
   ON runs (provider, started_at DESC);
+
+CREATE INDEX IF NOT EXISTS runs_group_id
+  ON runs (group_id) WHERE group_id IS NOT NULL;
 
 -- Partial index for the stuck-run query:
 --   SELECT * FROM runs WHERE status='running' AND last_heartbeat < now() - interval '5 minutes';
@@ -65,6 +83,38 @@ CREATE TABLE IF NOT EXISTS sandbox_results (
 
 CREATE INDEX IF NOT EXISTS sandbox_results_run_status
   ON sandbox_results (run_id, status);
+
+
+-- One row per sharded-burst group_id, written by scripts/burst-100k-aggregate.ts.
+-- Scalars mirror `runs` so dashboards/queries can union the two for a single
+-- N-sandbox view; full meta.json (distributions, concurrency timeline, etc.)
+-- lives in `meta_json` JSONB and in Tigris at `tigris_prefix`/meta.json.
+CREATE TABLE IF NOT EXISTS run_groups (
+  id                   TEXT PRIMARY KEY,           -- group_id
+  provider             TEXT NOT NULL,              -- comma-joined if shards span providers
+  shard_count          INTEGER NOT NULL,
+  shards_terminal      INTEGER NOT NULL,           -- how many shards were done/failed at aggregation time
+  started_at           TIMESTAMPTZ NOT NULL,       -- earliest shard started_at
+  ended_at             TIMESTAMPTZ,                -- latest shard ended_at (NULL if any shard still running)
+  aggregated_at        TIMESTAMPTZ NOT NULL,       -- when this row was last written
+  sandboxes_attempted  INTEGER NOT NULL,
+  sandboxes_succeeded  INTEGER,
+  partials             INTEGER,
+  readiness_failures   INTEGER,
+  timeouts             INTEGER,
+  http_errors          INTEGER,
+  network_errors       INTEGER,
+  p50_latency_ms       INTEGER,
+  p99_latency_ms       INTEGER,
+  peak_concurrent      INTEGER,
+  mean_concurrent      INTEGER,
+  total_run_ms         INTEGER,
+  tigris_prefix        TEXT,                       -- e.g. s3://<bucket>/groups/<group_id>/
+  meta_json            JSONB                       -- full meta.json equivalent
+);
+
+CREATE INDEX IF NOT EXISTS run_groups_provider_started
+  ON run_groups (provider, started_at DESC);
 
 -- Idempotent column adds for already-existing tables.
 ALTER TABLE sandbox_results ADD COLUMN IF NOT EXISTS provider_metadata JSONB;

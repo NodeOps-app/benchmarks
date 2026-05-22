@@ -1,3 +1,4 @@
+// import { daytona } from '@computesdk/daytona';
 import { declaw } from '@computesdk/declaw';
 import { e2b } from '@computesdk/e2b';
 import { modal } from '@computesdk/modal';
@@ -22,6 +23,12 @@ import type { BurstProviderConfig } from './types.js';
  * Modal is the exception: its adapter ignores `timeout` and uses whatever
  * default it applies. If that's shorter than the burst, modal sandboxes
  * will auto-destroy mid-test and be counted as partial.
+ *
+ * Daytona is also an exception: its adapter maps `timeout` to the create-call
+ * wait timeout (how long to wait for create to resolve), not a keep-alive.
+ * Daytona's actual keep-alive control is `autoStopInterval` (minutes, 0 =
+ * disabled), passed through as a provider option. We set it to 0 so the
+ * coordinated end-of-test destroy is the only thing that stops the sandbox.
  */
 const KEEP_ALIVE_MS = 30 * 60_000;
 
@@ -68,6 +75,14 @@ export const providers: BurstProviderConfig[] = [
     perRequestTimeoutMs: 120_000,
     sandboxOptions: { timeout: KEEP_ALIVE_MS },
   },
+  // {
+  //   name: 'daytona',
+  //   requiredEnvVars: ['DAYTONA_API_KEY'],
+  //   createCompute: () => daytona({ apiKey: process.env.DAYTONA_API_KEY! }),
+  //   concurrencyTarget: 100_000,
+  //   perRequestTimeoutMs: 120_000,
+  //   sandboxOptions: { autoStopInterval: 0 },
+  // },
 ];
 
 export function getProvider(name: string): BurstProviderConfig {

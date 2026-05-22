@@ -19,6 +19,11 @@
 #   MACHINE_TYPE              Defaults to 16x32
 #   CONCURRENCY_TARGET        If set, overrides the provider's default
 #                             (useful for smoke tests at N=10/100/1000)
+#   GROUP_ID                  Sharded-burst group identifier (set by
+#                             burst-100k-launch-sharded.ts when one logical
+#                             burst is spread across multiple VMs).
+#   SHARD_INDEX               0..SHARD_COUNT-1 — this VM's position in group.
+#   SHARD_COUNT               Total VMs in the group.
 
 set -euo pipefail
 
@@ -45,8 +50,15 @@ echo "[launch] 1/6 bundling coordinator -> dist/burst-100k.cjs"
 npm run --silent bundle:burst-100k
 
 # ----- 2. apply Postgres schema (idempotent) -------------------------------
-echo "[launch] 2/6 ensuring Postgres schema"
-psql "$PG_URL" -v ON_ERROR_STOP=1 -q -f db/burst-100k.sql
+# Skipped when SKIP_SCHEMA is set — the sharded launcher applies the schema
+# once up-front because `CREATE TABLE/INDEX IF NOT EXISTS` isn't race-safe
+# under N parallel applies.
+if [ -n "${SKIP_SCHEMA:-}" ]; then
+  echo "[launch] 2/6 skipping Postgres schema (SKIP_SCHEMA set)"
+else
+  echo "[launch] 2/6 ensuring Postgres schema"
+  psql "$PG_URL" -v ON_ERROR_STOP=1 -q -f db/burst-100k.sql
+fi
 
 # ----- 3. provision Namespace instance -------------------------------------
 echo "[launch] 3/6 creating Namespace instance"
@@ -68,10 +80,17 @@ nsc instance upload "$INSTANCE_ID" dist/burst-100k.cjs /root/coordinator.cjs
 # The coordinator UPSERTs the same row on startup; this INSERT exists so the
 # run is recorded even if the SSH hand-off below fails.
 echo "[launch] 5/6 recording run in Postgres"
+# When GROUP_ID/SHARD_* are set they're written here too so the row is fully
+# tagged even if the coordinator never starts (network race, OOM on the VM, …).
+GROUP_ID_LIT="$( [ -n "${GROUP_ID:-}" ]    && printf "'%s'" "$GROUP_ID"    || echo NULL )"
+SHARD_IDX_LIT="$( [ -n "${SHARD_INDEX:-}" ] && printf "%d"   "$SHARD_INDEX" || echo NULL )"
+SHARD_CNT_LIT="$( [ -n "${SHARD_COUNT:-}" ] && printf "%d"   "$SHARD_COUNT" || echo NULL )"
 psql "$PG_URL" -v ON_ERROR_STOP=1 -q -c "
-  INSERT INTO runs (id, provider, commit_sha, instance_id, started_at, status, tigris_prefix)
+  INSERT INTO runs (id, provider, commit_sha, instance_id, started_at, status, tigris_prefix,
+                    group_id, shard_index, shard_count)
   VALUES ('$RUN_ID', '$PROVIDER', '$GITHUB_SHA', '$INSTANCE_ID', now(), 'running',
-          's3://${TIGRIS_STORAGE_BUCKET}/${RUN_ID}/')
+          's3://${TIGRIS_STORAGE_BUCKET}/${RUN_ID}/',
+          $GROUP_ID_LIT, $SHARD_IDX_LIT, $SHARD_CNT_LIT)
   ON CONFLICT (id) DO NOTHING;
 "
 
@@ -115,6 +134,12 @@ trap 'rm -f "$STARTUP_FILE" "$CIDFILE"' EXIT
   if [ -n "${CONCURRENCY_TARGET:-}" ]; then
     printf 'export CONCURRENCY_TARGET=%q\n' "$CONCURRENCY_TARGET"
   fi
+  # Sharded-burst metadata (set by scripts/burst-100k-launch-sharded.ts).
+  # Forwarded as-is when present; coordinator treats absence as single-VM mode.
+  for v in GROUP_ID SHARD_INDEX SHARD_COUNT; do
+    eval "val=\${$v:-}"
+    [ -n "$val" ] && printf 'export %s=%q\n' "$v" "$val"
+  done
   echo 'ulimit -n 200000'
   # nohup + & + redirected stdio is enough to detach. `disown` is a bash
   # builtin and not available in BusyBox sh on Wolfi (`disown: not found`).
