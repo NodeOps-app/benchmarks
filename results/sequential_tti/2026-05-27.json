@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "timestamp": "2026-05-27T14:36:39.921Z",
+  "timestamp": "2026-05-27T14:54:14.376Z",
   "environment": {
     "node": "v24.16.0",
     "platform": "linux",
@@ -15,415 +15,315 @@
       "provider": "fcspawn",
       "iterations": [
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1249.4
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 767
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 797.17
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 876.93
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 811.56
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 841.08
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 806.87
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 738.4
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 711.65
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 697.52
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 683.95
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 904.37
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 888.54
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 947.79
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 888.42
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 988.21
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 878.28
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 793.6
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 964.99
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 736.35
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 729.27
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 953.48
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1234.08
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1228.7
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1233.61
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1215.63
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1435.77
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 980.62
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1019.08
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1123.58
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1064.7
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1194.6
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 887.97
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1024.65
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1097.28
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1228.67
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1272.62
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1047.39
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 694.34
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 751.11
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 688.59
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 794.53
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 908.72
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 904.03
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 829.19
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 795.18
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 898.29
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1034.02
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 690.03
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1169.32
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1179.3
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1187.24
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1183.73
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1190.91
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 767.44
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 750.59
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 845.48
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 924.05
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1184.32
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 988.1
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1161.05
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1248.64
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1195.6
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1302.49
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 940.71
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 868.07
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1240.22
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 899.98
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 679.54
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 912.08
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 745.07
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 867.66
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 970.19
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 785.92
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 930.95
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 729.08
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1075.61
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1179.35
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 919.1
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1112.47
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 770.97
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 929.73
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1121.41
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1205.84
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1166.77
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 655.16
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1149.03
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1028.68
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 758.99
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 950.86
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 962.41
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1226.83
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 970.86
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1078.79
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 692.12
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1035.59
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 1163.8
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 974.65
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 709.21
         },
         {
-          "ttiMs": 0,
-          "error": "create: {\"status\":\"fail\",\"data\":{\"auth\":\"missing or malformed Authorization header\"}}"
+          "ttiMs": 956.25
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 0,
-          "p95": 0,
-          "p99": 0
+          "median": 949.32,
+          "p95": 1228.67,
+          "p99": 1240.22
         }
       },
-      "compositeScore": 0,
-      "successRate": 0
+      "compositeScore": 89.37,
+      "successRate": 1
     }
   ]
 }
