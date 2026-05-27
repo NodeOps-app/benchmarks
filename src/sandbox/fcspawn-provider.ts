@@ -66,7 +66,7 @@ export function fcspawn(opts: { baseUrl: string; apiKey: string }) {
       destroy: async () => {
         const r3 = await fetch(`${opts.baseUrl}/v1/sandboxes/${id}`, {
           method: 'DELETE',
-          headers: { Authorization: `Bearer ${opts.apiKey}` },
+          headers: { 'X-Api-Key': `${opts.apiKey}` },
         });
         if (!r3.ok) {
           const b = await r3.text();
