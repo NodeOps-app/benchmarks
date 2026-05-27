@@ -121,9 +121,9 @@ trap 'rm -f "$STARTUP_FILE" "$CIDFILE"' EXIT
   printf 'export TIGRIS_STORAGE_BUCKET=%q\n'            "$TIGRIS_STORAGE_BUCKET"
   printf 'export TIGRIS_STORAGE_ACCESS_KEY_ID=%q\n'     "$TIGRIS_STORAGE_ACCESS_KEY_ID"
   printf 'export TIGRIS_STORAGE_SECRET_ACCESS_KEY=%q\n' "$TIGRIS_STORAGE_SECRET_ACCESS_KEY"
-  # Tell the coordinator where to read its own stdout/stderr from (the file
-  # the line below redirects to). Coordinator uploads this to Tigris on
-  # heartbeat + shutdown so logs survive VM tear-down.
+  # Tell the coordinator where to read its own process log from. We tee output
+  # to this file so Tigris uploads still work while stdout/stderr remain visible
+  # to Namespace log capture.
   echo 'export COORDINATOR_LOG_PATH=/root/run.log'
   # Provider-specific credentials — forward whatever's in the env. Coordinator's
   # `requiredEnvVars` check fails fast if its provider's vars are missing.
@@ -141,9 +141,11 @@ trap 'rm -f "$STARTUP_FILE" "$CIDFILE"' EXIT
     [ -n "$val" ] && printf 'export %s=%q\n' "$v" "$val"
   done
   echo 'ulimit -n 200000'
-  # nohup + & + redirected stdio is enough to detach. `disown` is a bash
-  # builtin and not available in BusyBox sh on Wolfi (`disown: not found`).
-  echo 'nohup node /root/coordinator.cjs > /root/run.log 2>&1 </dev/null &'
+  # Detach and duplicate output: keep stdout/stderr for Namespace logs while
+  # also writing /root/run.log for periodic Tigris upload. We wrap in `sh -c`
+  # so nohup applies to the whole pipeline rather than only `node`.
+  # `disown` is a bash builtin and not available in BusyBox sh on Wolfi.
+  echo 'nohup sh -c "node /root/coordinator.cjs 2>&1 | tee -a /root/run.log" </dev/null &'
   echo 'rm -f -- "$0"   # self-destruct so creds never linger on disk'
 } > "$STARTUP_FILE"
 
