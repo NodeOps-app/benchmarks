@@ -18,7 +18,7 @@ type ExecResp = {
 
 export function fcspawn(opts: { baseUrl: string; apiKey: string }) {
   const h = {
-    Authorization: `Bearer ${opts.apiKey}`,
+    'X-Api-Key': `${opts.apiKey}`,
     'Content-Type': 'application/json',
   };
 
