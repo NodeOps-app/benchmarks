@@ -24,10 +24,10 @@ export class PostgresSink {
 
   /**
    * Idempotently create the 'running' row for this run. Safe to call even if
-   * launch.sh has already inserted the row — ON CONFLICT DO NOTHING for the
-   * INSERT, and a follow-up UPDATE so launch.sh's bare INSERT (which doesn't
-   * know about sharding metadata) is patched with group/shard fields the
-   * coordinator has from env.
+   * the launcher's pre-handoff INSERT already created the row — ON CONFLICT DO
+   * NOTHING for the INSERT, plus a follow-up UPDATE that patches the
+   * group/shard fields from the coordinator's env (covers rows created before
+   * sharding metadata was known, and local runs with no launcher at all).
    */
   async bootstrap(
     provider: string,

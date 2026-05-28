@@ -1,6 +1,6 @@
 -- Schema for the 100k burst benchmark.
 --
--- Applied idempotently by scripts/burst-100k-launch.sh on every run, so all
+-- Applied idempotently by src/burst-100k/scripts/start.ts on every run, so all
 -- statements use IF NOT EXISTS. To evolve the schema later, add a follow-up
 -- .sql file and apply it once by hand — a migration framework is overkill
 -- for two tables.
@@ -8,8 +8,8 @@
 -- Concurrency note: this file is NOT safe to apply from multiple psql
 -- processes in parallel — Postgres' `CREATE TABLE/INDEX IF NOT EXISTS` is
 -- racy (two callers can pass the existence check and both try the catalog
--- insert). The sharded launcher (burst-100k-launch-sharded.ts) applies the
--- schema once up-front and passes SKIP_SCHEMA=1 to its children for this
+-- insert). The launcher (src/burst-100k/scripts/start.ts) applies the schema once
+-- up-front in the orchestrator before spawning any per-VM launches, for this
 -- reason. Don't paper this over with a session-level advisory lock — pooled
 -- connection routers (Neon's `-pooler` endpoint, PgBouncer) hold session
 -- locks past the client disconnect and orphan them.
@@ -47,7 +47,8 @@ ALTER TABLE runs ADD COLUMN IF NOT EXISTS partials           INTEGER;
 ALTER TABLE runs ADD COLUMN IF NOT EXISTS readiness_failures INTEGER;
 
 -- Sharded-burst columns. A "group" is N runs (one per VM) that together
--- form a single logical burst. Aggregated by scripts/burst-100k-aggregate.ts.
+-- form a single logical burst, tagged by src/burst-100k/scripts/start.ts and
+-- aggregated by src/burst-100k/scripts/aggregate.ts.
 ALTER TABLE runs ADD COLUMN IF NOT EXISTS group_id    TEXT;
 ALTER TABLE runs ADD COLUMN IF NOT EXISTS shard_index INTEGER;
 ALTER TABLE runs ADD COLUMN IF NOT EXISTS shard_count INTEGER;
@@ -85,7 +86,7 @@ CREATE INDEX IF NOT EXISTS sandbox_results_run_status
   ON sandbox_results (run_id, status);
 
 
--- One row per sharded-burst group_id, written by scripts/burst-100k-aggregate.ts.
+-- One row per sharded-burst group_id, written by src/burst-100k/scripts/aggregate.ts.
 -- Scalars mirror `runs` so dashboards/queries can union the two for a single
 -- N-sandbox view; full meta.json (distributions, concurrency timeline, etc.)
 -- lives in `meta_json` JSONB and in Tigris at `tigris_prefix`/meta.json.

@@ -9,9 +9,9 @@
  * Loads .env via dotenv so PG_URL works the same way as the runtime sees it.
  *
  * Usage:
- *   tsx scripts/burst-100k-watch.ts <RUN_ID> [<RUN_ID> ...]
- *   tsx scripts/burst-100k-watch.ts --recent 5
- *   tsx scripts/burst-100k-watch.ts --recent 5 --interval 10
+ *   tsx src/burst-100k/scripts/watch.ts <RUN_ID> [<RUN_ID> ...]
+ *   tsx src/burst-100k/scripts/watch.ts --recent 5
+ *   tsx src/burst-100k/scripts/watch.ts --recent 5 --interval 10
  *   npm run bench:burst-100k:watch -- --recent 5
  */
 
@@ -28,7 +28,7 @@ interface Args {
 
 function usage(): string {
   return [
-    'Usage: tsx scripts/burst-100k-watch.ts [options] [<RUN_ID> ...]',
+    'Usage: tsx src/burst-100k/scripts/watch.ts [options] [<RUN_ID> ...]',
     '',
     'Options:',
     '  --recent <n>, -n <n>   Watch the latest <n> runs from Postgres',

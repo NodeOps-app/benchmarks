@@ -10,7 +10,7 @@ import { runBurst } from './runner.js';
 import type { ProgressStats, MetricsSample } from './types.js';
 
 // dotenv only matters for local invocation. In production the env is set by
-// launch.sh via `nsc ssh ... export VAR=...`.
+// scripts/start.ts via the uploaded /root/start.sh (`export VAR=...`).
 loadDotenv();
 
 const HEARTBEAT_INTERVAL_MS = 30_000;
@@ -28,8 +28,8 @@ async function main() {
   const instance_id = process.env.INSTANCE_ID ?? 'local';
   const tigris_prefix = `s3://${TIGRIS_STORAGE_BUCKET}/${RUN_ID}/`;
 
-  // Sharded-burst metadata. Set by scripts/burst-100k-launch-sharded.ts when
-  // a logical burst is spread across multiple VMs. Unset for single-VM runs.
+  // Sharded-burst metadata. Set by src/burst-100k/scripts/start.ts when a
+  // logical burst is spread across multiple VMs. Unset for single-VM runs.
   const shard = (() => {
     const group_id = process.env.GROUP_ID;
     const shard_index_raw = process.env.SHARD_INDEX;
@@ -111,9 +111,9 @@ async function main() {
   // Sub-classification of create-failures only (status === 'failed').
   const createFailureClass = { timeout: 0, http_error: 0, network_error: 0 };
 
-  // Periodically upload the coordinator's own stdout/stderr (redirected to a
-  // file by launch.sh) to Tigris. Skipped silently when the env var is
-  // unset (e.g. local `npm run bench:burst-100k:local` runs).
+  // Periodically upload the coordinator's own stdout/stderr (tee'd to a file by
+  // the uploaded /root/start.sh) to Tigris. Skipped silently when the env var
+  // is unset (e.g. local `npm run bench:burst-100k:local` runs).
   const COORDINATOR_LOG_PATH = process.env.COORDINATOR_LOG_PATH;
   const uploadLog = async (): Promise<void> => {
     if (!COORDINATOR_LOG_PATH) return;
