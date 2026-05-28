@@ -39,7 +39,7 @@
     "bench:storage:10mb": "tsx src/run.ts --mode storage --file-size 10MB",
     "bench:storage:16mb": "tsx src/run.ts --mode storage --file-size 16MB",
     "bundle:burst-100k": "esbuild src/burst-100k/coordinator.ts --bundle --platform=node --target=node20 --format=cjs --outfile=dist/burst-100k.cjs",
-    "bench:burst-100k:image": "docker buildx build --platform linux/amd64 --provenance=false --sbom=false -f Dockerfile.burst-100k --push -t nscr.io/5enq753trme1k/burst-100k:latest .",
+    "bench:burst-100k:image": "docker buildx build --platform linux/amd64 --provenance=false --sbom=false -f src/burst-100k/Dockerfile --push -t nscr.io/5enq753trme1k/burst-100k:latest .",
     "bench:burst-100k:local": "tsx src/burst-100k/coordinator.ts",
     "bench:burst-100k:start": "tsx src/burst-100k/scripts/start.ts",
     "bench:burst-100k:aggregate": "tsx src/burst-100k/scripts/aggregate.ts",
