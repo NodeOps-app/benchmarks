@@ -21,7 +21,7 @@ import 'dotenv/config';
 import { createBenchQueryClient } from '@computesdk/bench';
 import type { BenchRunSummary } from '@computesdk/bench';
 
-const DEFAULT_QUERY_URL = 'https://platform.computesdk.com/api/v1';
+const QUERY_URL = 'https://platform.computesdk.com/api/v1';
 
 interface Args {
   runIds: string[];
@@ -85,7 +85,7 @@ function parseArgs(): Args {
 
 const args = parseArgs();
 
-const queryUrl = process.env.BENCHMARK_QUERY_URL ?? DEFAULT_QUERY_URL;
+const queryUrl = QUERY_URL;
 const apiKey = process.env.COMPUTESDK_API_KEY;
 const query = createBenchQueryClient(queryUrl, apiKey);
 

@@ -25,7 +25,7 @@ import { createBenchQueryClient } from '@computesdk/bench';
 import type { BenchRunSummary } from '@computesdk/bench';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
-const DEFAULT_QUERY_URL = 'https://platform.computesdk.com/api/v1';
+const QUERY_URL = 'https://platform.computesdk.com/api/v1';
 
 interface Args {
   groupId?: string;
@@ -51,8 +51,7 @@ function usage(): string {
     '  --help, -h             Print this help',
     '',
     'Required env:',
-    '  BENCHMARK_QUERY_URL   Bench API query endpoint',
-    '  COMPUTESDK_API_KEY    (optional if query endpoint is public)',
+    '  COMPUTESDK_API_KEY    Bench API token',
     '',
     'Tigris env (if --no-tigris not passed):',
     '  TIGRIS_STORAGE_ENDPOINT, _BUCKET, _ACCESS_KEY_ID, _SECRET_ACCESS_KEY',
@@ -83,7 +82,7 @@ function parseArgs(): Args {
 
 const args = parseArgs();
 
-const queryUrl = process.env.BENCHMARK_QUERY_URL ?? DEFAULT_QUERY_URL;
+const queryUrl = QUERY_URL;
 const apiKey = process.env.COMPUTESDK_API_KEY;
 const query = createBenchQueryClient(queryUrl, apiKey);
 
