@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "timestamp": "2026-05-29T04:15:19.977Z",
+  "timestamp": "2026-05-29T04:29:45.513Z",
   "environment": {
     "node": "v24.16.0",
     "platform": "linux",
@@ -15,329 +15,331 @@
       "provider": "fcspawn",
       "iterations": [
         {
-          "ttiMs": 625.18
+          "ttiMs": 808.41
         },
         {
-          "ttiMs": 550.54
+          "ttiMs": 598.22
         },
         {
-          "ttiMs": 555.38
+          "ttiMs": 3509.39
         },
         {
-          "ttiMs": 560.89
+          "ttiMs": 575.99
         },
         {
-          "ttiMs": 533.43
+          "ttiMs": 572.08
         },
         {
-          "ttiMs": 454.2
+          "ttiMs": 2899.74
         },
         {
-          "ttiMs": 547.88
+          "ttiMs": 236.8
         },
         {
-          "ttiMs": 183.64
+          "ttiMs": 611.98
         },
         {
-          "ttiMs": 553.22
+          "ttiMs": 569.29
+        },
+        {
+          "ttiMs": 572.26
+        },
+        {
+          "ttiMs": 569.58
+        },
+        {
+          "ttiMs": 268.59
+        },
+        {
+          "ttiMs": 573.04
+        },
+        {
+          "ttiMs": 235.65
+        },
+        {
+          "ttiMs": 561.16
+        },
+        {
+          "ttiMs": 559.34
+        },
+        {
+          "ttiMs": 571.35
+        },
+        {
+          "ttiMs": 581.65
+        },
+        {
+          "ttiMs": 477.28
+        },
+        {
+          "ttiMs": 568.5
+        },
+        {
+          "ttiMs": 490.7
+        },
+        {
+          "ttiMs": 585.38
+        },
+        {
+          "ttiMs": 571.46
+        },
+        {
+          "ttiMs": 572.74
+        },
+        {
+          "ttiMs": 571.06
+        },
+        {
+          "ttiMs": 571.91
+        },
+        {
+          "ttiMs": 561.16
+        },
+        {
+          "ttiMs": 568.99
+        },
+        {
+          "ttiMs": 549.8
+        },
+        {
+          "ttiMs": 474.75
+        },
+        {
+          "ttiMs": 233.78
+        },
+        {
+          "ttiMs": 540.54
+        },
+        {
+          "ttiMs": 276.45
+        },
+        {
+          "ttiMs": 488.65
+        },
+        {
+          "ttiMs": 574.34
+        },
+        {
+          "ttiMs": 571.67
+        },
+        {
+          "ttiMs": 276.52
+        },
+        {
+          "ttiMs": 493.05
+        },
+        {
+          "ttiMs": 590.72
+        },
+        {
+          "ttiMs": 563.99
+        },
+        {
+          "ttiMs": 571.17
+        },
+        {
+          "ttiMs": 576.27
+        },
+        {
+          "ttiMs": 572.52
+        },
+        {
+          "ttiMs": 573.35
+        },
+        {
+          "ttiMs": 570.21
+        },
+        {
+          "ttiMs": 563.56
+        },
+        {
+          "ttiMs": 566.5
+        },
+        {
+          "ttiMs": 539.68
+        },
+        {
+          "ttiMs": 573.36
+        },
+        {
+          "ttiMs": 497.7
+        },
+        {
+          "ttiMs": 236.67
+        },
+        {
+          "ttiMs": 493.5
+        },
+        {
+          "ttiMs": 571.56
+        },
+        {
+          "ttiMs": 549.29
+        },
+        {
+          "ttiMs": 271.36
+        },
+        {
+          "ttiMs": 560.37
+        },
+        {
+          "ttiMs": 569.82
+        },
+        {
+          "ttiMs": 572.14
         },
         {
           "ttiMs": 0,
           "error": "create: internal error"
         },
         {
-          "ttiMs": 199.72
+          "ttiMs": 543.64
         },
         {
-          "ttiMs": 468.45
-        },
-        {
-          "ttiMs": 552.92
-        },
-        {
-          "ttiMs": 539.82
+          "ttiMs": 474
         },
         {
           "ttiMs": 0,
           "error": "create: internal error"
         },
         {
-          "ttiMs": 476.8
+          "ttiMs": 551.55
         },
         {
-          "ttiMs": 554.11
-        },
-        {
-          "ttiMs": 539.51
+          "ttiMs": 472.71
         },
         {
           "ttiMs": 0,
           "error": "create: internal error"
         },
         {
-          "ttiMs": 554.42
+          "ttiMs": 237.86
         },
         {
-          "ttiMs": 547.98
+          "ttiMs": 3489.59
         },
         {
-          "ttiMs": 0,
-          "error": "create: internal error"
+          "ttiMs": 540.44
         },
         {
-          "ttiMs": 546.9
+          "ttiMs": 576.13
         },
         {
-          "ttiMs": 3496.06
+          "ttiMs": 487.66
         },
         {
-          "ttiMs": 478.95
+          "ttiMs": 575.07
         },
         {
-          "ttiMs": 184.73
+          "ttiMs": 235.67
         },
         {
-          "ttiMs": 520.87
-        },
-        {
-          "ttiMs": 469.15
-        },
-        {
-          "ttiMs": 535.6
-        },
-        {
-          "ttiMs": 183.07
-        },
-        {
-          "ttiMs": 616.62
-        },
-        {
-          "ttiMs": 516.84
-        },
-        {
-          "ttiMs": 547.06
-        },
-        {
-          "ttiMs": 538.68
-        },
-        {
-          "ttiMs": 555.14
-        },
-        {
-          "ttiMs": 559.4
+          "ttiMs": 497.34
         },
         {
           "ttiMs": 0,
           "error": "create: internal error"
         },
         {
-          "ttiMs": 547.9
-        },
-        {
-          "ttiMs": 536.95
+          "ttiMs": 564.87
         },
         {
           "ttiMs": 0,
           "error": "create: internal error"
         },
         {
-          "ttiMs": 558.23
+          "ttiMs": 563.54
+        },
+        {
+          "ttiMs": 235.09
         },
         {
           "ttiMs": 0,
           "error": "create: internal error"
         },
         {
-          "ttiMs": 542.35
-        },
-        {
-          "ttiMs": 514.9
-        },
-        {
           "ttiMs": 0,
           "error": "create: internal error"
-        },
-        {
-          "ttiMs": 465.62
-        },
-        {
-          "ttiMs": 201.4
         },
         {
           "ttiMs": 0,
           "error": "exec: {\"status\":\"fail\",\"data\":\"sandbox not found\"}"
         },
         {
-          "ttiMs": 3457.5
+          "ttiMs": 263.15
         },
         {
-          "ttiMs": 545.28
-        },
-        {
-          "ttiMs": 514
-        },
-        {
-          "ttiMs": 193.85
-        },
-        {
-          "ttiMs": 540.89
-        },
-        {
-          "ttiMs": 189.07
-        },
-        {
-          "ttiMs": 518.84
-        },
-        {
-          "ttiMs": 519.22
-        },
-        {
-          "ttiMs": 511.02
-        },
-        {
-          "ttiMs": 459.48
-        },
-        {
-          "ttiMs": 556.45
-        },
-        {
-          "ttiMs": 543.86
-        },
-        {
-          "ttiMs": 445.89
-        },
-        {
-          "ttiMs": 543.54
-        },
-        {
-          "ttiMs": 514.63
-        },
-        {
-          "ttiMs": 518.68
-        },
-        {
-          "ttiMs": 462.19
-        },
-        {
-          "ttiMs": 514.11
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
           "ttiMs": 0,
           "error": "exec: {\"status\":\"fail\",\"data\":\"sandbox not found\"}"
         },
         {
-          "ttiMs": 519.57
-        },
-        {
-          "ttiMs": 191.95
-        },
-        {
-          "ttiMs": 516.73
-        },
-        {
-          "ttiMs": 511.74
-        },
-        {
-          "ttiMs": 202.32
-        },
-        {
-          "ttiMs": 542.85
-        },
-        {
-          "ttiMs": 515.65
-        },
-        {
-          "ttiMs": 534.04
+          "ttiMs": 256.04
         },
         {
           "ttiMs": 0,
           "error": "create: internal error"
         },
         {
-          "ttiMs": 187.48
-        },
-        {
-          "ttiMs": 519.99
-        },
-        {
-          "ttiMs": 550.06
+          "ttiMs": 510.97
         },
         {
           "ttiMs": 0,
           "error": "create: internal error"
         },
         {
-          "ttiMs": 523.67
-        },
-        {
-          "ttiMs": 453.59
+          "ttiMs": 244.86
         },
         {
           "ttiMs": 0,
           "error": "create: internal error"
         },
         {
-          "ttiMs": 546.35
+          "ttiMs": 0,
+          "error": "create: internal error"
+        },
+        {
+          "ttiMs": 539.1
+        },
+        {
+          "ttiMs": 455.65
+        },
+        {
+          "ttiMs": 0,
+          "error": "First command execution timed out"
+        },
+        {
+          "ttiMs": 742.01
+        },
+        {
+          "ttiMs": 3613.63
+        },
+        {
+          "ttiMs": 256.22
         },
         {
           "ttiMs": 0,
           "error": "create: internal error"
         },
         {
-          "ttiMs": 472.28
+          "ttiMs": 479.59
         },
         {
-          "ttiMs": 182.36
-        },
-        {
-          "ttiMs": 516.22
-        },
-        {
-          "ttiMs": 3430.26
-        },
-        {
-          "ttiMs": 514.34
-        },
-        {
-          "ttiMs": 551.89
-        },
-        {
-          "ttiMs": 471.73
-        },
-        {
-          "ttiMs": 547.31
-        },
-        {
-          "ttiMs": 512.63
-        },
-        {
-          "ttiMs": 526.08
-        },
-        {
-          "ttiMs": 512.56
-        },
-        {
-          "ttiMs": 479.6
-        },
-        {
-          "ttiMs": 510.82
-        },
-        {
-          "ttiMs": 241.99
-        },
-        {
-          "ttiMs": 513.45
+          "ttiMs": 531.39
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 519.39,
-          "p95": 558.23,
-          "p99": 616.62
+          "median": 562.35,
+          "p95": 598.22,
+          "p99": 808.41
         }
       },
-      "compositeScore": 81.32,
-      "successRate": 0.86
+      "compositeScore": 78.89,
+      "successRate": 0.84
     }
   ]
 }
