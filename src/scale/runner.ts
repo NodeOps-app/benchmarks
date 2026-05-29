@@ -61,7 +61,7 @@ export class BurstLifecycle {
     this.survivors = new Array(config.concurrencyTarget).fill(null);
   }
 
-  async create(): Promise<void> {
+  async create(ctx?: any): Promise<void> {
     const { concurrencyTarget, sandboxOptions, perRequestTimeoutMs = 120_000 } = this.config;
     const limit = pLimit(concurrencyTarget);
 
@@ -99,7 +99,7 @@ export class BurstLifecycle {
           result.error_code = err?.code ?? null;
           result.error_message = truncate(err?.message ?? String(err), 500);
           result.latency_ms = Math.round(performance.now() - t0);
-          await this.emit(result);
+          await this.emit(result, ctx);
         }
       }));
     }
@@ -109,7 +109,7 @@ export class BurstLifecycle {
     log.phase(`create complete — ${survivorCount}/${concurrencyTarget} sandboxes alive`);
   }
 
-  async execInitial(): Promise<void> {
+  async execInitial(ctx?: any): Promise<void> {
     const { concurrencyTarget } = this.config;
     const limit = pLimit(concurrencyTarget);
     const tasks: Promise<void>[] = [];
@@ -134,7 +134,7 @@ export class BurstLifecycle {
             Promise.resolve(sandbox.destroy()).catch(() => {});
           }
           this.survivors[idx] = null;
-          await this.emit(result);
+          await this.emit(result, ctx);
         }
       }));
     }
@@ -173,7 +173,7 @@ export class BurstLifecycle {
     await Promise.all(tasks);
   }
 
-  async destroy(): Promise<void> {
+  async destroy(ctx?: any): Promise<void> {
     const { concurrencyTarget } = this.config;
     const limit = pLimit(concurrencyTarget);
     const tasks: Promise<void>[] = [];
@@ -187,20 +187,33 @@ export class BurstLifecycle {
         if (sandbox?.destroy) {
           await Promise.resolve(sandbox.destroy()).catch(() => {});
         }
-        await this.emit(result);
+        await this.emit(result, ctx);
       }));
     }
 
     await Promise.all(tasks);
   }
 
-  private async emit(result: SandboxResult): Promise<void> {
+  private async emit(result: SandboxResult, ctx?: any): Promise<void> {
     const { concurrencyTarget } = this.config;
     result.completed_at = new Date().toISOString();
     this.in_flight--;
     this.done++;
     try { await this.callbacks.onResult(result); } catch { /* swallow */ }
     this.callbacks.onProgress({ done: this.done, in_flight: this.in_flight, errors: this.errors });
+
+    if (ctx?.log) {
+      ctx.log(JSON.stringify({
+        __type: 'sandbox',
+        idx: result.sandbox_idx,
+        started_at: result.started_at,
+        completed_at: result.completed_at,
+        latency_ms: result.latency_ms,
+        first_command_ms: result.first_command_ms,
+        status: result.status,
+        error_code: result.error_code,
+      }));
+    }
 
     if (result.status === 'success') {
       const sb = result.provider_metadata?.sandboxId

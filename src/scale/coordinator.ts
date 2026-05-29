@@ -282,12 +282,12 @@ async function main() {
       },
     });
 
-    bench.add(`scale.${PROVIDER}.create`, async (_ctx: BenchContext) => {
+    bench.add(`scale.${PROVIDER}.create`, async (ctx: BenchContext) => {
       log.phase(`create — firing ${provider.concurrencyTarget} requests at t=0 (no stagger)`);
-      await flow.create();
+      await flow.create(ctx);
     });
-    bench.add(`scale.${PROVIDER}.exec.initial`, async (_ctx: BenchContext) => {
-      await flow.execInitial();
+    bench.add(`scale.${PROVIDER}.exec.initial`, async (ctx: BenchContext) => {
+      await flow.execInitial(ctx);
     });
     if (pauseMs > 0) {
       bench.add(`scale.${PROVIDER}.pause`, async (_ctx: BenchContext) => {
@@ -299,7 +299,7 @@ async function main() {
       await flow.execAfterPause();
     });
     bench.add(`scale.${PROVIDER}.destroy`, async (ctx: BenchContext) => {
-      await flow.destroy();
+      await flow.destroy(ctx);
       ctx.emitMetric('sandbox_result_count', {
         total: provider.concurrencyTarget,
         success: statusCounts.success,
