@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "timestamp": "2026-05-29T00:58:31.055Z",
+  "timestamp": "2026-05-29T04:15:19.973Z",
   "environment": {
     "node": "v24.16.0",
     "platform": "linux",
@@ -15,319 +15,343 @@
       "provider": "fcspawn",
       "mode": "concurrent",
       "concurrency": 100,
-      "wallClockMs": 5724.65,
-      "timeToFirstReadyMs": 849.92,
+      "wallClockMs": 32035.64,
+      "timeToFirstReadyMs": 353.83,
       "iterations": [
         {
-          "ttiMs": 849.92
+          "ttiMs": 353.83
         },
         {
-          "ttiMs": 890.66
+          "ttiMs": 689.45
         },
         {
-          "ttiMs": 885.69
+          "ttiMs": 737.55
         },
         {
-          "ttiMs": 880.1
+          "ttiMs": 797.26
         },
         {
-          "ttiMs": 4934.59
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 876
+          "ttiMs": 903.05
         },
         {
-          "ttiMs": 996.63
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 900.32
+          "ttiMs": 1004.52
         },
         {
-          "ttiMs": 992.12
+          "ttiMs": 1179.55
         },
         {
-          "ttiMs": 1048.33
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 1041.9
+          "ttiMs": 893.05
         },
         {
-          "ttiMs": 1129.03
+          "ttiMs": 1220.24
         },
         {
-          "ttiMs": 1600.41
+          "ttiMs": 1983.22
         },
         {
-          "ttiMs": 1168.76
+          "ttiMs": 1356.07
         },
         {
-          "ttiMs": 1284.71
+          "ttiMs": 1466.58
         },
         {
-          "ttiMs": 1399.53
+          "ttiMs": 1336.26
         },
         {
-          "ttiMs": 1511.11
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 1675.05
+          "ttiMs": 1954.98
         },
         {
-          "ttiMs": 1706.7
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 1893.29
+          "ttiMs": 2225.05
         },
         {
-          "ttiMs": 1909.16
+          "ttiMs": 0,
+          "error": "First command execution timed out"
         },
         {
-          "ttiMs": 2069.88
+          "ttiMs": 2374.03
         },
         {
-          "ttiMs": 1611.34
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 1650.96
+          "ttiMs": 2350.52
         },
         {
-          "ttiMs": 1739.06
+          "ttiMs": 2504.78
         },
         {
-          "ttiMs": 1804.82
+          "ttiMs": 2479.02
         },
         {
-          "ttiMs": 1819.69
+          "ttiMs": 2131.34
         },
         {
-          "ttiMs": 1861.25
+          "ttiMs": 2560.95
         },
         {
-          "ttiMs": 1941.68
+          "ttiMs": 2558.35
         },
         {
-          "ttiMs": 1862.85
+          "ttiMs": 2632.95
         },
         {
-          "ttiMs": 2022.77
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 1976.84
+          "ttiMs": 2691.17
         },
         {
-          "ttiMs": 2056.41
+          "ttiMs": 2308.79
         },
         {
-          "ttiMs": 2147.09
+          "ttiMs": 2769.35
         },
         {
-          "ttiMs": 2195.18
+          "ttiMs": 2763.97
         },
         {
-          "ttiMs": 2275.33
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 2288.98
+          "ttiMs": 2890.94
         },
         {
-          "ttiMs": 2333.45
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 2453.24
+          "ttiMs": 2602.74
         },
         {
-          "ttiMs": 2582.57
+          "ttiMs": 2999.46
         },
         {
-          "ttiMs": 2499.83
+          "ttiMs": 3060.32
         },
         {
-          "ttiMs": 2678.78
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 2563.19
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 2715.83
+          "ttiMs": 3105.15
         },
         {
-          "ttiMs": 2632.27
+          "ttiMs": 3105.64
         },
         {
-          "ttiMs": 2734.53
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 2750.21
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 3181.74
+          "ttiMs": 3207.95
         },
         {
-          "ttiMs": 3057.12
+          "ttiMs": 2902.6
         },
         {
-          "ttiMs": 3253.97
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 3305.82
+          "ttiMs": 3424.3
         },
         {
-          "ttiMs": 3417.4
+          "ttiMs": 3461.52
         },
         {
-          "ttiMs": 3402.88
+          "ttiMs": 3504.86
         },
         {
-          "ttiMs": 3718.39
+          "ttiMs": 3192.83
         },
         {
-          "ttiMs": 3608.92
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 3906.94
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 3798.37
+          "ttiMs": 3627.61
         },
         {
-          "ttiMs": 3838.87
+          "ttiMs": 3607.89
         },
         {
-          "ttiMs": 3980.13
+          "ttiMs": 3714.3
         },
         {
-          "ttiMs": 4138.51
+          "ttiMs": 3343.53
         },
         {
-          "ttiMs": 4209.89
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 4232.16
+          "ttiMs": 3852.13
         },
         {
-          "ttiMs": 4335.19
+          "ttiMs": 6459.05
         },
         {
-          "ttiMs": 4442.74
+          "ttiMs": 3962.74
         },
         {
-          "ttiMs": 4591.7
+          "ttiMs": 3981.72
         },
         {
-          "ttiMs": 4628.42
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 4708.61
+          "ttiMs": 3617.52
         },
         {
-          "ttiMs": 4704.74
+          "ttiMs": 4056.19
         },
         {
-          "ttiMs": 4897.95
+          "ttiMs": 4053.93
         },
         {
-          "ttiMs": 4855.08
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 4869.66
+          "ttiMs": 6456.09
         },
         {
-          "ttiMs": 5030.14
+          "ttiMs": 4224.13
         },
         {
-          "ttiMs": 5091.46
+          "ttiMs": 4152.7
         },
         {
-          "ttiMs": 5014.52
+          "ttiMs": 4242.32
         },
         {
-          "ttiMs": 5092.94
+          "ttiMs": 3910.72
         },
         {
-          "ttiMs": 5169.7
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 5175.72
+          "ttiMs": 4388.98
         },
         {
-          "ttiMs": 5218.54
+          "ttiMs": 4359.53
         },
         {
-          "ttiMs": 5224.04
+          "ttiMs": 6462.66
         },
         {
-          "ttiMs": 5341.39
+          "ttiMs": 4389.83
         },
         {
-          "ttiMs": 5301.77
+          "ttiMs": 4092.04
         },
         {
-          "ttiMs": 5351.77
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 5345.75
+          "ttiMs": 4561.22
         },
         {
-          "ttiMs": 5359.44
+          "ttiMs": 6491.67
         },
         {
-          "ttiMs": 5366.75
+          "ttiMs": 4658.53
         },
         {
-          "ttiMs": 5373.94
+          "ttiMs": 4675.11
         },
         {
-          "ttiMs": 5355.28
+          "ttiMs": 4355.57
         },
         {
-          "ttiMs": 5571.72
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 5684.78
+          "ttiMs": 6487.07
         },
         {
-          "ttiMs": 5639.96
+          "ttiMs": 4801.67
         },
         {
-          "ttiMs": 5655.01
+          "ttiMs": 4848.51
         },
         {
-          "ttiMs": 5663.05
+          "ttiMs": 4588.23
         },
         {
-          "ttiMs": 5648.64
+          "ttiMs": 4943.4
         },
         {
-          "ttiMs": 5671.71
+          "ttiMs": 0,
+          "error": "create: internal error"
         },
         {
-          "ttiMs": 5655.44
+          "ttiMs": 6457.64
         },
         {
-          "ttiMs": 5669.63
+          "ttiMs": 5042.42
         },
         {
-          "ttiMs": 5679.47
+          "ttiMs": 6454.44
         },
         {
-          "ttiMs": 5640.28
+          "ttiMs": 7138.94
         },
         {
-          "ttiMs": 5677.6
+          "ttiMs": 5159.59
         },
         {
-          "ttiMs": 5675.34
+          "ttiMs": 5165.87
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 3354.35,
-          "p95": 5648.64,
-          "p99": 5669.63
+          "median": 3442.91,
+          "p95": 6456.09,
+          "p99": 6462.66
         }
       },
-      "compositeScore": 57.25,
-      "successRate": 1
+      "compositeScore": 40.67,
+      "successRate": 0.76
     }
   ]
 }
