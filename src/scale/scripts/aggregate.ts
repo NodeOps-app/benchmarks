@@ -27,7 +27,7 @@
 import 'dotenv/config';
 import * as fs from 'node:fs';
 import { createBenchQueryClient } from '@computesdk/bench';
-import type { BenchRunSummary } from '@computesdk/bench';
+import type { BenchRunSummary, BenchMetricDistribution, BenchMetricCounts } from '@computesdk/bench';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
 interface Args {
@@ -85,7 +85,10 @@ function parseArgs(): Args {
 
 const args = parseArgs();
 
-const query = createBenchQueryClient('https://platform.computesdk.com/api/v1', process.env.COMPUTESDK_API_KEY);
+const query = createBenchQueryClient({
+  baseUrl: 'https://platform.computesdk.com/api/v1',
+  apiKey: process.env.COMPUTESDK_API_KEY,
+});
 
 // Resolve groupId (either explicit or most recent)
 let groupId = args.groupId;
@@ -99,12 +102,28 @@ if (!groupId) {
   console.log(`[aggregate] --recent → batchId=${groupId}`);
 }
 
-// Fetch progress and runs in parallel. getBatchStats is deliberately not used
-// (see header): its spans are lifecycle steps, not sandboxes.
-const [progress, runsRes] = await Promise.all([
+// Fetch progress and runs plus metric aggregates in parallel.
+const [progress, runsRes, latencyDistRaw, firstCmdDistRaw, statusCountsRaw, failureClassCountsRaw] = await Promise.all([
   query.getBatchProgress(groupId),
   query.listRuns({ batch: groupId, limit: 500 }),
+  query.getBatchMetricStats(groupId, { name: 'sandbox.result', field: 'latency_ms' }),
+  query.getBatchMetricStats(groupId, { name: 'sandbox.result', field: 'first_command_ms' }),
+  query.getBatchMetricCounts(groupId, { name: 'sandbox.result', field: 'status' }),
+  query.getBatchMetricCounts(groupId, { name: 'sandbox.result', field: 'failure_class' }),
 ]);
+
+const latencyDist = latencyDistRaw as BenchMetricDistribution;
+const firstCmdDist = firstCmdDistRaw as BenchMetricDistribution;
+const statusCounts = statusCountsRaw as BenchMetricCounts;
+const failureClassCounts = failureClassCountsRaw as BenchMetricCounts;
+
+const countMap = (rows: Array<{ key: string; count: number }>): Record<string, number> => {
+  const out: Record<string, number> = {};
+  for (const row of rows) out[row.key] = row.count;
+  return out;
+};
+const statusMap = countMap(statusCounts.counts);
+const failureMap = countMap(failureClassCounts.counts);
 
 // BenchBatchProgress carries only per-run counters (no roll-up), so derive both
 // the shard-level breakdown and the sandbox-level totals here. A run is terminal
@@ -137,44 +156,69 @@ if (shardsRunning > 0 && args.requireTerminal) {
   process.exit(1);
 }
 
-// Sandbox-level counts come from the rolled-up progress counters above. The
-// progress API exposes only scalar done/total/errors, so the finer
-// 'partial' / 'readiness_failed' / failure-by-code splits the coordinator
-// records per shard are not recoverable here — `failures` carries the full
-// non-success count, and the sub-buckets plus per-sandbox latency are left null.
-const succeeded = sandboxesDone - sandboxErrors;
-const failed = sandboxErrors;
+// Prefer metric-derived per-sandbox status splits. Fall back to progress rollup.
+const succeeded = statusMap.success ?? (sandboxesDone - sandboxErrors);
+const partials = statusMap.partial ?? null;
+const readinessFailures = statusMap.readiness_failed ?? null;
+const failed = statusMap.failed ?? sandboxErrors;
 
 const provider = [...new Set(runsRes.items.map((r: BenchRunSummary) => r.provider).filter(Boolean))].join(',') || 'unknown';
 
 const final = {
   sandboxes_attempted: sandboxesAttempted,
   sandboxes_succeeded: succeeded,
-  partials: null,            // not separable from the progress error counter
-  readiness_failures: null,  // not separable from the progress error counter
+  partials,
+  readiness_failures: readinessFailures,
   failures: failed,
-  timeouts: null,            // failure-by-code not exposed by the progress API
-  http_errors: null,         // "
-  network_errors: null,      // "
-  p50_latency_ms: null,      // per-sandbox latency not exposed by the progress API
-  p99_latency_ms: null,      // "
+  timeouts: failureMap.timeout ?? null,
+  http_errors: failureMap.http_error ?? null,
+  network_errors: failureMap.network_error ?? null,
+  p50_latency_ms: latencyDist.p50,
+  p99_latency_ms: latencyDist.p99,
 };
 
 const aggregate = {
   ...final,
-  // per-sandbox latency lives in each shard's Tigris meta.json — not derivable
-  // from the progress counters this script reads.
-  latency_distribution: null,
+  latency_distribution: {
+    count: latencyDist.count,
+    min_ms: latencyDist.min,
+    p10_ms: latencyDist.p10 ?? null,
+    p25_ms: latencyDist.p25 ?? null,
+    p50_ms: latencyDist.p50,
+    p75_ms: latencyDist.p75 ?? null,
+    p90_ms: latencyDist.p90 ?? null,
+    p95_ms: latencyDist.p95,
+    p99_ms: latencyDist.p99,
+    p999_ms: latencyDist.p999 ?? null,
+    max_ms: latencyDist.max,
+    mean_ms: latencyDist.avg,
+  },
   status_histogram: {
     success: succeeded,
+    partial: partials,
+    readiness_failed: readinessFailures,
     failed,
   },
-  create_failure_class: null,      // not exposed by the progress API
-  failure_breakdown_by_code: null, // "
-  // TODO: backend currently does not expose first_command_distribution,
-  // tti_distribution, submission_segments, or concurrency timeline.
-  // Once the API adds them, map them in here.
-  first_command_distribution: null,
+  create_failure_class: {
+    timeout: failureMap.timeout ?? null,
+    http_error: failureMap.http_error ?? null,
+    network_error: failureMap.network_error ?? null,
+  },
+  failure_breakdown_by_code: null,
+  first_command_distribution: {
+    count: firstCmdDist.count,
+    min_ms: firstCmdDist.min,
+    p10_ms: firstCmdDist.p10 ?? null,
+    p25_ms: firstCmdDist.p25 ?? null,
+    p50_ms: firstCmdDist.p50,
+    p75_ms: firstCmdDist.p75 ?? null,
+    p90_ms: firstCmdDist.p90 ?? null,
+    p95_ms: firstCmdDist.p95,
+    p99_ms: firstCmdDist.p99,
+    p999_ms: firstCmdDist.p999 ?? null,
+    max_ms: firstCmdDist.max,
+    mean_ms: firstCmdDist.avg,
+  },
   tti_distribution: null,
   submission_segments: null,
   concurrency_summary: null,
@@ -209,6 +253,9 @@ console.log(`  attempted:        ${final.sandboxes_attempted.toLocaleString()}`)
 console.log(`  succeeded:        ${final.sandboxes_succeeded.toLocaleString()} ` +
   `(${((final.sandboxes_succeeded / Math.max(1, final.sandboxes_attempted)) * 100).toFixed(2)}%)`);
 console.log(`  failed:           ${final.failures.toLocaleString()}`);
+if (final.p50_latency_ms != null && final.p99_latency_ms != null) {
+  console.log(`  latency:          p50=${final.p50_latency_ms}ms p99=${final.p99_latency_ms}ms`);
+}
 console.log('');
 console.log(`  note: counts are rolled up from per-shard progress counters.`);
 console.log(`        per-sandbox latency and the failure-by-code breakdown are`);

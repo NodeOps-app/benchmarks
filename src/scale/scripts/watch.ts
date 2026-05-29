@@ -83,7 +83,10 @@ function parseArgs(): Args {
 
 const args = parseArgs();
 
-const query = createBenchQueryClient('https://platform.computesdk.com/api/v1', process.env.COMPUTESDK_API_KEY);
+const query = createBenchQueryClient({
+  baseUrl: 'https://platform.computesdk.com/api/v1',
+  apiKey: process.env.COMPUTESDK_API_KEY,
+});
 
 // Resolve --recent into RUN_IDs
 let watchIds = [...args.runIds];
