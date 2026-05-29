@@ -103,6 +103,18 @@ interface WatchRow {
   total: number;
   errors: number;
   inFlight: number;
+  detail?: string;
+}
+
+// The SDK throws `Bench query failed: <status> <statusText>` on non-2xx.
+// Pull the numeric status back out so 404 (run/batch not known to the API)
+// reads differently from 401/403 (bad/missing key) instead of a blanket miss.
+function classifyError(err: unknown): { status: string; detail: string } {
+  const msg = err instanceof Error ? err.message : String(err);
+  const code = msg.match(/\b(\d{3})\b/)?.[1];
+  if (code === '404') return { status: 'not-found', detail: msg };
+  if (code === '401' || code === '403') return { status: 'unauthorized', detail: msg };
+  return { status: 'error', detail: msg };
 }
 
 async function fetchRuns(ids: string[]): Promise<WatchRow[]> {
@@ -124,8 +136,9 @@ async function fetchRuns(ids: string[]): Promise<WatchRow[]> {
         errors: progress.errors,
         inFlight: progress.inFlight,
       });
-    } catch (err: any) {
-      rows.push({ id, status: 'MISSING', done: 0, total: 0, errors: 0, inFlight: 0 });
+    } catch (err) {
+      const { status, detail } = classifyError(err);
+      rows.push({ id, status, done: 0, total: 0, errors: 0, inFlight: 0, detail });
     }
   }
   return rows;
@@ -168,7 +181,7 @@ function printTable(rows: WatchRow[], pollNum: number): void {
   console.log(`\n[${ts}]  poll ${pollNum}`);
   console.log(
     '  ' + pad('ID', ID_COL_WIDTH) +
-    '  ' + pad('status', 10) +
+    '  ' + pad('status', 12) +
     '  ' + pad('done/total', 12, 'r') +
     '  ' + pad('errors', 7, 'r') +
     '  ' + pad('inFlight', 8, 'r'),
@@ -176,11 +189,18 @@ function printTable(rows: WatchRow[], pollNum: number): void {
   for (const r of rows) {
     console.log(
       '  ' + pad(r.id, ID_COL_WIDTH) +
-      '  ' + pad(r.status, 10) +
+      '  ' + pad(r.status, 12) +
       '  ' + pad(`${r.done}/${r.total}`, 12, 'r') +
       '  ' + pad(r.errors, 7, 'r') +
       '  ' + pad(r.inFlight, 8, 'r'),
     );
+  }
+  // Surface the underlying API error so a non-OK status isn't a dead end.
+  for (const r of rows.filter(r => r.detail)) {
+    console.log(`    ! ${r.id}: ${r.detail}`);
+  }
+  if (rows.some(r => r.status === 'not-found')) {
+    console.log('    hint: pass the API run_… id, or watch the whole run with --batch <group_id> / --recent N');
   }
 }
 

@@ -361,7 +361,11 @@ async function main(): Promise<void> {
     if (r.rc !== 0) failed++;
   }
   console.log('');
-  console.log(`  Watch:     npm run bench:scale:watch -- ${results.map(r => r.runId).join(' ')}`);
+  // The bench API mints its own run_… ids and only exposes shards under the
+  // batch (= group_id); the local RUN_IDs above are never sent to it. So watch
+  // by batch when sharded, and fall back to --recent for a lone run.
+  const watchTarget = sharded ? `--batch ${groupId}` : `--recent 1`;
+  console.log(`  Watch:     npm run bench:scale:watch -- ${watchTarget}`);
   console.log(`  Aggregate: npm run bench:scale:aggregate -- --group ${groupId}`);
 
   if (failed > 0) {
