@@ -6,7 +6,6 @@ import { createBench } from '@computesdk/bench';
 import type { BenchContext } from '@computesdk/bench';
 import { getProvider } from './providers.js';
 import { log } from './logger.js';
-import { PostgresSink } from './sinks/postgres.js';
 import { TigrisSink } from './sinks/tigris.js';
 import { runBurst } from './runner.js';
 import type { ProgressStats, MetricsSample } from './types.js';
@@ -18,7 +17,6 @@ loadDotenv();
 async function main() {
   const RUN_ID = required('RUN_ID');
   const PROVIDER = required('PROVIDER');
-  const PG_URL = required('PG_URL');
   const TIGRIS_STORAGE_ENDPOINT = required('TIGRIS_STORAGE_ENDPOINT');
   const TIGRIS_STORAGE_BUCKET = required('TIGRIS_STORAGE_BUCKET');
   const TIGRIS_STORAGE_ACCESS_KEY_ID = required('TIGRIS_STORAGE_ACCESS_KEY_ID');
@@ -69,19 +67,11 @@ async function main() {
   if (missing.length > 0) {
     const msg = `Missing required env vars for ${PROVIDER}: ${missing.join(', ')}`;
     log.error(msg);
-    await tryRecordFailure(PG_URL, RUN_ID, msg);
     process.exit(1);
   }
   log.ok(`all ${provider.requiredEnvVars.length} provider env var(s) present`);
 
   log.phase('opening sinks');
-  log.info('Postgres: connecting…');
-  const pg = new PostgresSink(PG_URL, RUN_ID);
-  await pg.connect();
-  log.ok('Postgres: connected');
-  log.info('Postgres: bootstrapping runs row (idempotent)');
-  await pg.bootstrap(PROVIDER, commit_sha, instance_id, tigris_prefix, shard);
-  log.ok('Postgres: runs row in place');
 
   log.info('Tigris: opening multipart upload for raw.jsonl');
   const tigris = new TigrisSink(
@@ -197,10 +187,7 @@ async function main() {
     log.phase(`${signal} received — flushing`);
     clearInterval(metricsInterval);
     try {
-      await pg.flush();
       await tigris.close();
-      await pg.fail(`Process received ${signal} at done=${lastStats.done}/${provider.concurrencyTarget}`);
-      await pg.close();
       if (metricsSamples.length > 0) await tigris.writeMetrics(metricsSamples);
       log.ok('flushed all sinks');
     } catch (e: any) {
@@ -247,7 +234,6 @@ async function main() {
             error_code: result.error_code,
           });
           tigris.writeResult(result);
-          await pg.write(result);
         },
         onProgress(stats) {
           lastStats = stats;
@@ -309,8 +295,7 @@ async function main() {
       network_error: createFailureClass.network_error,
     };
 
-    // Full latency distribution, written to Tigris meta.json only. Postgres
-    // keeps just p50/p99 for cheap filtering; this is for retrospective
+    // Full latency distribution, written to Tigris meta.json for retrospective
     // analysis of tail behaviour. `latency_distribution` covers the
     // allocate phase only — the "first_command" and combined "tti"
     // distributions are computed below.
@@ -442,8 +427,6 @@ async function main() {
     };
 
     log.phase('flushing sinks and writing summary');
-    log.info('Postgres: flushing remaining sandbox_results batch');
-    await pg.flush();
     log.info('Tigris: closing multipart upload for raw.jsonl');
     await tigris.close();
     log.info('Tigris: writing metrics.jsonl');
@@ -465,9 +448,6 @@ async function main() {
       ended_at: new Date().toISOString(),
       ...(shard ? { group_id: shard.group_id, shard_index: shard.shard_index, shard_count: shard.shard_count } : {}),
     });
-    log.info('Postgres: marking run done with final stats');
-    await pg.complete(final);
-    await pg.close();
 
     log.phase('run complete');
     log.ok(`${final.sandboxes_succeeded}/${final.sandboxes_attempted} succeeded ` +
@@ -482,10 +462,7 @@ async function main() {
     clearInterval(metricsInterval);
     log.error(`run failed: ${err?.message ?? err}`);
     try {
-      await pg.flush();
       await tigris.close();
-      await pg.fail(err?.message ?? String(err));
-      await pg.close();
       if (metricsSamples.length > 0) await tigris.writeMetrics(metricsSamples);
     } catch (e: any) {
       log.error(`failed to record failure: ${e?.message ?? e}`);
@@ -501,17 +478,6 @@ function required(name: string): string {
     process.exit(1);
   }
   return v;
-}
-
-async function tryRecordFailure(pgUrl: string, runId: string, message: string): Promise<void> {
-  try {
-    const pg = new PostgresSink(pgUrl, runId);
-    await pg.connect();
-    await pg.fail(message);
-    await pg.close();
-  } catch (e: any) {
-    log.error(`could not write failure row: ${e?.message ?? e}`);
-  }
 }
 
 main().catch(err => {

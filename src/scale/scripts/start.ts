@@ -7,8 +7,7 @@
  * CONCURRENCY_TARGET = N/K, tagged with a shared GROUP_ID + per-VM
  * SHARD_INDEX. A single-VM run is just `--vms 1` (the default).
  *
- * Each VM ends up as its own `runs` row in Postgres; combine shards after the
- * fact with:
+ * Each VM gets its own RUN_ID; combine shards after the fact with:
  *
  *   tsx src/scale/scripts/aggregate.ts --group <GROUP_ID>
  *
@@ -19,7 +18,6 @@
  *   npm run bench:scale:start -- --provider e2b --total 100000 --vms 20
  *
  * Required env:
- *   PG_URL                            Neon connection string
  *   TIGRIS_STORAGE_ENDPOINT, _BUCKET  Tigris (S3-compat) target for raw results
  *   TIGRIS_STORAGE_ACCESS_KEY_ID
  *   TIGRIS_STORAGE_SECRET_ACCESS_KEY
@@ -35,17 +33,13 @@
  */
 
 import 'dotenv/config';
-import { spawn, spawnSync } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import { execSync } from 'node:child_process';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import pg from 'pg';
-
-const { Client } = pg;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// __dirname is <repo>/src/scale/scripts; the project root (cwd for npm,
-// psql, and the dist/ + db/ paths below) is three levels up.
+// __dirname is <repo>/src/scale/scripts.
 const repoRoot = path.resolve(__dirname, '../../..');
 
 // Provider-specific credentials forwarded to the VM. The coordinator's
@@ -69,7 +63,7 @@ type Logger = (line: string) => void;
 interface RunResult { code: number; stdout: string; }
 
 /**
- * Async wrapper around `spawn` for `nsc` / `psql`. Streams stdout+stderr to
+ * Async wrapper around `spawn` for `nsc`. Streams stdout+stderr to
  * `log` line-by-line (so parallel shards stay readable) and optionally captures
  * stdout. Never rejects — resolves with the exit code so callers decide.
  */
@@ -208,12 +202,11 @@ interface ShardOpts {
 interface ShardResult { shard: number; runId: string; rc: number; }
 
 /**
- * Start one shard as a native Namespace container (`nsc run --image ...`) and
- * record the corresponding `runs` row in Postgres. Never throws — resolves
+ * Start one shard as a native Namespace container (`nsc run --image ...`).
+ * Never throws — resolves
  * with rc so a failed shard doesn't take down its siblings.
  */
 async function launchOne(shard: number, opts: ShardOpts, log: Logger): Promise<ShardResult> {
-  let client: InstanceType<typeof Client> | null = null;
   try {
     // 1. run image as a Namespace containerized job
     log(`starting container (image=${opts.image} machine=${opts.machineType} duration=${opts.duration})`);
@@ -228,7 +221,6 @@ async function launchOne(shard: number, opts: ShardOpts, log: Logger): Promise<S
       '--env', `RUN_ID=${opts.runId}`,
       '--env', `PROVIDER=${opts.provider}`,
       '--env', `GITHUB_SHA=${opts.githubSha}`,
-      '--env', `PG_URL=${process.env.PG_URL!}`,
       '--env', `TIGRIS_STORAGE_ENDPOINT=${process.env.TIGRIS_STORAGE_ENDPOINT!}`,
       '--env', `TIGRIS_STORAGE_BUCKET=${process.env.TIGRIS_STORAGE_BUCKET!}`,
       '--env', `TIGRIS_STORAGE_ACCESS_KEY_ID=${process.env.TIGRIS_STORAGE_ACCESS_KEY_ID!}`,
@@ -266,54 +258,11 @@ async function launchOne(shard: number, opts: ShardOpts, log: Logger): Promise<S
     }
     log(`instance: ${instanceId}`);
 
-    // 2. record run in Postgres. Upsert to ensure the canonical instance_id from
-    // nsc run wins if the coordinator has already inserted a bootstrap row.
-    log('recording run in Postgres');
-    client = new Client({ connectionString: process.env.PG_URL });
-    try {
-      await client.connect();
-      await client.query(
-        `INSERT INTO runs (id, provider, commit_sha, instance_id, started_at, status,
-                            tigris_prefix, group_id, shard_index, shard_count)
-         VALUES ($1, $2, $3, $4, now(), 'running', $5, $6, $7, $8)
-         ON CONFLICT (id) DO UPDATE
-           SET provider = EXCLUDED.provider,
-               commit_sha = EXCLUDED.commit_sha,
-               instance_id = EXCLUDED.instance_id,
-               tigris_prefix = EXCLUDED.tigris_prefix,
-               group_id = COALESCE(runs.group_id, EXCLUDED.group_id),
-               shard_index = COALESCE(runs.shard_index, EXCLUDED.shard_index),
-               shard_count = COALESCE(runs.shard_count, EXCLUDED.shard_count)`,
-        [
-          opts.runId, opts.provider, opts.githubSha, instanceId,
-          `s3://${process.env.TIGRIS_STORAGE_BUCKET}/${opts.runId}/`,
-          opts.groupId ?? null, opts.shardIndex ?? null, opts.shardCount ?? null,
-        ],
-      );
-    } catch (err) {
-      log(`ERROR: runs INSERT failed: ${err instanceof Error ? err.message : String(err)}`);
-      return { shard, runId: opts.runId, rc: 1 };
-    }
-
-    // 3. confirm the coordinator launched. Past failures silently left the VM
-    // idle, so this is load-bearing. Two durable signals, because a small burst
-    // can finish (and the process exit) before status polling sees progress:
-    //   - the runs row reaches a terminal status ('done' = ran to completion,
-    //     'failed' = coordinator recorded a fatal error), or
-    //   - Namespace reports the instance still alive (long bursts run for minutes).
-    // Only a row still 'running' with no live process after the window is a
-    // genuine never-started / idle-VM failure.
+    // 2. confirm the coordinator launched. Past failures silently left the VM
+    // idle, so this is load-bearing. A simple "instance is alive" check is
+    // enough now that benchmark state is event-driven (no Postgres runs table).
     let confirmed = false;
     for (let i = 1; i <= 12; i++) {
-      const { rows } = await client.query<{ status: string; error_message: string | null }>(
-        'SELECT status, error_message FROM runs WHERE id = $1', [opts.runId],
-      );
-      const status = rows[0]?.status;
-      if (status === 'done') { log('coordinator completed (status=done)'); confirmed = true; break; }
-      if (status === 'failed') {
-        log(`ERROR: coordinator reported failure: ${rows[0]?.error_message ?? 'unknown'}`);
-        return { shard, runId: opts.runId, rc: 1 };
-      }
       const alive = await sh('nsc', ['describe', instanceId], { log, quiet: true });
       if (alive.code === 0) { log(`coordinator confirmed running on VM (after ${i})`); confirmed = true; break; }
       await sleep(1000);
@@ -330,8 +279,6 @@ async function launchOne(shard: number, opts: ShardOpts, log: Logger): Promise<S
   } catch (err) {
     log(`unexpected error: ${err instanceof Error ? err.message : String(err)}`);
     return { shard, runId: opts.runId, rc: 1 };
-  } finally {
-    if (client) await client.end().catch(() => {});
   }
 }
 
@@ -367,17 +314,9 @@ async function main(): Promise<void> {
   console.log(`  group_id:   ${groupId}`);
   console.log('');
 
-  if (!process.env.PG_URL) { console.error('PG_URL not set (check .env)'); process.exit(2); }
   for (const v of ['TIGRIS_STORAGE_ENDPOINT', 'TIGRIS_STORAGE_BUCKET', 'TIGRIS_STORAGE_ACCESS_KEY_ID', 'TIGRIS_STORAGE_SECRET_ACCESS_KEY']) {
     if (!process.env[v]) { console.error(`${v} not set (check .env)`); process.exit(2); }
   }
-
-  // Apply the Postgres schema ONCE up front. `CREATE TABLE/INDEX IF NOT EXISTS`
-  // is not race-safe under N parallel applies, so the orchestrator owns it.
-  console.log('[launch] ensuring Postgres schema');
-  const schema = spawnSync('psql', [process.env.PG_URL, '-v', 'ON_ERROR_STOP=1', '-q', '-f', 'db/scale.sql'], { stdio: 'inherit', cwd: repoRoot });
-  if (schema.status !== 0) { console.error(`[launch] schema apply failed (rc=${schema.status}); aborting before any VMs are spawned`); process.exit(schema.status ?? 1); }
-  console.log('');
 
   const sharded = args.vms > 1;
   console.log(`spawning ${args.vms} parallel launch(es)…\n`);
