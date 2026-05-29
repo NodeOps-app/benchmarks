@@ -278,7 +278,7 @@ async function main() {
         readiness_failed: statusCounts.readiness_failed,
         failed: statusCounts.failed,
       });
-    });
+    }, { runOnFailed: true });
     try {
       await bench.run({ iterations: 1, warmup: 0 });
     } catch (benchErr: any) {
