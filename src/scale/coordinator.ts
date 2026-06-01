@@ -116,7 +116,6 @@ async function main() {
     shard: shard
       ? { index: shard.shard_index, count: shard.shard_count }
       : undefined,
-    captureLogs: Boolean(COORDINATOR_LOG_PATH),
     captureOutput: COORDINATOR_LOG_PATH
       ? { file: COORDINATOR_LOG_PATH }
       : undefined,
@@ -284,33 +283,43 @@ async function main() {
     });
 
     bench.add(`scale.${PROVIDER}.create`, async (ctx: BenchContext) => {
-      log.phase(`create — firing ${provider.concurrencyTarget} requests at t=0 (no stagger)`);
-      await flow.create(ctx);
+      await flow.createOne(ctx.iteration, ctx);
     });
     bench.add(`scale.${PROVIDER}.exec.initial`, async (ctx: BenchContext) => {
-      await flow.execInitial(ctx);
+      await flow.execInitialOne(ctx.iteration, ctx);
     });
     if (pauseMs > 0) {
       bench.add(`scale.${PROVIDER}.pause`, async (_ctx: BenchContext) => {
-        log.phase(`pause — waiting ${pauseMs}ms`);
-        await flow.pause(pauseMs);
+        if (_ctx.iteration === 0) {
+          log.phase(`pause — waiting ${pauseMs}ms`);
+          await flow.pause(pauseMs);
+        }
       });
     }
-    bench.add(`scale.${PROVIDER}.exec.after_pause`, async (_ctx: BenchContext) => {
-      await flow.execAfterPause();
+    bench.add(`scale.${PROVIDER}.exec.after_pause`, async (ctx: BenchContext) => {
+      await flow.execAfterPauseOne(ctx.iteration);
     });
     bench.add(`scale.${PROVIDER}.destroy`, async (ctx: BenchContext) => {
-      await flow.destroy(ctx);
-      ctx.emitMetric('sandbox_result_count', {
-        total: provider.concurrencyTarget,
-        success: statusCounts.success,
-        partial: statusCounts.partial,
-        readiness_failed: statusCounts.readiness_failed,
-        failed: statusCounts.failed,
-      });
+      await flow.destroyOne(ctx.iteration, ctx);
+      if (ctx.iteration === 0) {
+        ctx.emitMetric('sandbox_result_count', {
+          total: provider.concurrencyTarget,
+          success: statusCounts.success,
+          partial: statusCounts.partial,
+          readiness_failed: statusCounts.readiness_failed,
+          failed: statusCounts.failed,
+        });
+      }
     }, { runOnFailed: true });
+    log.phase(`create — firing ${provider.concurrencyTarget} requests at t=0 (no stagger)`);
     try {
-      await bench.run({ iterations: 1, warmup: 0 });
+      await bench.run({
+        mode: 'concurrent',
+        iterations: provider.concurrencyTarget,
+        concurrency: provider.concurrencyTarget,
+        warmup: 0,
+        throwOnError: false,
+      });
     } catch (benchErr: any) {
       // The bench SDK already swallows telemetry/network errors internally.
       // Any error that escapes here is either from the burst itself or an
@@ -323,6 +332,7 @@ async function main() {
       }
       log.warn(`bench.run failed after burst completed; treating as non-fatal: ${benchErr?.message ?? benchErr}`);
     }
+    log.phase(`create complete — ${flow.countSurvivors()}/${provider.concurrencyTarget} sandboxes alive`);
 
     const latencies = okResults.map(r => r.ms).sort((a, b) => a - b);
     const pct = (q: number) =>

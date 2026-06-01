@@ -1,4 +1,3 @@
-import pLimit from 'p-limit';
 import { log } from './logger.js';
 import type {
   BurstProviderConfig,
@@ -50,7 +49,7 @@ export class BurstLifecycle {
   private startTime = Date.now();
   private progressStep: number;
   private nextProgressMilestone: number;
-  private survivors: Array<Pending | null>;
+  private survivors: Map<number, Pending>;
 
   constructor(config: BurstProviderConfig, compute: any, callbacks: RunnerCallbacks) {
     this.config = config;
@@ -58,141 +57,104 @@ export class BurstLifecycle {
     this.callbacks = callbacks;
     this.progressStep = Math.max(1, Math.floor(config.concurrencyTarget / 10));
     this.nextProgressMilestone = this.progressStep;
-    this.survivors = new Array(config.concurrencyTarget).fill(null);
+    this.survivors = new Map();
   }
 
-  async create(ctx?: any): Promise<void> {
-    const { concurrencyTarget, sandboxOptions, perRequestTimeoutMs = 120_000 } = this.config;
-    const limit = pLimit(concurrencyTarget);
+  async createOne(idx: number, ctx?: any): Promise<void> {
+    const { sandboxOptions, perRequestTimeoutMs = 120_000 } = this.config;
+    this.in_flight++;
+    const started_at = new Date().toISOString();
+    const t0 = performance.now();
 
-    const phase1: Promise<void>[] = [];
-    for (let idx = 0; idx < concurrencyTarget; idx++) {
-      phase1.push(limit(async () => {
-        this.in_flight++;
-        const started_at = new Date().toISOString();
-        const t0 = performance.now();
+    const result: SandboxResult = {
+      sandbox_idx: idx,
+      started_at,
+      completed_at: '',
+      latency_ms: 0,
+      first_command_ms: null,
+      status: 'success',
+      failure_class: null,
+      http_status: null,
+      error_code: null,
+      error_message: null,
+      provider_metadata: null,
+    };
 
-        const result: SandboxResult = {
-          sandbox_idx: idx,
-          started_at,
-          completed_at: '',
-          latency_ms: 0,
-          first_command_ms: null,
-          status: 'success',
-          failure_class: null,
-          http_status: null,
-          error_code: null,
-          error_message: null,
-          provider_metadata: null,
-        };
-
-        try {
-          const sandbox = await withTimeout(this.compute.sandbox.create(sandboxOptions), perRequestTimeoutMs);
-          result.latency_ms = Math.round(performance.now() - t0);
-          result.provider_metadata = extractProviderMetadata(sandbox);
-          this.survivors[idx] = { sandbox, result };
-        } catch (err: any) {
-          this.errors++;
-          result.status = 'failed';
-          result.failure_class = classifyError(err);
-          result.http_status = numericHttpStatus(err);
-          result.error_code = err?.code ?? null;
-          result.error_message = truncate(err?.message ?? String(err), 500);
-          result.latency_ms = Math.round(performance.now() - t0);
-          await this.emit(result, ctx);
-        }
-      }));
+    try {
+      const sandbox = await withTimeout(this.compute.sandbox.create(sandboxOptions), perRequestTimeoutMs);
+      result.latency_ms = Math.round(performance.now() - t0);
+      result.provider_metadata = extractProviderMetadata(sandbox);
+      this.survivors.set(idx, { sandbox, result });
+    } catch (err: any) {
+      this.errors++;
+      result.status = 'failed';
+      result.failure_class = classifyError(err);
+      result.http_status = numericHttpStatus(err);
+      result.error_code = err?.code ?? null;
+      result.error_message = truncate(err?.message ?? String(err), 500);
+      result.latency_ms = Math.round(performance.now() - t0);
+      await this.emit(result, ctx);
     }
-
-    await Promise.all(phase1);
-    const survivorCount = this.survivors.reduce((n, s) => n + (s ? 1 : 0), 0);
-    log.phase(`create complete — ${survivorCount}/${concurrencyTarget} sandboxes alive`);
   }
 
-  async execInitial(ctx?: any): Promise<void> {
-    const { concurrencyTarget } = this.config;
-    const limit = pLimit(concurrencyTarget);
-    const tasks: Promise<void>[] = [];
-
-    for (let idx = 0; idx < concurrencyTarget; idx++) {
-      const pending = this.survivors[idx];
-      if (!pending) continue;
-      tasks.push(limit(async () => {
-        const { sandbox, result } = pending;
-        const afterCreate = performance.now();
-        try {
-          await withTimeout(sandbox.runCommand('node -v'), FIRST_COMMAND_TIMEOUT_MS);
-          result.first_command_ms = Math.round(performance.now() - afterCreate);
-        } catch (cmdErr: any) {
-          this.errors++;
-          result.status = 'readiness_failed';
-          result.failure_class = classifyError(cmdErr);
-          result.http_status = numericHttpStatus(cmdErr);
-          result.error_code = cmdErr?.code ?? null;
-          result.error_message = truncate(cmdErr?.message ?? String(cmdErr), 500);
-          if (sandbox?.destroy) {
-            Promise.resolve(sandbox.destroy()).catch(() => {});
-          }
-          this.survivors[idx] = null;
-          await this.emit(result, ctx);
-        }
-      }));
+  async execInitialOne(idx: number, ctx?: any): Promise<void> {
+    const pending = this.survivors.get(idx);
+    if (!pending) return;
+    const { sandbox, result } = pending;
+    const afterCreate = performance.now();
+    try {
+      await withTimeout(sandbox.runCommand('node -v'), FIRST_COMMAND_TIMEOUT_MS);
+      result.first_command_ms = Math.round(performance.now() - afterCreate);
+    } catch (cmdErr: any) {
+      this.errors++;
+      result.status = 'readiness_failed';
+      result.failure_class = classifyError(cmdErr);
+      result.http_status = numericHttpStatus(cmdErr);
+      result.error_code = cmdErr?.code ?? null;
+      result.error_message = truncate(cmdErr?.message ?? String(cmdErr), 500);
+      if (sandbox?.destroy) {
+        Promise.resolve(sandbox.destroy()).catch(() => {});
+      }
+      this.survivors.delete(idx);
+      await this.emit(result, ctx);
     }
-
-    await Promise.all(tasks);
   }
 
   async pause(ms: number): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  async execAfterPause(): Promise<void> {
-    const { concurrencyTarget } = this.config;
-    const limit = pLimit(concurrencyTarget);
-    const tasks: Promise<void>[] = [];
-
-    for (let idx = 0; idx < concurrencyTarget; idx++) {
-      const pending = this.survivors[idx];
-      if (!pending) continue;
-      tasks.push(limit(async () => {
-        const { sandbox, result } = pending;
-        try {
-          await withTimeout(sandbox.runCommand('node -v'), LIVENESS_CHECK_TIMEOUT_MS);
-          result.status = 'success';
-        } catch (livenessErr: any) {
-          this.errors++;
-          result.status = 'partial';
-          result.failure_class = classifyError(livenessErr);
-          result.http_status = numericHttpStatus(livenessErr);
-          result.error_code = livenessErr?.code ?? null;
-          result.error_message = truncate(livenessErr?.message ?? String(livenessErr), 500);
-          result.completed_at = new Date().toISOString();
-        }
-      }));
+  async execAfterPauseOne(idx: number): Promise<void> {
+    const pending = this.survivors.get(idx);
+    if (!pending) return;
+    const { sandbox, result } = pending;
+    try {
+      await withTimeout(sandbox.runCommand('node -v'), LIVENESS_CHECK_TIMEOUT_MS);
+      result.status = 'success';
+    } catch (livenessErr: any) {
+      this.errors++;
+      result.status = 'partial';
+      result.failure_class = classifyError(livenessErr);
+      result.http_status = numericHttpStatus(livenessErr);
+      result.error_code = livenessErr?.code ?? null;
+      result.error_message = truncate(livenessErr?.message ?? String(livenessErr), 500);
+      result.completed_at = new Date().toISOString();
     }
-
-    await Promise.all(tasks);
   }
 
-  async destroy(ctx?: any): Promise<void> {
-    const { concurrencyTarget } = this.config;
-    const limit = pLimit(concurrencyTarget);
-    const tasks: Promise<void>[] = [];
-
-    for (let idx = 0; idx < concurrencyTarget; idx++) {
-      const pending = this.survivors[idx];
-      if (!pending) continue;
-      this.survivors[idx] = null;
-      tasks.push(limit(async () => {
-        const { sandbox, result } = pending;
-        if (sandbox?.destroy) {
-          await Promise.resolve(sandbox.destroy()).catch(() => {});
-        }
-        await this.emit(result, ctx);
-      }));
+  async destroyOne(idx: number, ctx?: any): Promise<void> {
+    const pending = this.survivors.get(idx);
+    if (!pending) return;
+    this.survivors.delete(idx);
+    const { sandbox, result } = pending;
+    if (sandbox?.destroy) {
+      await Promise.resolve(sandbox.destroy()).catch(() => {});
     }
+    await this.emit(result, ctx);
+  }
 
-    await Promise.all(tasks);
+  countSurvivors(): number {
+    return this.survivors.size;
   }
 
   private async emit(result: SandboxResult, ctx?: any): Promise<void> {
@@ -242,20 +204,6 @@ export class BurstLifecycle {
       this.nextProgressMilestone += this.progressStep;
     }
   }
-}
-
-export async function runBurst(
-  config: BurstProviderConfig,
-  compute: any,
-  callbacks: RunnerCallbacks,
-): Promise<void> {
-  const flow = new BurstLifecycle(config, compute, callbacks);
-  await flow.create();
-  await flow.execInitial();
-  log.phase('phase 1 complete — holding survivors until end-of-test');
-  await flow.execAfterPause();
-  log.phase('phase 2 complete — destroying survivors');
-  await flow.destroy();
 }
 
 /**
