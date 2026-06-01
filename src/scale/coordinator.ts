@@ -103,6 +103,7 @@ async function main() {
   const statusCounts = { success: 0, partial: 0, readiness_failed: 0, failed: 0 };
   // Sub-classification of create-failures only (status === 'failed').
   const createFailureClass = { timeout: 0, http_error: 0, network_error: 0 };
+  const emittedSegmentCounts = { first_25pct: 0, middle_50pct: 0, last_25pct: 0 };
 
   // Periodically upload the coordinator's own stdout/stderr (tee'd to a file by
   // the uploaded /root/start.sh) to Tigris. Skipped silently when the env var
@@ -242,30 +243,34 @@ async function main() {
           end: Date.parse(result.completed_at),
         });
         const segmentOf = (idx: number): 'first_25pct' | 'middle_50pct' | 'last_25pct' => {
-          const q1 = Math.floor(provider.concurrencyTarget * 0.25);
-          const q3 = Math.floor(provider.concurrencyTarget * 0.75);
-          if (idx < q1) return 'first_25pct';
-          if (idx < q3) return 'middle_50pct';
+          const n = provider.concurrencyTarget;
+          const normalized = ((idx % n) + n) % n;
+          const q1 = Math.floor(n * 0.25);
+          const q3 = Math.floor(n * 0.75);
+          if (normalized < q1) return 'first_25pct';
+          if (normalized < q3) return 'middle_50pct';
           return 'last_25pct';
         };
+        const submission_segment = segmentOf(result.sandbox_idx);
+        emittedSegmentCounts[submission_segment]++;
 
         bench.emit('sandbox_result', {
           status: result.status,
           error_code: result.error_code,
-          submission_segment: segmentOf(result.sandbox_idx),
+          submission_segment,
         });
         bench.emit('latency_ms', {
           value: result.latency_ms,
-          submission_segment: segmentOf(result.sandbox_idx),
+          submission_segment,
         });
         if (result.first_command_ms != null) {
           bench.emit('first_command_ms', {
             value: result.first_command_ms,
-            submission_segment: segmentOf(result.sandbox_idx),
+            submission_segment,
           });
           bench.emit('tti_ms', {
             value: result.latency_ms + result.first_command_ms,
-            submission_segment: segmentOf(result.sandbox_idx),
+            submission_segment,
           });
         }
         tigris.writeResult(result);
@@ -523,6 +528,7 @@ async function main() {
     });
 
     log.phase('run complete');
+    log.info(`submission_segment emitted counts: first=${emittedSegmentCounts.first_25pct} middle=${emittedSegmentCounts.middle_50pct} last=${emittedSegmentCounts.last_25pct}`);
     log.ok(`${final.sandboxes_succeeded}/${final.sandboxes_attempted} succeeded ` +
       `(${((final.sandboxes_succeeded / final.sandboxes_attempted) * 100).toFixed(1)}%) ` +
       `partial=${final.partials} readiness_failed=${final.readiness_failures} failed=${final.failures}`);
