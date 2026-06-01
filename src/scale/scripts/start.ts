@@ -267,7 +267,7 @@ async function launchOne(shard: number, opts: ShardOpts, log: Logger): Promise<S
 
     // 2. confirm the coordinator launched. Past failures silently left the VM
     // idle, so this is load-bearing. A simple "instance is alive" check is
-    // enough now that benchmark state is event-driven (no Postgres runs table).
+    // enough now that benchmark state is fully event-driven.
     let confirmed = false;
     for (let i = 1; i <= 12; i++) {
       const alive = await sh('nsc', ['describe', instanceId], { log, quiet: true });

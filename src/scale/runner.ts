@@ -166,6 +166,7 @@ export class BurstLifecycle {
           result.http_status = numericHttpStatus(livenessErr);
           result.error_code = livenessErr?.code ?? null;
           result.error_message = truncate(livenessErr?.message ?? String(livenessErr), 500);
+          result.completed_at = new Date().toISOString();
         }
       }));
     }
@@ -196,7 +197,7 @@ export class BurstLifecycle {
 
   private async emit(result: SandboxResult, ctx?: any): Promise<void> {
     const { concurrencyTarget } = this.config;
-    result.completed_at = new Date().toISOString();
+    if (!result.completed_at) result.completed_at = new Date().toISOString();
     this.in_flight--;
     this.done++;
     try { await this.callbacks.onResult(result); } catch { /* swallow */ }
@@ -295,6 +296,10 @@ function truncate(s: string, n: number): string {
   return s.length > n ? s.slice(0, n) : s;
 }
 
+// NOTE: Promise.race only ignores the late resolution; it does NOT cancel the
+// underlying SDK request. If sandbox.create() resolves after the timeout,
+// the sandbox is created and the handle is lost (leaked). True cancellation
+// requires SDK-level support for AbortSignal or similar.
 async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
   let timer: NodeJS.Timeout | undefined;
   const timeout = new Promise<never>((_, reject) => {

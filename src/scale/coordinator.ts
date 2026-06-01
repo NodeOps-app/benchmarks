@@ -116,6 +116,7 @@ async function main() {
     shard: shard
       ? { index: shard.shard_index, count: shard.shard_count }
       : undefined,
+    captureLogs: Boolean(COORDINATOR_LOG_PATH),
     captureOutput: COORDINATOR_LOG_PATH
       ? { file: COORDINATOR_LOG_PATH }
       : undefined,
