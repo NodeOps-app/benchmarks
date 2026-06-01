@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "timestamp": "2026-06-01T00:58:36.563Z",
+  "timestamp": "2026-06-01T05:27:28.235Z",
   "environment": {
     "node": "v24.16.0",
     "platform": "linux",
@@ -15,321 +15,319 @@
       "provider": "fcspawn",
       "mode": "concurrent",
       "concurrency": 100,
-      "wallClockMs": 31323.5,
-      "timeToFirstReadyMs": 575.53,
+      "wallClockMs": 6547.81,
+      "timeToFirstReadyMs": 523.82,
       "iterations": [
         {
-          "ttiMs": 663.67
+          "ttiMs": 4762.85
         },
         {
-          "ttiMs": 763.88
+          "ttiMs": 533.91
         },
         {
-          "ttiMs": 593.3
+          "ttiMs": 523.82
         },
         {
-          "ttiMs": 645.38
+          "ttiMs": 750.03
         },
         {
-          "ttiMs": 644.67
+          "ttiMs": 826.4
         },
         {
-          "ttiMs": 575.53
+          "ttiMs": 835.29
         },
         {
-          "ttiMs": 694.54
+          "ttiMs": 882.51
         },
         {
-          "ttiMs": 950.7
+          "ttiMs": 968.94
         },
         {
-          "ttiMs": 960.54
+          "ttiMs": 1205.33
         },
         {
-          "ttiMs": 1167.4
+          "ttiMs": 900.04
         },
         {
-          "ttiMs": 931.23
+          "ttiMs": 1244.47
         },
         {
-          "ttiMs": 1103.04
+          "ttiMs": 1173.95
         },
         {
-          "ttiMs": 1553.53
+          "ttiMs": 1331.97
         },
         {
-          "ttiMs": 1158.18
+          "ttiMs": 1380.99
         },
         {
-          "ttiMs": 1259.62
+          "ttiMs": 1590.93
         },
         {
-          "ttiMs": 1665.33
+          "ttiMs": 1610.03
         },
         {
-          "ttiMs": 0,
-          "error": "First command execution timed out"
+          "ttiMs": 1732.02
         },
         {
-          "ttiMs": 0,
-          "error": "First command execution timed out"
+          "ttiMs": 1420.95
         },
         {
-          "ttiMs": 1394.85
+          "ttiMs": 1863.92
         },
         {
-          "ttiMs": 1359.68
+          "ttiMs": 1860.41
         },
         {
-          "ttiMs": 2017.41
+          "ttiMs": 1655.89
         },
         {
-          "ttiMs": 1487.31
+          "ttiMs": 1982.53
         },
         {
-          "ttiMs": 1714.42
+          "ttiMs": 2319.11
         },
         {
-          "ttiMs": 2017.43
+          "ttiMs": 1934.31
         },
         {
-          "ttiMs": 2285.46
+          "ttiMs": 2233.06
         },
         {
-          "ttiMs": 1915.17
+          "ttiMs": 2757.22
         },
         {
-          "ttiMs": 2112.63
+          "ttiMs": 2066.44
         },
         {
-          "ttiMs": 2064.88
+          "ttiMs": 2203.07
         },
         {
-          "ttiMs": 2015.1
+          "ttiMs": 2491.61
         },
         {
-          "ttiMs": 2723.51
+          "ttiMs": 2255.44
         },
         {
-          "ttiMs": 2819.81
+          "ttiMs": 2325.98
         },
         {
-          "ttiMs": 2722.72
+          "ttiMs": 2316.96
         },
         {
-          "ttiMs": 2283.04
+          "ttiMs": 2766.89
         },
         {
-          "ttiMs": 2235.61
+          "ttiMs": 2538.07
         },
         {
-          "ttiMs": 3526.37
+          "ttiMs": 2650.82
         },
         {
-          "ttiMs": 2189.26
+          "ttiMs": 2489.87
         },
         {
-          "ttiMs": 3153.6
+          "ttiMs": 2827.69
         },
         {
-          "ttiMs": 2992.37
+          "ttiMs": 2503.86
         },
         {
-          "ttiMs": 2855.58
+          "ttiMs": 3030.25
         },
         {
-          "ttiMs": 2720.85
+          "ttiMs": 2617.62
         },
         {
-          "ttiMs": 2557.33
+          "ttiMs": 3109.97
         },
         {
-          "ttiMs": 2736.04
+          "ttiMs": 3009.29
         },
         {
-          "ttiMs": 3120.49
+          "ttiMs": 4303.38
         },
         {
-          "ttiMs": 2645.26
+          "ttiMs": 4735.03
         },
         {
-          "ttiMs": 4582.22
+          "ttiMs": 3441.15
         },
         {
-          "ttiMs": 3326.59
+          "ttiMs": 3111.89
         },
         {
-          "ttiMs": 2618.36
+          "ttiMs": 3052.78
         },
         {
-          "ttiMs": 3374.16
+          "ttiMs": 3324.23
         },
         {
-          "ttiMs": 3069.71
+          "ttiMs": 4483.47
         },
         {
-          "ttiMs": 2928.2
+          "ttiMs": 3268.39
         },
         {
-          "ttiMs": 3162.76
+          "ttiMs": 3183.73
         },
         {
-          "ttiMs": 3154.88
+          "ttiMs": 3129.23
         },
         {
-          "ttiMs": 5180.5
+          "ttiMs": 3182.82
         },
         {
-          "ttiMs": 3987.45
+          "ttiMs": 3436.75
         },
         {
-          "ttiMs": 4717.71
+          "ttiMs": 3273.51
         },
         {
-          "ttiMs": 4803.41
+          "ttiMs": 3800.43
         },
         {
-          "ttiMs": 3305.57
+          "ttiMs": 3174.48
         },
         {
-          "ttiMs": 4946.69
+          "ttiMs": 3633.37
         },
         {
-          "ttiMs": 3686.07
+          "ttiMs": 4334.02
         },
         {
-          "ttiMs": 5634.39
+          "ttiMs": 5368.97
         },
         {
-          "ttiMs": 4512.31
+          "ttiMs": 3798.95
         },
         {
-          "ttiMs": 3646.61
+          "ttiMs": 3634
         },
         {
-          "ttiMs": 3531.35
+          "ttiMs": 3640.37
         },
         {
-          "ttiMs": 4918.74
+          "ttiMs": 3984.06
         },
         {
-          "ttiMs": 5501.53
+          "ttiMs": 4367.21
         },
         {
-          "ttiMs": 4068.85
+          "ttiMs": 5445.52
         },
         {
-          "ttiMs": 5515.43
+          "ttiMs": 3505.37
         },
         {
-          "ttiMs": 4744.23
+          "ttiMs": 5368.37
         },
         {
-          "ttiMs": 4902.55
+          "ttiMs": 4481.54
         },
         {
-          "ttiMs": 5865.42
+          "ttiMs": 4516.88
         },
         {
-          "ttiMs": 4452.06
+          "ttiMs": 4999.76
         },
         {
-          "ttiMs": 5316.03
+          "ttiMs": 4820.43
         },
         {
-          "ttiMs": 4839.7
+          "ttiMs": 4627.33
         },
         {
-          "ttiMs": 5313.23
+          "ttiMs": 5234.16
         },
         {
-          "ttiMs": 4530.17
+          "ttiMs": 5017.86
         },
         {
-          "ttiMs": 4742.07
+          "ttiMs": 4984.55
         },
         {
-          "ttiMs": 4358.74
+          "ttiMs": 4227.65
         },
         {
-          "ttiMs": 4923.73
+          "ttiMs": 4782.15
         },
         {
-          "ttiMs": 6120.5
+          "ttiMs": 5621.89
         },
         {
-          "ttiMs": 4991.84
+          "ttiMs": 4365.67
         },
         {
-          "ttiMs": 4779.08
+          "ttiMs": 4729.35
         },
         {
-          "ttiMs": 5169.13
+          "ttiMs": 4548.63
         },
         {
-          "ttiMs": 5950.18
+          "ttiMs": 5955.57
         },
         {
-          "ttiMs": 5074.09
+          "ttiMs": 4273.9
         },
         {
-          "ttiMs": 5134.86
+          "ttiMs": 5443.26
         },
         {
-          "ttiMs": 5647.87
+          "ttiMs": 5080.94
         },
         {
-          "ttiMs": 4798.77
+          "ttiMs": 5148.28
         },
         {
-          "ttiMs": 5156.23
+          "ttiMs": 5883.43
         },
         {
-          "ttiMs": 5325.88
+          "ttiMs": 5615.03
         },
         {
-          "ttiMs": 5296.49
+          "ttiMs": 5631.51
         },
         {
-          "ttiMs": 5533.75
+          "ttiMs": 5232.05
         },
         {
-          "ttiMs": 4739.75
+          "ttiMs": 6149.16
         },
         {
-          "ttiMs": 5155.91
+          "ttiMs": 5316.19
         },
         {
-          "ttiMs": 5609.85
+          "ttiMs": 5751.98
         },
         {
-          "ttiMs": 5290.65
+          "ttiMs": 5308.38
         },
         {
-          "ttiMs": 5290.89
+          "ttiMs": 5944.57
         },
         {
-          "ttiMs": 5807.01
+          "ttiMs": 6505.45
         },
         {
-          "ttiMs": 5018.75
+          "ttiMs": 5866.86
         },
         {
-          "ttiMs": 5289.47
+          "ttiMs": 5873.9
         },
         {
-          "ttiMs": 5327.62
+          "ttiMs": 5881.01
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 3450.27,
-          "p95": 5515.43,
-          "p99": 5647.87
+          "median": 3380.49,
+          "p95": 5631.51,
+          "p99": 5881.01
         }
       },
-      "compositeScore": 55.9,
-      "successRate": 0.98
+      "compositeScore": 56.82,
+      "successRate": 1
     }
   ]
 }
