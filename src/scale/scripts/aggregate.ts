@@ -252,6 +252,7 @@ const aggregate = {
     status: r.status,
     started_at: r.startedAt,
     ended_at: r.endedAt ?? null,
+    tigris_prefix: `s3://${process.env.TIGRIS_STORAGE_BUCKET ?? '<bucket>'}/${r.runId}/`,
   })),
   started_at: runsRes.items.reduce<string | null>((m: string | null, r: BenchRunSummary) =>
     (m == null || r.startedAt < m ? r.startedAt : m), null),
@@ -259,6 +260,28 @@ const aggregate = {
     (r.endedAt && (m == null || r.endedAt > m) ? r.endedAt : m), null),
   aggregated_at: new Date().toISOString(),
   tigris_prefix: null,
+};
+
+const manifest = {
+  schema_version: 1,
+  group_id: groupId,
+  provider,
+  shard_count: runsRes.items.length,
+  started_at: aggregate.started_at,
+  ended_at: aggregate.ended_at,
+  aggregated_at: aggregate.aggregated_at,
+  tigris_group_prefix: process.env.TIGRIS_STORAGE_BUCKET
+    ? `s3://${process.env.TIGRIS_STORAGE_BUCKET}/groups/${groupId}/`
+    : null,
+  shards: runsRes.items.map((r: BenchRunSummary) => ({
+    run_id: r.runId,
+    status: r.status,
+    started_at: r.startedAt,
+    ended_at: r.endedAt ?? null,
+    tigris_prefix: process.env.TIGRIS_STORAGE_BUCKET
+      ? `s3://${process.env.TIGRIS_STORAGE_BUCKET}/${r.runId}/`
+      : null,
+  })),
 };
 
 // ─── pretty-print ────────────────────────────────────────────────────────
@@ -290,7 +313,7 @@ if (args.out) {
   console.log(`[aggregate] wrote ${args.out}`);
 }
 
-// ─── persist to Tigris (groups/<id>/meta.json) ───────────────────────────
+// ─── persist to Tigris (groups/<id>/meta.json + manifest.json) ────────────
 if (args.writeTigris) {
   const endpoint = process.env.TIGRIS_STORAGE_ENDPOINT;
   const bucket = process.env.TIGRIS_STORAGE_BUCKET;
@@ -306,14 +329,22 @@ if (args.writeTigris) {
       region: 'auto',
       credentials: { accessKeyId, secretAccessKey },
     });
-    const key = `groups/${groupId}/meta.json`;
+    const metaKey = `groups/${groupId}/meta.json`;
+    const manifestKey = `groups/${groupId}/manifest.json`;
     await s3.send(new PutObjectCommand({
       Bucket: bucket,
-      Key: key,
+      Key: metaKey,
       Body: JSON.stringify(aggregate, null, 2),
       ContentType: 'application/json',
     }));
-    console.log(`[aggregate] uploaded s3://${bucket}/${key}`);
+    await s3.send(new PutObjectCommand({
+      Bucket: bucket,
+      Key: manifestKey,
+      Body: JSON.stringify(manifest, null, 2),
+      ContentType: 'application/json',
+    }));
+    console.log(`[aggregate] uploaded s3://${bucket}/${metaKey}`);
+    console.log(`[aggregate] uploaded s3://${bucket}/${manifestKey}`);
   }
 }
 
