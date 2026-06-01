@@ -124,6 +124,7 @@ interface Args {
   machineType: string;
   groupId?: string;
   label?: string;
+  retries: number;
 }
 
 function usage(): string {
@@ -142,6 +143,7 @@ function usage(): string {
     `  --machine-type <type>  Namespace machine type (default: ${MACHINE_TYPE_DEFAULT})`,
     '  --group-id <id>        Override the generated GROUP_ID',
     '  --label <name>         Override the bench run label (default: scale.<provider>)',
+    '  --retries <n>          Re-launch failed shards up to n extra times (default: 0)',
     '  --help, -h             Print this help',
     '',
     'Examples:',
@@ -152,7 +154,7 @@ function usage(): string {
 }
 
 function parseArgs(): Args {
-  const out: Partial<Args> = { vms: 1, duration: '1h', machineType: MACHINE_TYPE_DEFAULT };
+  const out: Partial<Args> = { vms: 1, duration: '1h', machineType: MACHINE_TYPE_DEFAULT, retries: 0 };
   const argv = process.argv.slice(2);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -169,6 +171,7 @@ function parseArgs(): Args {
     else if (a === '--machine-type') out.machineType = next();
     else if (a === '--group-id') out.groupId = next();
     else if (a === '--label') out.label = next();
+    else if (a === '--retries') out.retries = parseInt(next(), 10);
     else if (a === '--help' || a === '-h') { console.log(usage()); process.exit(0); }
     else { console.error(`unknown arg: ${a}\n${usage()}`); process.exit(2); }
   }
@@ -182,6 +185,9 @@ function parseArgs(): Args {
   if ((out.total as number) % (out.vms as number) !== 0) {
     console.error(`--total (${out.total}) must be evenly divisible by --vms (${out.vms})`);
     process.exit(2);
+  }
+  if (!Number.isFinite(out.retries) || (out.retries as number) < 0) {
+    console.error(`--retries must be a non-negative integer\n${usage()}`); process.exit(2);
   }
   return out as Args;
 }
@@ -330,26 +336,46 @@ async function main(): Promise<void> {
   }
 
   const sharded = args.vms > 1;
+
+  // Launch a single shard. attempt 0 uses the canonical RUN_ID; retries mint a
+  // fresh `-r{attempt}` RUN_ID so `nsc run --name` can't collide with the
+  // failed instance. GROUP_ID + SHARD_INDEX stay fixed, so batch watch and
+  // aggregate still see it as the same shard (local RUN_IDs aren't sent to the
+  // bench API — see the Watch note below).
+  const launchShard = (i: number, attempt: number): Promise<ShardResult> => {
+    const tag = sharded ? `[s${pad(i)}${attempt > 0 ? `r${attempt}` : ''}] ` : '';
+    const log: Logger = (line) => console.log(`${tag}${line}`);
+    const opts: ShardOpts = {
+      provider: args.provider,
+      image,
+      runId: attempt > 0 ? `${runIds[i]}-r${attempt}` : runIds[i],
+      concurrencyTarget: perVm,
+      duration: args.duration,
+      machineType: args.machineType,
+      githubSha,
+      label: args.label,
+      ...(sharded ? { groupId, shardIndex: i, shardCount: args.vms } : {}),
+    };
+    return launchOne(i, opts, log);
+  };
+
   console.log(`spawning ${args.vms} parallel launch(es)…\n`);
   const results = await Promise.all(
-    Array.from({ length: args.vms }, (_, i) => {
-      const tag = sharded ? `[s${pad(i)}] ` : '';
-      const log: Logger = (line) => console.log(`${tag}${line}`);
-      const opts: ShardOpts = {
-        provider: args.provider,
-        image,
-        runId: runIds[i],
-        concurrencyTarget: perVm,
-        duration: args.duration,
-        machineType: args.machineType,
-        githubSha,
-        label: args.label,
-        ...(sharded ? { groupId, shardIndex: i, shardCount: args.vms } : {}),
-      };
-      return launchOne(i, opts, log);
-    }),
+    Array.from({ length: args.vms }, (_, i) => launchShard(i, 0)),
   );
-  results.sort((a, b) => a.shard - b.shard);
+
+  // Re-launch any shards whose launch failed, up to --retries extra rounds.
+  // Keyed by shard index so the latest attempt's result replaces the earlier one.
+  const byShard = new Map(results.map((r) => [r.shard, r]));
+  for (let attempt = 1; attempt <= args.retries; attempt++) {
+    const failedShards = [...byShard.values()].filter((r) => r.rc !== 0).map((r) => r.shard).sort((a, b) => a - b);
+    if (failedShards.length === 0) break;
+    console.log(`\nretry ${attempt}/${args.retries}: re-launching ${failedShards.length} failed shard(s): ${failedShards.map(pad).join(', ')}\n`);
+    const retried = await Promise.all(failedShards.map((i) => launchShard(i, attempt)));
+    for (const r of retried) byShard.set(r.shard, r);
+  }
+
+  const finalResults = [...byShard.values()].sort((a, b) => a.shard - b.shard);
 
   console.log('');
   console.log(rule);
@@ -358,7 +384,7 @@ async function main(): Promise<void> {
   console.log(`  group_id: ${groupId}`);
   console.log('');
   let failed = 0;
-  for (const r of results) {
+  for (const r of finalResults) {
     const tag = r.rc === 0 ? 'OK  ' : 'FAIL';
     console.log(`  shard ${pad(r.shard)}/${args.vms}  ${tag}  rc=${r.rc}  ${r.runId}`);
     if (r.rc !== 0) failed++;
@@ -367,12 +393,12 @@ async function main(): Promise<void> {
   // The bench API mints its own run_… ids and only exposes shards under the
   // batch (= group_id); the local RUN_IDs above are never sent to it. So watch
   // by batch when sharded, and fall back to --recent for a lone run.
-  const watchTarget = sharded ? `--batch ${groupId}` : `--recent 1`;
+  const watchTarget = sharded ? `--batch ${groupId} --expected ${args.total}` : `--recent 1`;
   console.log(`  Watch:     npm run bench:scale:watch -- ${watchTarget}`);
   console.log(`  Aggregate: npm run bench:scale:aggregate -- --group ${groupId}`);
 
   if (failed > 0) {
-    console.log(`\n${failed}/${results.length} launches failed`);
+    console.log(`\n${failed}/${finalResults.length} launches failed${args.retries > 0 ? ` after ${args.retries} retr${args.retries === 1 ? 'y' : 'ies'}` : ''}`);
     process.exit(1);
   }
 }
