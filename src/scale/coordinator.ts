@@ -546,6 +546,8 @@ async function main() {
     }
     log.phase('flushing complete');
     await tigris.writeLog(log.dump());
+    // No explicit teardown: the coordinator is the container's PID 1, so when
+    // this process exits the Namespace instance auto-reaps (see start.ts).
   } catch (err: any) {
     clearInterval(metricsInterval);
     log.error(`run failed: ${err?.message ?? err}`);
@@ -556,6 +558,9 @@ async function main() {
     } catch (e: any) {
       log.error(`failed to record failure: ${e?.message ?? e}`);
     }
+    // Exit non-zero: as PID 1 this stops the container, the Namespace instance
+    // reaps, and the non-zero exit is visible in DescribeInstance shutdownReasons
+    // (so start.ts can flag the shard).
     process.exit(1);
   }
 }

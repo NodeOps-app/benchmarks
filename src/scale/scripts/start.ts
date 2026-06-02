@@ -2,10 +2,17 @@
 /**
  * Launcher for the scale benchmark.
  *
- * Spreads a single logical burst of N sandboxes across K Namespace VM-backed
- * containers by launching K `nsc run --image ...` jobs in parallel — each with
- * CONCURRENCY_TARGET = N/K, tagged with a shared GROUP_ID + per-VM
- * SHARD_INDEX. A single-VM run is just `--vms 1` (the default).
+ * Spreads a single logical burst of N sandboxes across K Namespace VMs by
+ * creating K instances in parallel — each with CONCURRENCY_TARGET = N/K, tagged
+ * with a shared GROUP_ID + per-VM SHARD_INDEX. A single-VM run is just `--vms 1`
+ * (the default).
+ *
+ * Each VM runs the coordinator as its container command (PID 1) via a direct
+ * CreateInstance call (the package's exported fetchNamespace), NOT via the
+ * package's sandbox.create + runCommand (which forces `sleep infinity`). Running
+ * the coordinator as PID 1 means: its stdout is captured natively by
+ * `nsc logs <id> --kind containers`, and the instance auto-reaps when it exits —
+ * just like the old `nsc run` path, with no log redirect and no self-destruct.
  *
  * Each VM gets its own RUN_ID; combine shards after the fact with:
  *
@@ -18,6 +25,7 @@
  *   npm run bench:scale:start -- --provider e2b --total 100000 --vms 20
  *
  * Required env:
+ *   NSC_TOKEN (or NSC_TOKEN_FILE)     Namespace API token used to create the VMs
  *   TIGRIS_STORAGE_ENDPOINT, _BUCKET  Tigris (S3-compat) target for raw results
  *   TIGRIS_STORAGE_ACCESS_KEY_ID
  *   TIGRIS_STORAGE_SECRET_ACCESS_KEY
@@ -33,14 +41,22 @@
  */
 
 import 'dotenv/config';
-import { spawn } from 'node:child_process';
 import { execSync } from 'node:child_process';
-import * as path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fetchNamespace, getAndValidateCredentials } from '@computesdk/namespace';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// __dirname is <repo>/src/scale/scripts.
-const repoRoot = path.resolve(__dirname, '../../..');
+// The container command — the coordinator bundle baked into the scale image
+// (see src/scale/Dockerfile: CMD ["node", "/app/coordinator.cjs"]). We run it
+// as the container's PID 1 (not via runCommand), so its stdout is captured
+// natively by `nsc logs <id> --kind containers` and the instance auto-reaps
+// when it exits — exactly like the old `nsc run` path.
+const COORDINATOR_ARGS = ['node', '/app/coordinator.cjs'];
+
+// Namespace Compute API endpoints. The package's own create/describe use these
+// via its exported fetchNamespace; we call CreateInstance directly so we can set
+// the container command (the package's sandbox.create hardcodes
+// `args: ['sleep','infinity']`, which forces a runCommand child).
+const CREATE_INSTANCE = '/namespace.cloud.compute.v1beta.ComputeService/CreateInstance';
+const DESCRIBE_INSTANCE = '/namespace.cloud.compute.v1beta.ComputeService/DescribeInstance';
 
 // Provider-specific credentials forwarded to the VM. The coordinator's
 // `requiredEnvVars` check fails fast if its provider's vars are missing, so we
@@ -60,50 +76,43 @@ const DEFAULT_SCALE_IMAGE = `${DEFAULT_SCALE_IMAGE_REPO}:${DEFAULT_SCALE_IMAGE_T
 
 type Logger = (line: string) => void;
 
-interface RunResult { code: number; stdout: string; }
+const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
+
+const errMsg = (err: unknown): string => (err instanceof Error ? err.message : String(err));
 
 /**
- * Async wrapper around `spawn` for `nsc`. Streams stdout+stderr to
- * `log` line-by-line (so parallel shards stay readable) and optionally captures
- * stdout. Never rejects — resolves with the exit code so callers decide.
+ * Parse an nsc-style machine-type shape ("CPUxGB", e.g. "1x2") into the numeric
+ * fields the `@computesdk/namespace` package wants. "1x2" → 1 vCPU, 2048 MB.
  */
-function sh(
-  cmd: string,
-  args: string[],
-  opts: { log: Logger; capture?: boolean; quiet?: boolean } = { log: () => { } },
-): Promise<RunResult> {
-  return new Promise((resolve) => {
-    const child = spawn(cmd, args, { stdio: ['ignore', 'pipe', 'pipe'], cwd: repoRoot });
-    let stdout = '';
-    let stderrBuf = '';
-    let stdoutBuf = '';
-    const onChunk = (buf: string, isErr: boolean): string => {
-      if (opts.capture && !isErr) stdout += buf;
-      let acc = buf;
-      const lines = acc.split('\n');
-      acc = lines.pop() ?? '';
-      if (!opts.quiet) for (const line of lines) opts.log(line);
-      return acc;
-    };
-    child.stdout.setEncoding('utf8');
-    child.stderr.setEncoding('utf8');
-    child.stdout.on('data', (d: string) => { stdoutBuf = onChunk(stdoutBuf + d, false); });
-    child.stderr.on('data', (d: string) => { stderrBuf = onChunk(stderrBuf + d, true); });
-    child.on('close', (code) => {
-      if (!opts.quiet) {
-        if (stdoutBuf) opts.log(stdoutBuf);
-        if (stderrBuf) opts.log(stderrBuf);
-      }
-      resolve({ code: code ?? 1, stdout });
-    });
-    child.on('error', (err) => {
-      opts.log(`spawn error (${cmd}): ${err.message}`);
-      resolve({ code: 1, stdout });
-    });
-  });
+function parseMachineType(shape: string): { virtualCpu: number; memoryMegabytes: number } {
+  const m = /^(\d+)x(\d+)$/.exec(shape.trim());
+  if (!m) {
+    console.error(`--machine-type must be "<cpu>x<memGB>" (e.g. 1x2), got: ${shape}`);
+    process.exit(2);
+  }
+  return { virtualCpu: parseInt(m[1], 10), memoryMegabytes: parseInt(m[2], 10) * 1024 };
 }
 
-const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
+/**
+ * Parse a duration string into minutes. Accepts "1h", "30m", "1h30m", or a bare
+ * integer (interpreted as minutes, e.g. "5" → 5). Returns null if unparseable.
+ */
+function durationMinutes(dur: string): number | null {
+  const t = dur.trim();
+  if (/^\d+$/.test(t)) return parseInt(t, 10);
+  const m = /^(?:(\d+)\s*h)?\s*(?:(\d+)\s*m)?$/i.exec(t);
+  if (!m || (!m[1] && !m[2])) return null;
+  return (m[1] ? parseInt(m[1], 10) * 60 : 0) + (m[2] ? parseInt(m[2], 10) : 0);
+}
+
+/**
+ * Duration string → milliseconds for the instance deadline. Assumes the value
+ * was validated in parseArgs; falls back to 1h defensively.
+ */
+function durationToMs(dur: string): number {
+  const mins = durationMinutes(dur);
+  return (mins && mins > 0 ? mins : 60) * 60 * 1000;
+}
 
 function shortSha(): string {
   try { return execSync('git rev-parse HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim(); }
@@ -133,13 +142,15 @@ function usage(): string {
     '',
     'Required:',
     '  --provider <name>, -p  Provider name (e2b, modal, runloop, ...)',
-    '  --image <ref>,  -i     Container image to run with `nsc run`',
+    '  --image <ref>,  -i     Container image for the Namespace sandbox VM',
     '  --total <n>,    -t     Total concurrent sandboxes across all VMs',
     '',
     'Optional:',
     '  --vms <n>,      -v     Number of Namespace VMs to spread across',
     '                         (must divide --total evenly; default: 1)',
-    `  --duration <dur>       Namespace VM lifetime (default: 1h)`,
+    `  --duration <dur>       Namespace VM deadline / max lifetime (default: 1h,`,
+    `                         e.g. 30m, 2h, 1h30m, or N for N minutes). VM also`,
+    `                         auto-reaps on finish.`,
     `  --machine-type <type>  Namespace machine type (default: ${MACHINE_TYPE_DEFAULT})`,
     '  --group-id <id>        Override the generated GROUP_ID',
     '  --label <name>         Override the bench run label (default: scale.<provider>)',
@@ -189,6 +200,10 @@ function parseArgs(): Args {
   if (!Number.isFinite(out.retries) || (out.retries as number) < 0) {
     console.error(`--retries must be a non-negative integer\n${usage()}`); process.exit(2);
   }
+  if (durationMinutes(out.duration as string) === null) {
+    console.error(`--duration must be like 30m, 2h, 1h30m, or a number of minutes (got: ${out.duration})`);
+    process.exit(2);
+  }
   return out as Args;
 }
 
@@ -212,88 +227,121 @@ interface ShardOpts {
 interface ShardResult { shard: number; runId: string; rc: number; }
 
 /**
- * Start one shard as a native Namespace container (`nsc run --image ...`).
- * Never throws — resolves
- * with rc so a failed shard doesn't take down its siblings.
+ * Build the container environment forwarded to the coordinator, mirroring the
+ * `--env` set the nsc CLI used to pass.
+ */
+function buildEnv(opts: ShardOpts): Record<string, string> {
+  const env: Record<string, string> = {
+    RUN_ID: opts.runId,
+    PROVIDER: opts.provider,
+    GITHUB_SHA: opts.githubSha,
+    TIGRIS_STORAGE_ENDPOINT: process.env.TIGRIS_STORAGE_ENDPOINT!,
+    TIGRIS_STORAGE_BUCKET: process.env.TIGRIS_STORAGE_BUCKET!,
+    TIGRIS_STORAGE_ACCESS_KEY_ID: process.env.TIGRIS_STORAGE_ACCESS_KEY_ID!,
+    TIGRIS_STORAGE_SECRET_ACCESS_KEY: process.env.TIGRIS_STORAGE_SECRET_ACCESS_KEY!,
+    CONCURRENCY_TARGET: String(opts.concurrencyTarget),
+    // Have the bench SDK tee the coordinator's output to a file in-container,
+    // in addition to the logger's in-memory buffer uploaded as coordinator.log.
+    COORDINATOR_LOG_PATH: '/tmp/coordinator.log',
+  };
+  if (process.env.COMPUTESDK_API_KEY) env.COMPUTESDK_API_KEY = process.env.COMPUTESDK_API_KEY;
+  if (opts.label !== undefined) env.LABEL = opts.label;
+  if (opts.groupId !== undefined && opts.shardIndex !== undefined && opts.shardCount !== undefined) {
+    env.GROUP_ID = opts.groupId;
+    env.SHARD_INDEX = String(opts.shardIndex);
+    env.SHARD_COUNT = String(opts.shardCount);
+  }
+  for (const v of PROVIDER_SECRET_VARS) {
+    const val = process.env[v];
+    if (val) env[v] = val;
+  }
+  return env;
+}
+
+/**
+ * Start one shard as a Namespace VM running the coordinator as the container's
+ * PID 1. We call CreateInstance directly (via the package's exported
+ * fetchNamespace) with `args: COORDINATOR_ARGS` instead of using
+ * `sandbox.create` (which hardcodes `sleep infinity`). Because the coordinator
+ * IS the container command, its stdout is captured natively by
+ * `nsc logs --kind containers`, and the instance auto-reaps when it exits — no
+ * runCommand, no self-destruct, no log redirect. Never throws — resolves with
+ * rc so a failed shard doesn't take down its siblings.
  */
 async function launchOne(shard: number, opts: ShardOpts, log: Logger): Promise<ShardResult> {
+  const { virtualCpu, memoryMegabytes } = parseMachineType(opts.machineType);
   try {
-    // 1. run image as a Namespace containerized job
-    log(`starting container (image=${opts.image} machine=${opts.machineType} duration=${opts.duration})`);
-    const runArgs = [
-      'run',
-      '--image', opts.image,
-      '--machine_type', opts.machineType,
-      '--duration', opts.duration,
-      '--name', opts.runId,
-      '--wait',
-      '-o', 'json',
-      '--env', `RUN_ID=${opts.runId}`,
-      '--env', `PROVIDER=${opts.provider}`,
-      '--env', `GITHUB_SHA=${opts.githubSha}`,
-      '--env', `TIGRIS_STORAGE_ENDPOINT=${process.env.TIGRIS_STORAGE_ENDPOINT!}`,
-      '--env', `TIGRIS_STORAGE_BUCKET=${process.env.TIGRIS_STORAGE_BUCKET!}`,
-      '--env', `TIGRIS_STORAGE_ACCESS_KEY_ID=${process.env.TIGRIS_STORAGE_ACCESS_KEY_ID!}`,
-      '--env', `TIGRIS_STORAGE_SECRET_ACCESS_KEY=${process.env.TIGRIS_STORAGE_SECRET_ACCESS_KEY!}`,
-      '--env', `CONCURRENCY_TARGET=${opts.concurrencyTarget}`,
-      // Have the bench SDK tee the coordinator's output to a file in-container,
-      // in addition to the logger's in-memory buffer uploaded as coordinator.log.
-      '--env', `COORDINATOR_LOG_PATH=/tmp/coordinator.log`,
-    ];
-    if (process.env.COMPUTESDK_API_KEY) {
-      runArgs.push('--env', `COMPUTESDK_API_KEY=${process.env.COMPUTESDK_API_KEY}`);
-    }
-    if (opts.label !== undefined) {
-      runArgs.push('--env', `LABEL=${opts.label}`);
-    }
-    if (opts.groupId !== undefined && opts.shardIndex !== undefined && opts.shardCount !== undefined) {
-      runArgs.push('--env', `GROUP_ID=${opts.groupId}`);
-      runArgs.push('--env', `SHARD_INDEX=${opts.shardIndex}`);
-      runArgs.push('--env', `SHARD_COUNT=${opts.shardCount}`);
-    }
-    for (const v of PROVIDER_SECRET_VARS) {
-      const val = process.env[v];
-      if (val) runArgs.push('--env', `${v}=${val}`);
-    }
-    const run = await sh('nsc', runArgs, { log, capture: true });
-    if (run.code !== 0) {
-      log(`ERROR: nsc run failed (rc=${run.code})`);
-      return { shard, runId: opts.runId, rc: 1 };
-    }
+    log(`creating sandbox (image=${opts.image} cpu=${virtualCpu} mem=${memoryMegabytes}MB duration=${opts.duration})`);
+    const { token } = await getAndValidateCredentials({
+      token: process.env.NSC_TOKEN,
+      tokenFile: process.env.NSC_TOKEN_FILE,
+    });
 
+    // 1. create the instance with the coordinator as the container command.
+    const requestBody = {
+      shape: { virtual_cpu: virtualCpu, memory_megabytes: memoryMegabytes, machine_arch: 'amd64', os: 'linux' },
+      containers: [{
+        name: 'main-container',
+        image_ref: opts.image,
+        args: COORDINATOR_ARGS,
+        environment: buildEnv(opts),
+      }],
+      documented_purpose: `scale ${opts.runId}`,
+      deadline: new Date(Date.now() + durationToMs(opts.duration)).toISOString(),
+    };
     let instanceId = '';
     try {
-      const payload = JSON.parse(run.stdout);
-      instanceId = String(payload.instance_id ?? payload.cluster_id ?? '').trim();
-    } catch {
-      // fallthrough
+      const resp = await fetchNamespace(token, CREATE_INSTANCE, { method: 'POST', body: JSON.stringify(requestBody) });
+      instanceId = String(resp?.metadata?.instanceId ?? '').trim();
+    } catch (err) {
+      log(`ERROR: create instance failed: ${errMsg(err)}`);
+      return { shard, runId: opts.runId, rc: 1 };
     }
     if (!instanceId) {
-      log('ERROR: could not parse instance_id from nsc run output');
+      log('ERROR: no instanceId returned from CreateInstance');
       return { shard, runId: opts.runId, rc: 1 };
     }
     log(`instance: ${instanceId}`);
 
-    // 2. confirm the coordinator launched. Past failures silently left the VM
-    // idle, so this is load-bearing. A simple "instance is alive" check is
-    // enough now that benchmark state is fully event-driven.
+    // 2. confirm the container actually started the coordinator. DescribeInstance
+    // reports metadata.status (RUNNING → … → DESTROYED) and, once stopped,
+    // shutdownReasons[].errorCode (present only on a non-zero exit). We accept
+    // RUNNING (normal) or a clean stop (fast run that already finished), and fail
+    // only on a non-zero-exit stop (coordinator crashed on startup).
     let confirmed = false;
-    for (let i = 1; i <= 12; i++) {
-      const alive = await sh('nsc', ['describe', instanceId], { log, quiet: true });
-      if (alive.code === 0) { log(`coordinator confirmed running on VM (after ${i})`); confirmed = true; break; }
+    for (let i = 1; i <= 30; i++) {
+      try {
+        const d = await fetchNamespace(token, DESCRIBE_INSTANCE, { method: 'POST', body: JSON.stringify({ instance_id: instanceId }) });
+        const status = String(d?.metadata?.status ?? '');
+        const reasons: Array<{ errorCode?: number }> = d?.shutdownReasons ?? [];
+        if (status === 'RUNNING') { log(`coordinator confirmed running (after ${i})`); confirmed = true; break; }
+        if (reasons.length > 0 || status === 'DESTROYED') {
+          const crashed = reasons.some((r) => r.errorCode != null);
+          if (crashed) {
+            log(`ERROR: coordinator exited non-zero on startup — check: nsc logs ${instanceId} --kind containers`);
+            return { shard, runId: opts.runId, rc: 1 };
+          }
+          log(`coordinator ran to completion (after ${i})`);
+          confirmed = true; break;
+        }
+      } catch {
+        // transient API error — retry below
+      }
       await sleep(1000);
     }
     if (!confirmed) {
-      log('ERROR: coordinator not running and run not terminal after timeout');
-      return { shard, runId: opts.runId, rc: 1 };
+      // Create succeeded but we never saw RUNNING/terminal — most likely a slow
+      // image pull or flaky DescribeInstance. The container will still run; don't
+      // fail the shard, just flag it so the operator can check.
+      log(`WARN: could not confirm status (create OK) — check: nsc logs ${instanceId} --kind containers`);
     }
 
     log(`OK  run_id=${opts.runId}  instance=${instanceId}`);
-    log(`  Tail logs:  nsc logs ${instanceId} --follow`);
+    log(`  Tail logs:  nsc logs ${instanceId} --kind containers --follow`);
     log(`  Destroy:    nsc destroy --force ${instanceId}`);
     return { shard, runId: opts.runId, rc: 0 };
   } catch (err) {
-    log(`unexpected error: ${err instanceof Error ? err.message : String(err)}`);
+    log(`unexpected error: ${errMsg(err)}`);
     return { shard, runId: opts.runId, rc: 1 };
   }
 }
@@ -334,12 +382,16 @@ async function main(): Promise<void> {
   for (const v of ['TIGRIS_STORAGE_ENDPOINT', 'TIGRIS_STORAGE_BUCKET', 'TIGRIS_STORAGE_ACCESS_KEY_ID', 'TIGRIS_STORAGE_SECRET_ACCESS_KEY']) {
     if (!process.env[v]) { console.error(`${v} not set (check .env)`); process.exit(2); }
   }
+  if (!process.env.NSC_TOKEN && !process.env.NSC_TOKEN_FILE) {
+    console.error('NSC_TOKEN (or NSC_TOKEN_FILE) not set — needed to create Namespace VMs (check .env)');
+    process.exit(2);
+  }
 
   const sharded = args.vms > 1;
 
   // Launch a single shard. attempt 0 uses the canonical RUN_ID; retries mint a
-  // fresh `-r{attempt}` RUN_ID so `nsc run --name` can't collide with the
-  // failed instance. GROUP_ID + SHARD_INDEX stay fixed, so batch watch and
+  // fresh `-r{attempt}` RUN_ID so the retry's results don't collide with the
+  // failed instance's. GROUP_ID + SHARD_INDEX stay fixed, so batch watch and
   // aggregate still see it as the same shard (local RUN_IDs aren't sent to the
   // bench API — see the Watch note below).
   const launchShard = (i: number, attempt: number): Promise<ShardResult> => {
