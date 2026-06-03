@@ -1,3 +1,6 @@
 .env
 node_modules/
 .DS_Store
+
+scale.cjs
+fetch-raw-json.ts

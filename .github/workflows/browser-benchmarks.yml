@@ -201,4 +201,19 @@ jobs:
           git add package.json package-lock.json browser.svg results/browser/
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "chore: update browser benchmark results [skip ci]"
-          git push
+
+          # Remote master can advance during the run (concurrent benchmark
+          # workflows push to master too), so a plain push fails non-fast-forward.
+          # Rebase onto the latest remote and retry a few times before giving up.
+          branch="${GITHUB_REF#refs/heads/}"
+          for attempt in 1 2 3 4 5; do
+            if git push origin "HEAD:${branch}"; then
+              echo "Pushed on attempt ${attempt}"
+              exit 0
+            fi
+            echo "Push rejected (attempt ${attempt}); rebasing onto origin/${branch}"
+            git fetch origin "${branch}"
+            git rebase "origin/${branch}" || { git rebase --abort; exit 1; }
+          done
+          echo "Failed to push after multiple attempts" >&2
+          exit 1
