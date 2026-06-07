@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "timestamp": "2026-06-07T01:03:21.565Z",
+  "timestamp": "2026-06-07T05:07:02.444Z",
   "environment": {
     "node": "v24.16.0",
     "platform": "linux",
@@ -15,364 +15,319 @@
       "provider": "fcspawn",
       "mode": "concurrent",
       "concurrency": 100,
-      "wallClockMs": 35387.33,
-      "timeToFirstReadyMs": 320.21,
+      "wallClockMs": 5546.08,
+      "timeToFirstReadyMs": 366.37,
       "iterations": [
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 404.11
         },
         {
-          "ttiMs": 471.52
+          "ttiMs": 366.37
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 428.43
         },
         {
-          "ttiMs": 699.35
+          "ttiMs": 431.96
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 610.76
         },
         {
-          "ttiMs": 891.27
+          "ttiMs": 682.7
         },
         {
-          "ttiMs": 2086.08
+          "ttiMs": 732.19
         },
         {
-          "ttiMs": 2685.25
+          "ttiMs": 748.54
         },
         {
-          "ttiMs": 320.21
+          "ttiMs": 783.18
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 853.59
         },
         {
-          "ttiMs": 2167.66
+          "ttiMs": 930.82
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 1009.38
         },
         {
-          "ttiMs": 2361.6
+          "ttiMs": 1140.02
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 1085.17
         },
         {
-          "ttiMs": 2573.32
+          "ttiMs": 1140.2
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 1218.08
         },
         {
-          "ttiMs": 2785.39
+          "ttiMs": 1195.43
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 1271.47
         },
         {
-          "ttiMs": 2870.86
+          "ttiMs": 1290.66
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 1367.56
         },
         {
-          "ttiMs": 2971.72
+          "ttiMs": 1335.45
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 1413.13
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 1515.5
         },
         {
-          "ttiMs": 3047.62
+          "ttiMs": 1484.27
         },
         {
-          "ttiMs": 3122.97
+          "ttiMs": 1573.14
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 1550.4
         },
         {
-          "ttiMs": 3204.08
+          "ttiMs": 1602.58
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 1678.67
         },
         {
-          "ttiMs": 3310.92
+          "ttiMs": 2744.6
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 2795.92
         },
         {
-          "ttiMs": 3638.42
+          "ttiMs": 2801.9
         },
         {
-          "ttiMs": 3688.75
+          "ttiMs": 2829.74
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 2903.23
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 2858.16
         },
         {
-          "ttiMs": 3737.88
+          "ttiMs": 2910.76
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 2953.84
         },
         {
-          "ttiMs": 3921.5
+          "ttiMs": 2971.78
         },
         {
-          "ttiMs": 4002.96
+          "ttiMs": 3028.15
         },
         {
-          "ttiMs": 4141.9
+          "ttiMs": 3076.94
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 3129.21
         },
         {
-          "ttiMs": 4144.24
+          "ttiMs": 3140.35
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 3219.14
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 3203.31
         },
         {
-          "ttiMs": 4243.27
+          "ttiMs": 3335.75
         },
         {
-          "ttiMs": 4213.48
+          "ttiMs": 3299.5
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 3380.4
         },
         {
-          "ttiMs": 4262.83
+          "ttiMs": 3469.99
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 3407.18
         },
         {
-          "ttiMs": 4523.79
+          "ttiMs": 3414
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 3538.89
         },
         {
-          "ttiMs": 4526.64
+          "ttiMs": 3494.03
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 3585
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 3585.4
         },
         {
-          "ttiMs": 4573.47
+          "ttiMs": 3658.06
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 3651.03
         },
         {
-          "ttiMs": 4699.17
+          "ttiMs": 3676.35
         },
         {
-          "ttiMs": 4791.1
+          "ttiMs": 4295.63
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 3737.33
         },
         {
-          "ttiMs": 4742.35
+          "ttiMs": 3830.54
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 3864.46
         },
         {
-          "ttiMs": 4905.47
+          "ttiMs": 3910.41
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 3968.44
         },
         {
-          "ttiMs": 4903.21
+          "ttiMs": 4046.05
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4124.75
         },
         {
-          "ttiMs": 4904.09
+          "ttiMs": 4171.92
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4223.1
         },
         {
-          "ttiMs": 5275.95
+          "ttiMs": 4268.04
         },
         {
-          "ttiMs": 5023.55
+          "ttiMs": 4351.24
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4410.44
         },
         {
-          "ttiMs": 5153.02
+          "ttiMs": 4480.95
         },
         {
-          "ttiMs": 5182.68
+          "ttiMs": 4533.13
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4530.19
         },
         {
-          "ttiMs": 5020.28
+          "ttiMs": 4586.89
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4615.2
         },
         {
-          "ttiMs": 5338.11
+          "ttiMs": 4672.62
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4671.99
         },
         {
-          "ttiMs": 5338.33
+          "ttiMs": 4708.01
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4781.98
         },
         {
-          "ttiMs": 5338.45
+          "ttiMs": 4756.77
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4798.84
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4851.77
         },
         {
-          "ttiMs": 5383.65
+          "ttiMs": 4860.1
         },
         {
-          "ttiMs": 5553.13
+          "ttiMs": 4893.23
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4932.68
         },
         {
-          "ttiMs": 5582.9
+          "ttiMs": 4967.35
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 4984.77
         },
         {
-          "ttiMs": 5643.59
+          "ttiMs": 5071.55
         },
         {
-          "ttiMs": 5642.91
+          "ttiMs": 5149.98
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5120.64
         },
         {
-          "ttiMs": 5657.56
+          "ttiMs": 5240.4
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5174.24
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5248.28
         },
         {
-          "ttiMs": 5993.63
+          "ttiMs": 5328.96
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5277.8
         },
         {
-          "ttiMs": 6020.45
+          "ttiMs": 5326.67
         },
         {
-          "ttiMs": 6110.66
+          "ttiMs": 5401.43
         },
         {
-          "ttiMs": 6095.45
+          "ttiMs": 5418.23
         },
         {
-          "ttiMs": 0,
-          "error": "create: upstream error"
+          "ttiMs": 5439.09
         },
         {
-          "ttiMs": 6124.63
+          "ttiMs": 5469.39
         },
         {
-          "ttiMs": 6209.65
+          "ttiMs": 5504.24
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 4526.64,
-          "p95": 6020.45,
-          "p99": 6110.66
+          "median": 3516.46,
+          "p95": 5240.4,
+          "p99": 5328.96
         }
       },
-      "compositeScore": 26.74,
-      "successRate": 0.55
+      "compositeScore": 57.81,
+      "successRate": 1
     }
   ]
 }
