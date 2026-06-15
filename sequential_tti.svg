@@ -67,14 +67,14 @@
   <!-- Row 1 -->
   <text class="rank rank-1" x="40" y="208">1</text>
   <text class="row provider" x="80" y="208">Fcspawn</text>
-  <text class="row median" x="280" y="208">97.4</text>
+  <text class="row median" x="280" y="208">97.3</text>
   <text class="row median fast" x="420" y="208">0.23s</text>
-  <text class="row" x="600" y="208">0.30s</text>
-  <text class="row" x="780" y="208">0.31s</text>
+  <text class="row" x="600" y="208">0.33s</text>
+  <text class="row" x="780" y="208">0.38s</text>
   <text class="row status" x="960" y="208">100/100</text>
 
   <!-- Timestamp -->
-  <text class="timestamp" x="1176" y="268" text-anchor="end">Last updated: Jun 15, 2026, 01:00 AM UTC</text>
+  <text class="timestamp" x="1176" y="268" text-anchor="end">Last updated: Jun 15, 2026, 07:02 AM UTC</text>
 
   <!-- Footnote -->
   <text class="timestamp" x="24" y="282">* Uses ComputeSDK orchestrator</text>
