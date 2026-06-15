@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "timestamp": "2026-06-15T07:02:38.048Z",
+  "timestamp": "2026-06-15T07:06:41.403Z",
   "environment": {
     "node": "v24.16.0",
     "platform": "linux",
@@ -15,314 +15,314 @@
       "provider": "fcspawn",
       "iterations": [
         {
-          "ttiMs": 1220.85
+          "ttiMs": 597.47
         },
         {
-          "ttiMs": 187.27
+          "ttiMs": 336.62
         },
         {
-          "ttiMs": 282.46
+          "ttiMs": 372.02
         },
         {
-          "ttiMs": 183.67
+          "ttiMs": 178.95
         },
         {
-          "ttiMs": 242.84
+          "ttiMs": 186.35
         },
         {
-          "ttiMs": 186.66
+          "ttiMs": 232.38
         },
         {
-          "ttiMs": 305.17
+          "ttiMs": 314.73
         },
         {
-          "ttiMs": 180.89
+          "ttiMs": 170.26
         },
         {
-          "ttiMs": 317.45
+          "ttiMs": 318.76
         },
         {
-          "ttiMs": 187.03
+          "ttiMs": 184.59
         },
         {
-          "ttiMs": 323.82
+          "ttiMs": 179.83
         },
         {
-          "ttiMs": 222.73
+          "ttiMs": 309.24
         },
         {
-          "ttiMs": 189.65
+          "ttiMs": 237.59
         },
         {
-          "ttiMs": 172.76
+          "ttiMs": 181.99
         },
         {
-          "ttiMs": 352.21
+          "ttiMs": 255
         },
         {
-          "ttiMs": 271.96
+          "ttiMs": 278.91
         },
         {
-          "ttiMs": 171.81
+          "ttiMs": 179.73
         },
         {
-          "ttiMs": 184.67
+          "ttiMs": 182.62
         },
         {
-          "ttiMs": 238.84
+          "ttiMs": 301.48
         },
         {
-          "ttiMs": 223.45
+          "ttiMs": 228.2
         },
         {
-          "ttiMs": 257.74
+          "ttiMs": 185.33
         },
         {
-          "ttiMs": 182.34
+          "ttiMs": 221.22
         },
         {
-          "ttiMs": 173.95
+          "ttiMs": 173.75
         },
         {
-          "ttiMs": 225.47
+          "ttiMs": 317.26
+        },
+        {
+          "ttiMs": 225.32
+        },
+        {
+          "ttiMs": 188.01
         },
         {
           "ttiMs": 187.87
         },
         {
-          "ttiMs": 298.11
+          "ttiMs": 280.12
         },
         {
-          "ttiMs": 271.22
+          "ttiMs": 320.18
         },
         {
-          "ttiMs": 303.55
+          "ttiMs": 189.71
         },
         {
-          "ttiMs": 192.62
+          "ttiMs": 176.36
         },
         {
-          "ttiMs": 170.81
+          "ttiMs": 232.2
         },
         {
-          "ttiMs": 225.9
+          "ttiMs": 224.55
         },
         {
-          "ttiMs": 177.52
+          "ttiMs": 178.07
         },
         {
-          "ttiMs": 565.67
+          "ttiMs": 240.26
         },
         {
-          "ttiMs": 332.05
+          "ttiMs": 169.43
         },
         {
-          "ttiMs": 187.5
+          "ttiMs": 229.03
         },
         {
-          "ttiMs": 170.35
+          "ttiMs": 226.88
         },
         {
-          "ttiMs": 227.85
+          "ttiMs": 179.18
         },
         {
-          "ttiMs": 308.5
+          "ttiMs": 349.81
         },
         {
-          "ttiMs": 179.04
+          "ttiMs": 187.71
         },
         {
-          "ttiMs": 224.56
+          "ttiMs": 275.86
         },
         {
-          "ttiMs": 182.19
+          "ttiMs": 178.68
         },
         {
-          "ttiMs": 233.64
+          "ttiMs": 219.67
         },
         {
-          "ttiMs": 464.27
+          "ttiMs": 189.82
         },
         {
-          "ttiMs": 178.44
+          "ttiMs": 250.58
         },
         {
-          "ttiMs": 248.5
+          "ttiMs": 226.88
         },
         {
-          "ttiMs": 280.33
+          "ttiMs": 176.33
         },
         {
-          "ttiMs": 180.88
+          "ttiMs": 295.9
         },
         {
-          "ttiMs": 183
+          "ttiMs": 271.74
         },
         {
-          "ttiMs": 231.36
+          "ttiMs": 186.75
         },
         {
-          "ttiMs": 285.09
+          "ttiMs": 225.24
         },
         {
-          "ttiMs": 279.05
+          "ttiMs": 178.37
         },
         {
-          "ttiMs": 174.03
+          "ttiMs": 281.63
         },
         {
-          "ttiMs": 378.22
+          "ttiMs": 179.94
         },
         {
-          "ttiMs": 187.9
+          "ttiMs": 305.17
         },
         {
-          "ttiMs": 228.4
+          "ttiMs": 222.94
         },
         {
-          "ttiMs": 511.97
+          "ttiMs": 185.44
         },
         {
-          "ttiMs": 179.23
+          "ttiMs": 171.05
         },
         {
-          "ttiMs": 289.17
+          "ttiMs": 228.21
         },
         {
-          "ttiMs": 187.76
+          "ttiMs": 186.17
         },
         {
-          "ttiMs": 170.91
+          "ttiMs": 184.36
         },
         {
-          "ttiMs": 235.15
+          "ttiMs": 249.87
         },
         {
-          "ttiMs": 225.94
+          "ttiMs": 223.12
         },
         {
-          "ttiMs": 187.61
+          "ttiMs": 181.41
         },
         {
-          "ttiMs": 171.46
+          "ttiMs": 195.28
         },
         {
-          "ttiMs": 330.06
+          "ttiMs": 235.07
         },
         {
-          "ttiMs": 272.79
+          "ttiMs": 327.26
         },
         {
-          "ttiMs": 173.23
+          "ttiMs": 270.09
         },
         {
-          "ttiMs": 297.03
+          "ttiMs": 178.6
         },
         {
-          "ttiMs": 182.27
+          "ttiMs": 191.81
         },
         {
-          "ttiMs": 226.45
+          "ttiMs": 225.57
         },
         {
-          "ttiMs": 176.78
+          "ttiMs": 294.99
         },
         {
-          "ttiMs": 469.55
+          "ttiMs": 171.08
         },
         {
-          "ttiMs": 192.31
+          "ttiMs": 185.78
         },
         {
-          "ttiMs": 175.63
+          "ttiMs": 321.05
         },
         {
-          "ttiMs": 321.41
+          "ttiMs": 171.29
         },
         {
-          "ttiMs": 326.15
+          "ttiMs": 315.81
         },
         {
-          "ttiMs": 242.99
+          "ttiMs": 181.44
         },
         {
-          "ttiMs": 185.65
+          "ttiMs": 181
         },
         {
-          "ttiMs": 184.66
+          "ttiMs": 271.85
         },
         {
-          "ttiMs": 277.84
+          "ttiMs": 246.06
         },
         {
-          "ttiMs": 223.82
+          "ttiMs": 219.7
         },
         {
-          "ttiMs": 185.07
+          "ttiMs": 191.17
         },
         {
-          "ttiMs": 169.85
+          "ttiMs": 190.36
         },
         {
-          "ttiMs": 231.38
+          "ttiMs": 221.72
         },
         {
-          "ttiMs": 292.19
+          "ttiMs": 308.71
         },
         {
-          "ttiMs": 170.36
+          "ttiMs": 181.31
         },
         {
-          "ttiMs": 270.51
+          "ttiMs": 275.77
         },
         {
-          "ttiMs": 193.16
+          "ttiMs": 184.03
         },
         {
-          "ttiMs": 234.46
+          "ttiMs": 231.4
         },
         {
-          "ttiMs": 267.59
+          "ttiMs": 168.83
         },
         {
-          "ttiMs": 297.31
+          "ttiMs": 275.91
         },
         {
-          "ttiMs": 364.08
+          "ttiMs": 328.41
         },
         {
-          "ttiMs": 269.44
+          "ttiMs": 169.77
         },
         {
-          "ttiMs": 309.01
+          "ttiMs": 273.77
         },
         {
-          "ttiMs": 194.02
+          "ttiMs": 180.18
         },
         {
-          "ttiMs": 181.59
+          "ttiMs": 226.17
         },
         {
-          "ttiMs": 218.87
+          "ttiMs": 252.25
         },
         {
-          "ttiMs": 240.37
-        },
-        {
-          "ttiMs": 185.3
-        },
-        {
-          "ttiMs": 177.31
+          "ttiMs": 271.4
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 225.68,
-          "p95": 330.06,
-          "p99": 378.22
+          "median": 223.84,
+          "p95": 317.26,
+          "p99": 327.26
         }
       },
-      "compositeScore": 97.25,
+      "compositeScore": 97.37,
       "successRate": 1
     }
   ]
