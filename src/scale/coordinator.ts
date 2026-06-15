@@ -516,8 +516,15 @@ async function main() {
     // crash, handled in the catch below, fails the worker).
     await uploadArtifacts(meta);
     if (bench) await bench.finish(false);
-    // No explicit teardown: the coordinator is the container's PID 1, so when
-    // this process exits the Namespace instance auto-reaps (see start.ts).
+    // Exit explicitly so the Namespace instance reaps promptly. The coordinator
+    // is the container's PID 1 and its work is done (burst accounted, survivors
+    // destroyed, artifacts uploaded, worker finished) — but provider SDKs can
+    // hold the event loop open past this point (e.g. @declaw/sdk keeps a
+    // module-level keep-alive undici Agent and may have create requests still
+    // in flight), so relying on natural drain can strand the VM until its
+    // deadline. A clean exit(0) avoids that; the crash/SIGTERM paths exit(1).
+    log.ok('coordinator complete — exiting');
+    process.exit(0);
   } catch (err: any) {
     clearInterval(metricsInterval);
     clearInterval(heartbeatInterval);
