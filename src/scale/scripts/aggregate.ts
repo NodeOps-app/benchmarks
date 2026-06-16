@@ -201,51 +201,50 @@ const taskIndexBuckets = (taskResults?.buckets ?? []).map(b => ({
   max_ms: b.latencyMs.max,
 }));
 
-// Concurrency over time: sum active across all non-live telemetry steps per time
-// bucket. sandbox.live is emitted separately so it does not double-count with
-// the SDK's live-hold concurrency signal.
+const summarizeTimeline = (points: Array<{ t_ms: number; active: number }>): Record<string, number> | null => {
+  if (points.length === 0) return null;
+  let peak = -Infinity, peakT = 0;
+  for (const p of points) if (p.active > peak) { peak = p.active; peakT = p.t_ms; }
+  return {
+    peak_concurrent: peak,
+    peak_t_ms: peakT,
+    mean_concurrent: Math.round(points.reduce((s, p) => s + p.active, 0) / points.length),
+    total_run_ms: points[points.length - 1].t_ms,
+    sample_interval_ms: timeline?.concurrency ? (timeline.eventRate.bucketMs ?? 1000) : 1000,
+  };
+};
+
+const timelineForStep = (stepName: string): Array<{ t_ms: number; active: number }> => {
+  const byT = new Map<number, number>();
+  for (const pt of timeline?.concurrency.points ?? []) {
+    if (pt.step !== stepName) continue;
+    byT.set(pt.tMs, (byT.get(pt.tMs) ?? 0) + pt.active);
+  }
+  return [...byT.entries()]
+    .sort((a, b) => a[0] - b[0])
+    .map(([t_ms, active]) => ({ t_ms, active }));
+};
+
+// Worker readiness is a pre-create barrier. Keep it separate so barrier wait is
+// not mistaken for provider create/runtime concurrency.
+const workerReadyTimeline = timelineForStep('worker.ready');
+const workerReadySummary = summarizeTimeline(workerReadyTimeline);
+
+// Concurrency over time for non-barrier, non-live telemetry steps. Today create
+// and exec steps do not report concurrency, so this is often null by design.
 const concByT = new Map<number, number>();
 for (const pt of timeline?.concurrency.points ?? []) {
-  if (pt.step === 'sandbox.live') continue;
+  if (pt.step === 'worker.ready' || pt.step === 'sandbox.live') continue;
   concByT.set(pt.tMs, (concByT.get(pt.tMs) ?? 0) + pt.active);
 }
 const concurrencyTimeline = [...concByT.entries()]
   .sort((a, b) => a[0] - b[0])
   .map(([t_ms, active]) => ({ t_ms, active }));
-let concurrencySummary: Record<string, number> | null = null;
-if (concurrencyTimeline.length > 0) {
-  let peak = -Infinity, peakT = 0;
-  for (const p of concurrencyTimeline) if (p.active > peak) { peak = p.active; peakT = p.t_ms; }
-  concurrencySummary = {
-    peak_concurrent: peak,
-    peak_t_ms: peakT,
-    mean_concurrent: Math.round(concurrencyTimeline.reduce((s, p) => s + p.active, 0) / concurrencyTimeline.length),
-    total_run_ms: concurrencyTimeline[concurrencyTimeline.length - 1].t_ms,
-    sample_interval_ms: timeline?.concurrency ? (timeline.eventRate.bucketMs ?? 1000) : 1000,
-  };
-}
+const concurrencySummary = summarizeTimeline(concurrencyTimeline);
 
 // True live ready sandboxes over time, emitted from create start through teardown.
-const liveByT = new Map<number, number>();
-for (const pt of timeline?.concurrency.points ?? []) {
-  if (pt.step !== 'sandbox.live') continue;
-  liveByT.set(pt.tMs, (liveByT.get(pt.tMs) ?? 0) + pt.active);
-}
-const liveSandboxesTimeline = [...liveByT.entries()]
-  .sort((a, b) => a[0] - b[0])
-  .map(([t_ms, active]) => ({ t_ms, active }));
-let liveSandboxesSummary: Record<string, number> | null = null;
-if (liveSandboxesTimeline.length > 0) {
-  let peak = -Infinity, peakT = 0;
-  for (const p of liveSandboxesTimeline) if (p.active > peak) { peak = p.active; peakT = p.t_ms; }
-  liveSandboxesSummary = {
-    peak_concurrent: peak,
-    peak_t_ms: peakT,
-    mean_concurrent: Math.round(liveSandboxesTimeline.reduce((s, p) => s + p.active, 0) / liveSandboxesTimeline.length),
-    total_run_ms: liveSandboxesTimeline[liveSandboxesTimeline.length - 1].t_ms,
-    sample_interval_ms: timeline?.concurrency ? (timeline.eventRate.bucketMs ?? 1000) : 1000,
-  };
-}
+const liveSandboxesTimeline = timelineForStep('sandbox.live');
+const liveSandboxesSummary = summarizeTimeline(liveSandboxesTimeline);
 
 // Throughput over time: completed sandboxes per time bucket (summed across
 // participants).
@@ -300,6 +299,8 @@ const aggregate = {
   failure_breakdown_capped: failuresSampleCapped,
   task_index_buckets: taskIndexBuckets,
   submission_segments: null,
+  worker_ready_summary: workerReadySummary,
+  worker_ready_timeline: workerReadyTimeline.length ? workerReadyTimeline : null,
   concurrency_summary: concurrencySummary,
   concurrency_timeline: concurrencyTimeline.length ? concurrencyTimeline : null,
   live_sandboxes_summary: liveSandboxesSummary,
@@ -356,6 +357,11 @@ if (concurrencySummary) {
   console.log('');
   console.log(`  concurrency:      peak=${concurrencySummary.peak_concurrent}  mean=${concurrencySummary.mean_concurrent}  ` +
     `(over ${(concurrencySummary.total_run_ms / 1000).toFixed(0)}s, summed across workers)`);
+}
+if (workerReadySummary) {
+  console.log('');
+  console.log(`  worker ready:     peak=${workerReadySummary.peak_concurrent}  mean=${workerReadySummary.mean_concurrent}  ` +
+    `(over ${(workerReadySummary.total_run_ms / 1000).toFixed(0)}s, pre-create barrier)`);
 }
 if (liveSandboxesSummary) {
   console.log(`  live sandboxes:   peak=${liveSandboxesSummary.peak_concurrent}  mean=${liveSandboxesSummary.mean_concurrent}  ` +

@@ -93,7 +93,7 @@ async function main() {
   const intervals: Array<{ start: number; end: number }> = [];
   // Counts per final status. `failure_class` (timeout/http_error/network_error)
   // is tracked separately so it works across all non-success statuses.
-  const statusCounts = { success: 0, partial: 0, readiness_failed: 0, failed: 0 };
+  const statusCounts = { success: 0, partial: 0, readiness_failed: 0, failed: 0, worker_ready_failed: 0 };
   // Sub-classification of create-failures only (status === 'failed').
   const createFailureClass = { timeout: 0, http_error: 0, network_error: 0 };
   const emittedSegmentCounts = { first_25pct: 0, middle_50pct: 0, last_25pct: 0 };
@@ -394,6 +394,7 @@ async function main() {
       sandboxes_succeeded: statusCounts.success,
       partials: statusCounts.partial,
       readiness_failures: statusCounts.readiness_failed,
+      worker_ready_failures: statusCounts.worker_ready_failed,
       failures: statusCounts.failed,
       timeouts: createFailureClass.timeout,
       http_errors: createFailureClass.http_error,
@@ -409,6 +410,7 @@ async function main() {
       partial: statusCounts.partial,
       readiness_failed: statusCounts.readiness_failed,
       failed: statusCounts.failed,
+      worker_ready_failed: statusCounts.worker_ready_failed,
     };
     // Sub-classification of create-failures only (sums to status_histogram.failed).
     const create_failure_class = {

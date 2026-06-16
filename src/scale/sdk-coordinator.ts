@@ -78,6 +78,13 @@ async function main() {
   let preparedArtifacts: Promise<PreparedArtifacts> | null = null;
 
   const task = defineTask<SandboxState>('sandbox.lifecycle', [
+    defineStep<SandboxState>('worker.ready', {
+      reportConcurrency: true,
+      readiness: 'poll',
+      readyPollIntervalMs: 1_000,
+      readyTimeoutMs: barrierTimeoutMs,
+    }, async () => {}),
+
     defineStep<SandboxState>('create', { reportConcurrency: false }, async ({ assignment, state, taskIndex }) => {
       preparedArtifacts ??= prepareArtifacts({ assignment, benchmarkSlug, runId: BENCHMARK_RUN_ID, client: benchClient });
       state.sandbox = await withTimeout(
@@ -185,6 +192,7 @@ async function main() {
 }
 
 function normalizeTaskRecord(record: TaskResultRecord): SandboxResult {
+  const workerReadyStep = stepByName(record, 'worker.ready');
   const createStep = stepByName(record, 'create');
   const initialStep = stepByName(record, 'exec.initial');
   const liveStep = stepByName(record, 'sandbox.live');
@@ -193,18 +201,18 @@ function normalizeTaskRecord(record: TaskResultRecord): SandboxResult {
   const lifecycleStatus = lifecycleStatusFor(failedStep?.name);
 
   record.status = lifecycleStatus;
-  record.latencyMs = createStep?.latencyMs ?? record.latencyMs;
+  record.latencyMs = createStep?.latencyMs ?? (lifecycleStatus === 'worker_ready_failed' ? 0 : record.latencyMs);
   record.firstCommandMs = initialStep?.status === 'success' ? initialStep.latencyMs ?? null : null;
   record.errorCode = failedStep?.errorCode ?? null;
 
   const failureClass = lifecycleStatus === 'success' ? null : classifyFailure(failedStep?.errorCode);
   const data = (record.data ?? {}) as Record<string, unknown>;
-  const createMs = createStep?.latencyMs ?? record.latencyMs ?? 0;
+  const createMs = createStep?.latencyMs ?? (lifecycleStatus === 'worker_ready_failed' ? 0 : record.latencyMs ?? 0);
   const firstCommandMs = initialStep?.status === 'success' ? initialStep.latencyMs ?? null : null;
   const ttiMs = firstCommandMs == null ? null : createMs + firstCommandMs;
   const sandboxResult: SandboxResult = {
     sandbox_idx: record.taskIndex,
-    started_at: record.startedAt ?? createStep?.startedAt ?? new Date().toISOString(),
+    started_at: createStep?.startedAt ?? record.startedAt ?? new Date().toISOString(),
     completed_at: record.completedAt ?? new Date().toISOString(),
     latency_ms: createMs,
     first_command_ms: firstCommandMs,
@@ -222,6 +230,8 @@ function normalizeTaskRecord(record: TaskResultRecord): SandboxResult {
     failure_class: failureClass,
     http_status: null,
     error_message: null,
+    worker_ready_ms: workerReadyStep?.latencyMs ?? null,
+    worker_ready_started_at: workerReadyStep?.startedAt ?? null,
     create_ms: createStep?.latencyMs ?? null,
     first_command_ms: firstCommandMs,
     tti_ms: ttiMs,
@@ -238,6 +248,7 @@ function stepByName(record: TaskResultRecord, name: string): TaskStepRecord | un
 
 function lifecycleStatusFor(stepName: string | undefined): SandboxResultStatus {
   if (!stepName) return 'success';
+  if (stepName === 'worker.ready') return 'worker_ready_failed';
   if (stepName === 'create') return 'failed';
   if (stepName === 'exec.initial') return 'readiness_failed';
   return 'partial';
