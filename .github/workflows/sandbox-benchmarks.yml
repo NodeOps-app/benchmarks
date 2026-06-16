@@ -58,6 +58,7 @@ jobs:
           - declaw
           - e2b
           - hopx
+          - isorun
           - modal
           # - namespace
           - northflank
@@ -99,6 +100,7 @@ jobs:
           DECLAW_API_KEY: ${{ secrets.DECLAW_API_KEY }}
           E2B_API_KEY: ${{ secrets.E2B_API_KEY }}
           HOPX_API_KEY: ${{ secrets.HOPX_API_KEY }}
+          ISORUN_API_KEY: ${{ secrets.ISORUN_API_KEY }}
           MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
           MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
           # NSC_TOKEN: ${{ secrets.NSC_TOKEN }}

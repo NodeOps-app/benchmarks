@@ -7,6 +7,7 @@ import { daytona } from '@computesdk/daytona';
 import { declaw } from '@computesdk/declaw';
 import { e2b } from '@computesdk/e2b';
 import { hopx } from '@computesdk/hopx';
+import { isorun } from '@computesdk/isorun';
 import { modal } from '@computesdk/modal';
 // import { namespace } from '@computesdk/namespace';
 import { northflank } from '@computesdk/northflank';
@@ -73,6 +74,12 @@ export const providers: ProviderConfig[] = [
     name: 'hopx',
     requiredEnvVars: ['HOPX_API_KEY'],
     createCompute: () => hopx({ apiKey: process.env.HOPX_API_KEY! }),
+  },
+  {
+    name: 'isorun',
+    requiredEnvVars: ['ISORUN_API_KEY'],
+    createCompute: () => isorun({ apiKey: process.env.ISORUN_API_KEY! }),
+    sandboxOptions: { image: 'node:22' },
   },
   {
     name: 'modal',
