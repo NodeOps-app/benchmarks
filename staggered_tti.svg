@@ -70,14 +70,14 @@
   <text class="row median" x="280" y="208">97.4</text>
   <text class="row median fast" x="420" y="208">0.23s</text>
   <text class="row" x="600" y="208">0.30s</text>
-  <text class="row" x="780" y="208">0.31s</text>
+  <text class="row" x="780" y="208">0.32s</text>
   <text class="row status" x="960" y="208">100/100</text>
 
   <text class="metrics-label" x="24" y="242">STAGGERED METRICS</text>
-  <text class="metrics-row" x="34" y="262">Fcspawn: 100 sandboxes (200ms apart) | Wall clock: 20.08s | First ready: 0.17s</text>
+  <text class="metrics-row" x="34" y="262">Fcspawn: 100 sandboxes (200ms apart) | Wall clock: 20.07s | First ready: 0.17s</text>
 
   <!-- Timestamp -->
-  <text class="timestamp" x="1176" y="328" text-anchor="end">Last updated: Jun 16, 2026, 01:05 AM UTC</text>
+  <text class="timestamp" x="1176" y="328" text-anchor="end">Last updated: Jun 17, 2026, 01:00 AM UTC</text>
 
   <!-- Footnote -->
   <text class="timestamp" x="24" y="342">Staggered mode: 100 sandboxes, 200ms between launches</text>
