@@ -1,3 +1,23 @@
+import { archil } from '@computesdk/archil';
+import { beam } from '@computesdk/beam';
+import { blaxel } from '@computesdk/blaxel';
+import { codesandbox } from '@computesdk/codesandbox';
+// import { collimate } from '@computesdk/collimate';
+import { cloudflare } from '@computesdk/cloudflare';
+import { daytona } from '@computesdk/daytona';
+import { declaw } from '@computesdk/declaw';
+import { e2b } from '@computesdk/e2b';
+import { hopx } from '@computesdk/hopx';
+import { isorun } from '@computesdk/isorun';
+import { modal } from '@computesdk/modal';
+// import { namespace } from '@computesdk/namespace';
+import { northflank } from '@computesdk/northflank';
+// import { railway } from '@computesdk/railway';
+import { runloop } from '@computesdk/runloop';
+import { sprites } from '@computesdk/sprites';
+import { tensorlake } from '@computesdk/tensorlake'
+import { upstash } from '@computesdk/upstash';
+import { vercel } from '@computesdk/vercel';
 import type { ProviderConfig } from './types.js';
 
 /**
@@ -11,44 +31,29 @@ export const providers: ProviderConfig[] = [
   {
     name: 'archil',
     requiredEnvVars: ['ARCHIL_API_KEY', 'ARCHIL_REGION', 'ARCHIL_DISK_ID'],
-    createCompute: async () => {
-      const { archil } = await import('@computesdk/archil');
-      return archil({ apiKey: process.env.ARCHIL_API_KEY!, region: process.env.ARCHIL_REGION! });
-    },
+    createCompute: () => archil({ apiKey: process.env.ARCHIL_API_KEY!, region: process.env.ARCHIL_REGION! }),
     sandboxOptions: { metadata: { diskId: process.env.ARCHIL_DISK_ID! } }
   },
   {
     name: 'beam',
     requiredEnvVars: ['BEAM_TOKEN', 'BEAM_WORKSPACE_ID'],
-    createCompute: async () => {
-      const { beam } = await import('@computesdk/beam');
-      return beam({ token: process.env.BEAM_TOKEN!, workspaceId: process.env.BEAM_WORKSPACE_ID! });
-    },
+    createCompute: () => beam({ token: process.env.BEAM_TOKEN!, workspaceId: process.env.BEAM_WORKSPACE_ID! }),
     sandboxOptions: { name: 'computesdk-benchmarks' },
   },
   {
     name: 'blaxel',
     requiredEnvVars: ['BL_API_KEY', 'BL_WORKSPACE'],
-    createCompute: async () => {
-      const { blaxel } = await import('@computesdk/blaxel');
-      return blaxel({ apiKey: process.env.BL_API_KEY!, workspace: process.env.BL_WORKSPACE!, region: 'us-was-1' });
-    },
+    createCompute: () => blaxel({ apiKey: process.env.BL_API_KEY!, workspace: process.env.BL_WORKSPACE!, region: 'us-was-1' }),
   },
   {
     name: 'cloudflare',
     requiredEnvVars: ['CLOUDFLARE_SANDBOX_URL', 'CLOUDFLARE_SANDBOX_SECRET'],
-    createCompute: async () => {
-      const { cloudflare } = await import('@computesdk/cloudflare');
-      return cloudflare({ sandboxUrl: process.env.CLOUDFLARE_SANDBOX_URL!, sandboxSecret: process.env.CLOUDFLARE_SANDBOX_SECRET! });
-    },
+    createCompute: () => cloudflare({ sandboxUrl: process.env.CLOUDFLARE_SANDBOX_URL!, sandboxSecret: process.env.CLOUDFLARE_SANDBOX_SECRET! }),
   },
   {
     name: 'codesandbox',
     requiredEnvVars: ['CSB_API_KEY'],
-    createCompute: async () => {
-      const { codesandbox } = await import('@computesdk/codesandbox');
-      return codesandbox({ apiKey: process.env.CSB_API_KEY! });
-    },
+    createCompute: () => codesandbox({ apiKey: process.env.CSB_API_KEY! }),
     destroyTimeoutMs: 1_000,
   },
   // {
@@ -59,52 +64,34 @@ export const providers: ProviderConfig[] = [
   {
     name: 'daytona',
     requiredEnvVars: ['DAYTONA_API_KEY'],
-    createCompute: async () => {
-      const { daytona } = await import('@computesdk/daytona');
-      return daytona({ apiKey: process.env.DAYTONA_API_KEY! });
-    },
+    createCompute: () => daytona({ apiKey: process.env.DAYTONA_API_KEY! }),
     sandboxOptions: { autoStopInterval: 15, autoDeleteInterval: 0 },
   },
   {
     name: 'declaw',
     requiredEnvVars: ['DECLAW_API_KEY'],
-    createCompute: async () => {
-      const { declaw } = await import('@computesdk/declaw');
-      return declaw({ apiKey: process.env.DECLAW_API_KEY! });
-    },
+    createCompute: () => declaw({ apiKey: process.env.DECLAW_API_KEY! }),
   },
   {
     name: 'e2b',
     requiredEnvVars: ['E2B_API_KEY'],
-    createCompute: async () => {
-      const { e2b } = await import('@computesdk/e2b');
-      return e2b({ apiKey: process.env.E2B_API_KEY! });
-    },
+    createCompute: () => e2b({ apiKey: process.env.E2B_API_KEY! }),
   },
   {
     name: 'hopx',
     requiredEnvVars: ['HOPX_API_KEY'],
-    createCompute: async () => {
-      const { hopx } = await import('@computesdk/hopx');
-      return hopx({ apiKey: process.env.HOPX_API_KEY! });
-    },
+    createCompute: () => hopx({ apiKey: process.env.HOPX_API_KEY! }),
   },
   {
     name: 'isorun',
     requiredEnvVars: ['ISORUN_API_KEY'],
-    createCompute: async () => {
-      const { isorun } = await import('@computesdk/isorun');
-      return isorun({ apiKey: process.env.ISORUN_API_KEY! });
-    },
+    createCompute: () => isorun({ apiKey: process.env.ISORUN_API_KEY! }),
     sandboxOptions: { image: 'node:22' },
   },
   {
     name: 'modal',
     requiredEnvVars: ['MODAL_TOKEN_ID', 'MODAL_TOKEN_SECRET'],
-    createCompute: async () => {
-      const { modal } = await import('@computesdk/modal');
-      return modal({ tokenId: process.env.MODAL_TOKEN_ID!, tokenSecret: process.env.MODAL_TOKEN_SECRET!, scalableSandboxes: true });
-    },
+    createCompute: () => modal({ tokenId: process.env.MODAL_TOKEN_ID!, tokenSecret: process.env.MODAL_TOKEN_SECRET!, scalableSandboxes: true }),
   },
   // {
   //   name: 'namespace',
@@ -115,14 +102,11 @@ export const providers: ProviderConfig[] = [
   {
     name: 'northflank',
     requiredEnvVars: ['NORTHFLANK_TOKEN', 'NORTHFLANK_PROJECT_ID'],
-    createCompute: async () => {
-      const { northflank } = await import('@computesdk/northflank');
-      return northflank({
-        token: process.env.NORTHFLANK_TOKEN!,
-        projectId: process.env.NORTHFLANK_PROJECT_ID!,
-        runtime: 'node',
-      });
-    },
+    createCompute: () => northflank({
+      token: process.env.NORTHFLANK_TOKEN!,
+      projectId: process.env.NORTHFLANK_PROJECT_ID!,
+      runtime: 'node',
+    }),
   },
   // {
   //   name: 'railway',
@@ -132,42 +116,27 @@ export const providers: ProviderConfig[] = [
   {
     name: 'runloop',
     requiredEnvVars: ['RUNLOOP_API_KEY'],
-    createCompute: async () => {
-      const { runloop } = await import('@computesdk/runloop');
-      return runloop({ apiKey: process.env.RUNLOOP_API_KEY! });
-    },
+    createCompute: () => runloop({ apiKey: process.env.RUNLOOP_API_KEY! }),
   },
   {
     name: 'sprites',
     requiredEnvVars: ['SPRITES_TOKEN'],
-    createCompute: async () => {
-      const { sprites } = await import('@computesdk/sprites');
-      return sprites({ apiKey: process.env.SPRITES_TOKEN! });
-    },
+    createCompute: () => sprites({ apiKey: process.env.SPRITES_TOKEN! }),
   },
   {
     name: 'tensorlake',
     requiredEnvVars: ['TENSORLAKE_API_KEY'],
-    createCompute: async () => {
-      const { tensorlake } = await import('@computesdk/tensorlake');
-      return tensorlake({ apiKey: process.env.TENSORLAKE_API_KEY! });
-    },
+    createCompute: () => tensorlake({ apiKey: process.env.TENSORLAKE_API_KEY! }),
   },
   {
     name: 'upstash',
     requiredEnvVars: ['UPSTASH_BOX_API_KEY'],
-    createCompute: async () => {
-      const { upstash } = await import('@computesdk/upstash');
-      return upstash({ apiKey: process.env.UPSTASH_BOX_API_KEY! });
-    },
+    createCompute: () => upstash({ apiKey: process.env.UPSTASH_BOX_API_KEY! }),
     sandboxOptions: { ephemeral: true },
   },
   {
     name: 'vercel',
     requiredEnvVars: ['VERCEL_TOKEN', 'VERCEL_TEAM_ID', 'VERCEL_PROJECT_ID'],
-    createCompute: async () => {
-      const { vercel } = await import('@computesdk/vercel');
-      return vercel({ token: process.env.VERCEL_TOKEN!, teamId: process.env.VERCEL_TEAM_ID!, projectId: process.env.VERCEL_PROJECT_ID! });
-    },
+    createCompute: () => vercel({ token: process.env.VERCEL_TOKEN!, teamId: process.env.VERCEL_TEAM_ID!, projectId: process.env.VERCEL_PROJECT_ID! }),
   },
 ];

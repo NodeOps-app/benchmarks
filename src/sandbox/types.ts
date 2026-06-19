@@ -8,7 +8,7 @@ export interface ProviderConfig {
   /** Environment variables that must all be set to run this benchmark */
   requiredEnvVars: string[];
   /** Creates a compute instance — either direct SDK or gateway-based */
-  createCompute: () => any | Promise<any>;
+  createCompute: () => any;
   /** Options passed to sandbox.create() (e.g. { image: 'node:20' }) */
   sandboxOptions?: Record<string, any>;
   /** Timeout for sandbox.destroy() in ms (default: 15000) */
