@@ -39,7 +39,8 @@ jobs:
   bench:
     name: Bench ${{ matrix.provider }}
     runs-on:
-      - arc-runner-set
+      - ubuntu-latest
+      # - arc-runner-set
     timeout-minutes: 60
     strategy:
       fail-fast: false
