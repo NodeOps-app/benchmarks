@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import type { Storage } from '@storagesdk/core';
 import { withTimeout } from '../util/timeout.js';
+import { formatError } from '../util/error.js';
 import { round, roundStats, computeStats as computeStorageStats } from './stats.js';
 import type { StorageProviderConfig, StorageBenchmarkResult, StorageTimingResult } from './types.js';
 
@@ -47,12 +48,12 @@ async function runStorageIteration(
         'Delete timed out'
       );
     } catch (err) {
-      console.warn(`    [cleanup] delete failed: ${err instanceof Error ? err.message : String(err)}`);
+      console.warn(`    [cleanup] delete failed: ${formatError(err)}`);
     }
 
     return { uploadMs, downloadMs, throughputMbps, fileSizeBytes };
   } catch (err) {
-    const error = err instanceof Error ? err.message : String(err);
+    const error = formatError(err);
     
     // Attempt cleanup even on failure
     try {
@@ -122,7 +123,7 @@ export async function runStorageBenchmark(config: StorageProviderConfig, fileSiz
           console.log(`  Iteration ${iterationIndex + 1}/${iterations} FAILED: ${iterationResult.error}`);
         }
       } catch (err) {
-        const error = err instanceof Error ? err.message : String(err);
+        const error = formatError(err);
         results[iterationIndex] = { uploadMs: 0, downloadMs: 0, throughputMbps: 0, fileSizeBytes, error };
         console.log(`  Iteration ${iterationIndex + 1}/${iterations} FAILED: ${error}`);
       } finally {

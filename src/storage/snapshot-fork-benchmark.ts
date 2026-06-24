@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import type { Storage } from '@storagesdk/core';
 import { withTimeout } from '../util/timeout.js';
+import { formatError } from '../util/error.js';
 import { round, roundStats, computeStats } from './stats.js';
 import type { StorageProviderConfig } from './types.js';
 import {
@@ -20,7 +21,7 @@ async function safeCleanup(label: string, fn: () => Promise<unknown>): Promise<v
   try {
     await withTimeout(Promise.resolve(fn()), 30000, `${label} timed out`);
   } catch (err) {
-    console.warn(`    [cleanup] ${label} failed: ${err instanceof Error ? err.message : String(err)}`);
+    console.warn(`    [cleanup] ${label} failed: ${formatError(err)}`);
   }
 }
 
@@ -112,7 +113,7 @@ async function runIteration(
       objectCount: spec.objectCount,
     };
   } catch (err) {
-    const error = err instanceof Error ? err.message : String(err);
+    const error = formatError(err);
     return {
       seedMs: 0,
       snapshotCreateMs: 0,
