@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "timestamp": "2026-06-28T00:57:58.235Z",
+  "timestamp": "2026-06-28T06:14:02.436Z",
   "environment": {
     "node": "v24.18.0",
     "platform": "linux",
@@ -15,186 +15,107 @@
       "provider": "fcspawn",
       "mode": "concurrent",
       "concurrency": 100,
-      "wallClockMs": 7662.18,
-      "timeToFirstReadyMs": 449.88,
+      "wallClockMs": 7030.4,
+      "timeToFirstReadyMs": 440.66,
       "iterations": [
         {
-          "ttiMs": 455.78
+          "ttiMs": 673.72
         },
         {
-          "ttiMs": 908.49
+          "ttiMs": 811.97
         },
         {
-          "ttiMs": 778.35
-        },
-        {
-          "ttiMs": 789.4
-        },
-        {
-          "ttiMs": 449.88
+          "ttiMs": 543.97
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 574.62
+          "ttiMs": 712.63
         },
         {
-          "ttiMs": 499.36
+          "ttiMs": 451.95
         },
         {
-          "ttiMs": 915.45
+          "ttiMs": 687.98
         },
         {
-          "ttiMs": 977.78
-        },
-        {
-          "ttiMs": 911.57
+          "ttiMs": 440.66
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 974.08
+          "ttiMs": 836.18
         },
         {
-          "ttiMs": 918.32
+          "ttiMs": 919.09
         },
         {
-          "ttiMs": 1046.63
+          "ttiMs": 1102.46
         },
         {
-          "ttiMs": 963.55
-        },
-        {
-          "ttiMs": 984.25
+          "ttiMs": 939.49
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 1125.68
+          "ttiMs": 1127.83
         },
         {
-          "ttiMs": 1231.86
+          "ttiMs": 920.12
         },
         {
-          "ttiMs": 1091.48
-        },
-        {
-          "ttiMs": 1089.3
+          "ttiMs": 1102.78
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 1161.06
-        },
-        {
-          "ttiMs": 1275.79
-        },
-        {
-          "ttiMs": 1125.61
-        },
-        {
-          "ttiMs": 1262.98
+          "ttiMs": 1223.35
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 0,
-          "error": "exec: internal error"
+          "ttiMs": 1098.95
         },
         {
-          "ttiMs": 1573.54
+          "ttiMs": 1088.78
         },
         {
-          "ttiMs": 1369.6
+          "ttiMs": 1329.01
         },
         {
-          "ttiMs": 1408.06
+          "ttiMs": 1138.96
         },
         {
-          "ttiMs": 1371.52
+          "ttiMs": 1261.29
         },
         {
-          "ttiMs": 1449.25
-        },
-        {
-          "ttiMs": 1382.2
-        },
-        {
-          "ttiMs": 1384.66
+          "ttiMs": 1186
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 1833.55
+          "ttiMs": 1147.56
         },
         {
-          "ttiMs": 1890.46
+          "ttiMs": 1107.68
         },
         {
-          "ttiMs": 1865.89
+          "ttiMs": 1102.11
         },
         {
-          "ttiMs": 1798.79
-        },
-        {
-          "ttiMs": 1817.28
-        },
-        {
-          "ttiMs": 1906.05
-        },
-        {
-          "ttiMs": 0,
-          "error": "exec: internal error"
-        },
-        {
-          "ttiMs": 1811.01
-        },
-        {
-          "ttiMs": 0,
-          "error": "exec: internal error"
-        },
-        {
-          "ttiMs": 1921.38
-        },
-        {
-          "ttiMs": 1837.59
-        },
-        {
-          "ttiMs": 1835.54
-        },
-        {
-          "ttiMs": 1821.8
-        },
-        {
-          "ttiMs": 1909.93
-        },
-        {
-          "ttiMs": 0,
-          "error": "exec: internal error"
-        },
-        {
-          "ttiMs": 1884.68
-        },
-        {
-          "ttiMs": 1893.94
-        },
-        {
-          "ttiMs": 1987.18
-        },
-        {
-          "ttiMs": 1958.14
+          "ttiMs": 1312.1
         },
         {
           "ttiMs": 0,
@@ -205,148 +126,228 @@
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 1918.92
+          "ttiMs": 1111.43
         },
         {
-          "ttiMs": 1886.35
+          "ttiMs": 1190.44
         },
         {
-          "ttiMs": 1889.74
-        },
-        {
-          "ttiMs": 1918.24
-        },
-        {
-          "ttiMs": 2051.44
-        },
-        {
-          "ttiMs": 1904.47
-        },
-        {
-          "ttiMs": 1912.84
-        },
-        {
-          "ttiMs": 1891.13
-        },
-        {
-          "ttiMs": 1957.2
-        },
-        {
-          "ttiMs": 2083.62
-        },
-        {
-          "ttiMs": 1944.32
+          "ttiMs": 1230.03
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 1991.52
+          "ttiMs": 1162.92
         },
         {
-          "ttiMs": 2026.3
+          "ttiMs": 1114.77
         },
         {
-          "ttiMs": 1964.63
+          "ttiMs": 1181.61
         },
         {
-          "ttiMs": 1931.23
-        },
-        {
-          "ttiMs": 2000.28
-        },
-        {
-          "ttiMs": 1975.34
-        },
-        {
-          "ttiMs": 2076.67
-        },
-        {
-          "ttiMs": 2041.41
-        },
-        {
-          "ttiMs": 2067.27
+          "ttiMs": 1187.36
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 2031.92
+          "ttiMs": 1168.3
+        },
+        {
+          "ttiMs": 1248.62
+        },
+        {
+          "ttiMs": 1127.1
+        },
+        {
+          "ttiMs": 1338.97
+        },
+        {
+          "ttiMs": 1196.83
+        },
+        {
+          "ttiMs": 1222.42
+        },
+        {
+          "ttiMs": 1178.08
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 2002.98
+          "ttiMs": 1344.75
         },
         {
-          "ttiMs": 2131.9
+          "ttiMs": 1176.65
         },
         {
-          "ttiMs": 2070.24
+          "ttiMs": 1209.12
         },
         {
-          "ttiMs": 0,
-          "error": "exec: internal error"
+          "ttiMs": 1343.39
         },
         {
-          "ttiMs": 2003.2
+          "ttiMs": 1207.68
         },
         {
-          "ttiMs": 2029.86
-        },
-        {
-          "ttiMs": 1965.45
-        },
-        {
-          "ttiMs": 1990.92
+          "ttiMs": 1353.71
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
+          "ttiMs": 1272.59
+        },
+        {
+          "ttiMs": 1231.96
+        },
+        {
+          "ttiMs": 1229.88
+        },
+        {
+          "ttiMs": 1250.02
+        },
+        {
+          "ttiMs": 1232.23
+        },
+        {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 1991.57
-        },
-        {
-          "ttiMs": 2111.64
-        },
-        {
-          "ttiMs": 2026.47
+          "ttiMs": 1380.08
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 1998.69
+          "ttiMs": 1319.42
         },
         {
-          "ttiMs": 2117.18
+          "ttiMs": 1306.2
         },
         {
-          "ttiMs": 2000.6
+          "ttiMs": 1464.43
         },
         {
-          "ttiMs": 2052.68
+          "ttiMs": 1384.93
+        },
+        {
+          "ttiMs": 1326.82
+        },
+        {
+          "ttiMs": 1323.98
+        },
+        {
+          "ttiMs": 1350.69
+        },
+        {
+          "ttiMs": 1522.54
+        },
+        {
+          "ttiMs": 1383.44
+        },
+        {
+          "ttiMs": 1437.2
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 1394.52
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 1602.36
+        },
+        {
+          "ttiMs": 1511.29
+        },
+        {
+          "ttiMs": 1562.27
+        },
+        {
+          "ttiMs": 1574.97
+        },
+        {
+          "ttiMs": 1442.3
+        },
+        {
+          "ttiMs": 1520.52
+        },
+        {
+          "ttiMs": 1518.12
+        },
+        {
+          "ttiMs": 1615.78
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 1399.09
+        },
+        {
+          "ttiMs": 1575.4
+        },
+        {
+          "ttiMs": 1595.84
+        },
+        {
+          "ttiMs": 1518.23
+        },
+        {
+          "ttiMs": 1438.03
+        },
+        {
+          "ttiMs": 1624.02
+        },
+        {
+          "ttiMs": 1600.08
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 1782.76
+        },
+        {
+          "ttiMs": 1885.48
+        },
+        {
+          "ttiMs": 1766.62
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 1889.74,
-          "p95": 2052.68,
-          "p99": 2076.67
+          "median": 1240.43,
+          "p95": 1595.84,
+          "p99": 1615.78
         }
       },
-      "compositeScore": 65.14,
-      "successRate": 0.81
+      "compositeScore": 68.92,
+      "successRate": 0.8
     }
   ]
 }

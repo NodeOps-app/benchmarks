@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "timestamp": "2026-06-28T00:57:58.236Z",
+  "timestamp": "2026-06-28T06:14:02.437Z",
   "environment": {
     "node": "v24.18.0",
     "platform": "linux",
@@ -15,343 +15,345 @@
       "provider": "fcspawn",
       "iterations": [
         {
-          "ttiMs": 0,
-          "error": "exec: internal error"
-        },
-        {
-          "ttiMs": 609.07
+          "ttiMs": 1049.13
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 429.95
+          "ttiMs": 383.43
         },
         {
-          "ttiMs": 543.94
+          "ttiMs": 586.26
         },
         {
-          "ttiMs": 405.52
-        },
-        {
-          "ttiMs": 0,
-          "error": "exec: internal error"
-        },
-        {
-          "ttiMs": 500.45
-        },
-        {
-          "ttiMs": 424.13
-        },
-        {
-          "ttiMs": 540.15
+          "ttiMs": 352.01
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 597.94
+          "ttiMs": 369.63
         },
         {
-          "ttiMs": 430.38
-        },
-        {
-          "ttiMs": 492.38
-        },
-        {
-          "ttiMs": 403.18
+          "ttiMs": 549.04
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 490.94
+          "ttiMs": 369.72
         },
         {
-          "ttiMs": 415.29
+          "ttiMs": 447.09
         },
         {
-          "ttiMs": 0,
-          "error": "exec: internal error"
-        },
-        {
-          "ttiMs": 415.44
-        },
-        {
-          "ttiMs": 501.22
-        },
-        {
-          "ttiMs": 401.83
+          "ttiMs": 377.51
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 413.63
-        },
-        {
-          "ttiMs": 495.81
-        },
-        {
-          "ttiMs": 416.9
+          "ttiMs": 447.28
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 595.65
+          "ttiMs": 363.89
         },
         {
-          "ttiMs": 409
+          "ttiMs": 518.41
         },
         {
-          "ttiMs": 0,
-          "error": "exec: internal error"
-        },
-        {
-          "ttiMs": 507.04
-        },
-        {
-          "ttiMs": 402.01
-        },
-        {
-          "ttiMs": 519.73
-        },
-        {
-          "ttiMs": 410.72
+          "ttiMs": 373.05
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 547.38
+          "ttiMs": 367.84
         },
         {
-          "ttiMs": 423.41
-        },
-        {
-          "ttiMs": 0,
-          "error": "exec: internal error"
-        },
-        {
-          "ttiMs": 545.59
-        },
-        {
-          "ttiMs": 422.54
-        },
-        {
-          "ttiMs": 495.44
-        },
-        {
-          "ttiMs": 409.57
+          "ttiMs": 479.23
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 420.59
+          "ttiMs": 375
         },
         {
-          "ttiMs": 550.76
+          "ttiMs": 555.42
         },
         {
-          "ttiMs": 0,
-          "error": "exec: internal error"
-        },
-        {
-          "ttiMs": 540.32
-        },
-        {
-          "ttiMs": 411.19
-        },
-        {
-          "ttiMs": 540.89
+          "ttiMs": 358.29
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 497.84
+          "ttiMs": 390.76
         },
         {
-          "ttiMs": 405.08
-        },
-        {
-          "ttiMs": 593.16
+          "ttiMs": 500.5
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 402.67
+          "ttiMs": 451.63
         },
         {
-          "ttiMs": 544.34
-        },
-        {
-          "ttiMs": 0,
-          "error": "exec: internal error"
-        },
-        {
-          "ttiMs": 424.47
-        },
-        {
-          "ttiMs": 545.68
-        },
-        {
-          "ttiMs": 445.05
-        },
-        {
-          "ttiMs": 559.34
+          "ttiMs": 371.18
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 422.21
+          "ttiMs": 551.05
         },
         {
-          "ttiMs": 492.74
+          "ttiMs": 359.67
         },
         {
-          "ttiMs": 402.03
-        },
-        {
-          "ttiMs": 0,
-          "error": "exec: internal error"
-        },
-        {
-          "ttiMs": 395.67
-        },
-        {
-          "ttiMs": 534.56
-        },
-        {
-          "ttiMs": 419.82
+          "ttiMs": 497.9
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 407.18
+          "ttiMs": 496.04
         },
         {
-          "ttiMs": 545.06
-        },
-        {
-          "ttiMs": 402.89
+          "ttiMs": 364.34
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 422.33
+          "ttiMs": 364.84
         },
         {
-          "ttiMs": 548.79
-        },
-        {
-          "ttiMs": 0,
-          "error": "exec: internal error"
-        },
-        {
-          "ttiMs": 540.44
-        },
-        {
-          "ttiMs": 405.82
-        },
-        {
-          "ttiMs": 486.07
+          "ttiMs": 456.78
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 410.86
+          "ttiMs": 371.46
         },
         {
-          "ttiMs": 593.77
+          "ttiMs": 499.53
         },
         {
-          "ttiMs": 0,
-          "error": "exec: internal error"
-        },
-        {
-          "ttiMs": 495.16
-        },
-        {
-          "ttiMs": 412.8
+          "ttiMs": 361.55
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 544.65
+          "ttiMs": 362.38
         },
         {
-          "ttiMs": 404.13
-        },
-        {
-          "ttiMs": 0,
-          "error": "exec: internal error"
-        },
-        {
-          "ttiMs": 404.91
-        },
-        {
-          "ttiMs": 568.03
-        },
-        {
-          "ttiMs": 411.21
+          "ttiMs": 507.03
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 408.82
+          "ttiMs": 365.36
         },
         {
-          "ttiMs": 590.26
+          "ttiMs": 450.6
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 367.7
+        },
+        {
+          "ttiMs": 503.57
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
         },
         {
-          "ttiMs": 494.35
+          "ttiMs": 366.78
         },
         {
-          "ttiMs": 425.79
+          "ttiMs": 459.28
         },
         {
           "ttiMs": 0,
           "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 458.26
+        },
+        {
+          "ttiMs": 359.27
+        },
+        {
+          "ttiMs": 498.15
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 355.55
+        },
+        {
+          "ttiMs": 504.18
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 361.16
+        },
+        {
+          "ttiMs": 456.48
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 354.73
+        },
+        {
+          "ttiMs": 452.56
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 367.23
+        },
+        {
+          "ttiMs": 553.44
+        },
+        {
+          "ttiMs": 367.4
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 449.54
+        },
+        {
+          "ttiMs": 373.26
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 544.77
+        },
+        {
+          "ttiMs": 371.29
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 507.25
+        },
+        {
+          "ttiMs": 374.29
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 364.41
+        },
+        {
+          "ttiMs": 451.19
+        },
+        {
+          "ttiMs": 366.28
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 377.84
+        },
+        {
+          "ttiMs": 505.52
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 501.3
+        },
+        {
+          "ttiMs": 376
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 367.07
+        },
+        {
+          "ttiMs": 506.53
+        },
+        {
+          "ttiMs": 366.92
+        },
+        {
+          "ttiMs": 0,
+          "error": "exec: internal error"
+        },
+        {
+          "ttiMs": 368.71
+        },
+        {
+          "ttiMs": 502.25
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 437.72,
-          "p95": 568.03,
-          "p99": 593.77
+          "median": 380.63,
+          "p95": 544.77,
+          "p99": 553.44
         }
       },
-      "compositeScore": 68.45,
-      "successRate": 0.72
+      "compositeScore": 66.87,
+      "successRate": 0.7
     }
   ]
 }
