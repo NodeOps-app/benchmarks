@@ -73,43 +73,43 @@
   <!-- vercel -->
   <text class="row provider" x="40" y="252">Vercel</text>
   <text class="row cost fast" x="200" y="252">~$0.0340</text>
-  <text class="row" x="380" y="252">94.1 (100/100)</text>
+  <text class="row" x="380" y="252">93.8 (100/100)</text>
   <text class="row" x="580" y="252">Active CPU</text>
-  <text class="row value fast" x="740" y="252">88.4</text>
+  <text class="row value fast" x="740" y="252">88.2</text>
   <text class="row confidence-exact" x="920" y="252">exact</text>
   <line class="divider" x1="24" y1="266" x2="1176" y2="266"/>
 
   <!-- modal -->
   <text class="row provider" x="40" y="296">Modal</text>
   <text class="row cost fast" x="200" y="296">~$0.0661</text>
-  <text class="row" x="380" y="296">90.2 (100/100)</text>
+  <text class="row" x="380" y="296">90.3 (100/100)</text>
   <text class="row" x="580" y="296">Active CPU</text>
-  <text class="row value fast" x="740" y="296">77.7</text>
+  <text class="row value fast" x="740" y="296">77.8</text>
   <text class="row confidence-exact" x="920" y="296">exact</text>
   <line class="divider" x1="24" y1="310" x2="1176" y2="310"/>
 
   <!-- codesandbox -->
   <text class="row provider" x="40" y="340">Codesandbox</text>
   <text class="row cost fast" x="200" y="340">$0.0743</text>
-  <text class="row" x="380" y="340">73.6 (100/100)</text>
+  <text class="row" x="380" y="340">72.7 (100/100)</text>
   <text class="row" x="580" y="340">Credits</text>
-  <text class="row value fast" x="740" y="340">68.0</text>
+  <text class="row value fast" x="740" y="340">67.6</text>
   <text class="row confidence-estimated" x="920" y="340">estimated</text>
   <line class="divider" x1="24" y1="354" x2="1176" y2="354"/>
 
   <!-- e2b -->
   <text class="row provider" x="40" y="384">E2B</text>
   <text class="row cost fast" x="200" y="384">$0.0828</text>
-  <text class="row" x="380" y="384">94.9 (100/100)</text>
+  <text class="row" x="380" y="384">94.7 (100/100)</text>
   <text class="row" x="580" y="384">Per-second</text>
-  <text class="row value fast" x="740" y="384">74.6</text>
+  <text class="row value fast" x="740" y="384">74.5</text>
   <text class="row confidence-exact" x="920" y="384">exact</text>
   <line class="divider" x1="24" y1="398" x2="1176" y2="398"/>
 
   <!-- blaxel -->
   <text class="row provider" x="40" y="428">Blaxel</text>
   <text class="row cost fast" x="200" y="428">$0.0828</text>
-  <text class="row" x="380" y="428">94.3 (100/100)</text>
+  <text class="row" x="380" y="428">94.1 (100/100)</text>
   <text class="row" x="580" y="428">Per-second</text>
   <text class="row value fast" x="740" y="428">74.3</text>
   <text class="row confidence-exact" x="920" y="428">exact</text>
@@ -118,27 +118,27 @@
   <!-- hopx -->
   <text class="row provider" x="40" y="472">Hopx</text>
   <text class="row cost fast" x="200" y="472">$0.0828</text>
-  <text class="row" x="380" y="472">82.0 (99/100)</text>
+  <text class="row" x="380" y="472">44.5 (83/100)</text>
   <text class="row" x="580" y="472">Per-second</text>
-  <text class="row value fast" x="740" y="472">69.3</text>
+  <text class="row value medium" x="740" y="472">51.1</text>
   <text class="row confidence-exact" x="920" y="472">exact</text>
   <line class="divider" x1="24" y1="486" x2="1176" y2="486"/>
 
   <!-- daytona -->
   <text class="row provider" x="40" y="516">Daytona</text>
   <text class="row cost fast" x="200" y="516">$0.0828</text>
-  <text class="row" x="380" y="516">97.3 (100/100)</text>
+  <text class="row" x="380" y="516">96.8 (100/100)</text>
   <text class="row" x="580" y="516">Per-second</text>
-  <text class="row value fast" x="740" y="516">75.5</text>
+  <text class="row value fast" x="740" y="516">75.3</text>
   <text class="row confidence-exact" x="920" y="516">exact</text>
   <line class="divider" x1="24" y1="530" x2="1176" y2="530"/>
 
   <!-- runloop -->
   <text class="row provider" x="40" y="560">Runloop</text>
   <text class="row cost slow" x="200" y="560">$0.1584</text>
-  <text class="row" x="380" y="560">93.4 (100/100)</text>
+  <text class="row" x="380" y="560">92.9 (100/100)</text>
   <text class="row" x="580" y="560">Per-second</text>
-  <text class="row value medium" x="740" y="560">44.1</text>
+  <text class="row value medium" x="740" y="560">44.0</text>
   <text class="row confidence-exact" x="920" y="560">exact</text>
 
   <!-- Timestamp -->
