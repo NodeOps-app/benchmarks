@@ -1,5 +1,17 @@
 import type { Storage } from '@storagesdk/core';
 
+/**
+ * Per-provider overrides for the snapshot/fork benchmark. Some backends need a
+ * different bucket/credentials there than for upload/download — e.g. Tigris
+ * snapshots only work on a Standard-tier, snapshot-enabled bucket. When set,
+ * these replace the defaults for snapshot-fork mode only.
+ */
+export interface SnapshotForkOverride {
+  requiredEnvVars: string[];
+  createStorage: () => Storage;
+  bucket: string;
+}
+
 export interface StorageProviderConfig {
   /** Provider name */
   name: string;
@@ -17,6 +29,8 @@ export interface StorageProviderConfig {
   bucket: string;
   /** Test file sizes in bytes */
   fileSizes: number[];
+  /** Optional override applied only in snapshot-fork mode (see {@link SnapshotForkOverride}) */
+  snapshotFork?: SnapshotForkOverride;
 }
 
 export interface StorageTimingResult {
