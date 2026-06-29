@@ -64,13 +64,14 @@ export const storageProviders: StorageProviderConfig[] = [
     // R2 snapshots/forks are emulated as sibling buckets (server-side copy +
     // root manifest object), so they need an API token with bucket create/delete
     // permission (R2 "Admin Read & Write") — broader than the object-only token
-    // used for upload/download. Same bucket/account; only the credentials differ.
+    // used for upload/download. Uses a dedicated bucket (same account) so the
+    // sibling-bucket churn is isolated from the upload/download bucket.
     snapshotFork: {
-      requiredEnvVars: ['R2_SNAPSHOT_ACCESS_KEY_ID', 'R2_SNAPSHOT_SECRET_ACCESS_KEY', 'R2_BUCKET', 'R2_ACCOUNT_ID'],
-      bucket: process.env.R2_BUCKET!,
+      requiredEnvVars: ['R2_SNAPSHOT_ACCESS_KEY_ID', 'R2_SNAPSHOT_SECRET_ACCESS_KEY', 'R2_SNAPSHOT_BUCKET', 'R2_ACCOUNT_ID'],
+      bucket: process.env.R2_SNAPSHOT_BUCKET!,
       createStorage: () => new Storage({
         adapter: r2({
-          bucket: process.env.R2_BUCKET!,
+          bucket: process.env.R2_SNAPSHOT_BUCKET!,
           accountId: process.env.R2_ACCOUNT_ID!,
           accessKeyId: process.env.R2_SNAPSHOT_ACCESS_KEY_ID!,
           secretAccessKey: process.env.R2_SNAPSHOT_SECRET_ACCESS_KEY!,

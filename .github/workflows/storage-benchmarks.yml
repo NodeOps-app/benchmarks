@@ -162,6 +162,7 @@ jobs:
           S3_SNAPSHOT_BUCKET: ${{ secrets.S3_SNAPSHOT_BUCKET }}
           R2_SNAPSHOT_ACCESS_KEY_ID: ${{ secrets.R2_SNAPSHOT_ACCESS_KEY_ID }}
           R2_SNAPSHOT_SECRET_ACCESS_KEY: ${{ secrets.R2_SNAPSHOT_SECRET_ACCESS_KEY }}
+          R2_SNAPSHOT_BUCKET: ${{ secrets.R2_SNAPSHOT_BUCKET }}
           # Snapshot-fork uses a dedicated Standard-tier, snapshot-enabled Tigris bucket.
           TIGRIS_SNAPSHOT_ACCESS_KEY: ${{ secrets.TIGRIS_SNAPSHOT_ACCESS_KEY }}
           TIGRIS_SNAPSHOT_SECRET_KEY: ${{ secrets.TIGRIS_SNAPSHOT_SECRET_KEY }}
