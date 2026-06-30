@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "timestamp": "2026-06-30T00:53:32.176Z",
+  "timestamp": "2026-06-30T06:26:57.139Z",
   "environment": {
     "node": "v24.18.0",
     "platform": "linux",
@@ -16,821 +16,420 @@
       "mode": "staggered",
       "concurrency": 100,
       "staggerDelayMs": 200,
-      "wallClockMs": 20312.76,
-      "timeToFirstReadyMs": 327.88,
-      "rampProfile": [
-        {
-          "launchedAt": 0,
-          "readyAt": 814.28,
-          "ttiMs": 352.09
-        },
-        {
-          "launchedAt": 200.15,
-          "readyAt": 1094.03,
-          "ttiMs": 763.42
-        },
-        {
-          "launchedAt": 400.67,
-          "readyAt": 1191.71,
-          "ttiMs": 342.18
-        },
-        {
-          "launchedAt": 601.04,
-          "readyAt": 1125.73,
-          "ttiMs": 385.06
-        },
-        {
-          "launchedAt": 802.05,
-          "readyAt": 1292.02,
-          "ttiMs": 354.5
-        },
-        {
-          "launchedAt": 1001.84,
-          "readyAt": 1612.78,
-          "ttiMs": 480.51
-        },
-        {
-          "launchedAt": 1202.96,
-          "readyAt": 1759.67,
-          "ttiMs": 426.87
-        },
-        {
-          "launchedAt": 1403.38,
-          "readyAt": 1890.66,
-          "ttiMs": 351.37
-        },
-        {
-          "launchedAt": 1603.6,
-          "readyAt": 2111.14,
-          "ttiMs": 367.48
-        },
-        {
-          "launchedAt": 1804.44,
-          "readyAt": 2297.86,
-          "ttiMs": 357.1
-        },
-        {
-          "launchedAt": 2005.9,
-          "readyAt": 2560.12,
-          "ttiMs": 424.74
-        },
-        {
-          "launchedAt": 2206.45,
-          "readyAt": 2686.04,
-          "ttiMs": 343.6
-        },
-        {
-          "launchedAt": 2407.4,
-          "readyAt": 3023.12,
-          "ttiMs": 475.51
-        },
-        {
-          "launchedAt": 2608.33,
-          "readyAt": 3102.95,
-          "ttiMs": 360.51
-        },
-        {
-          "launchedAt": 2808.68,
-          "readyAt": 3276.33,
-          "ttiMs": 338.42
-        },
-        {
-          "launchedAt": 3008.63,
-          "readyAt": 3622.6,
-          "ttiMs": 480.77
-        },
-        {
-          "launchedAt": 3208.93,
-          "readyAt": 3685.75,
-          "ttiMs": 339.25
-        },
-        {
-          "launchedAt": 3409.38,
-          "readyAt": 3970.18,
-          "ttiMs": 424.47
-        },
-        {
-          "launchedAt": 3609.86,
-          "readyAt": 4081.48,
-          "ttiMs": 341.7
-        },
-        {
-          "launchedAt": 3809.58,
-          "readyAt": 4312.75,
-          "ttiMs": 371.01
-        },
-        {
-          "launchedAt": 4010.48,
-          "readyAt": 4471.33,
-          "ttiMs": 331.41
-        },
-        {
-          "launchedAt": 4211.11,
-          "readyAt": 4868.4,
-          "ttiMs": 520.32
-        },
-        {
-          "launchedAt": 4411.58,
-          "readyAt": 4879.12,
-          "ttiMs": 338.3
-        },
-        {
-          "launchedAt": 4613.18,
-          "readyAt": 5108.45,
-          "ttiMs": 361.29
-        },
-        {
-          "launchedAt": 4813.08,
-          "readyAt": 5279.03,
-          "ttiMs": 337.22
-        },
-        {
-          "launchedAt": 5013.11,
-          "readyAt": 5639.72,
-          "ttiMs": 479.88
-        },
-        {
-          "launchedAt": 5213.84,
-          "readyAt": 5690.21,
-          "ttiMs": 340.69
-        },
-        {
-          "launchedAt": 5414.73,
-          "readyAt": 6023.74,
-          "ttiMs": 471.33
-        },
-        {
-          "launchedAt": 5615.23,
-          "readyAt": 6116.6,
-          "ttiMs": 371.87
-        },
-        {
-          "launchedAt": 5815.66,
-          "readyAt": 6274.34,
-          "ttiMs": 327.88
-        },
-        {
-          "launchedAt": 6016.59,
-          "readyAt": 6672.65,
-          "ttiMs": 519.69
-        },
-        {
-          "launchedAt": 6217.37,
-          "readyAt": 6676.84,
-          "ttiMs": 330.51
-        },
-        {
-          "launchedAt": 6417.35,
-          "readyAt": 7273.4,
-          "ttiMs": 726.15
-        },
-        {
-          "launchedAt": 6618.38,
-          "readyAt": 7096.21,
-          "ttiMs": 348.16
-        },
-        {
-          "launchedAt": 6819.35,
-          "readyAt": 7317.63,
-          "ttiMs": 355.69
-        },
-        {
-          "launchedAt": 7019.53,
-          "readyAt": 7493.23,
-          "ttiMs": 343.91
-        },
-        {
-          "launchedAt": 7220.31,
-          "readyAt": 7783.63,
-          "ttiMs": 433.73
-        },
-        {
-          "launchedAt": 7420.2,
-          "readyAt": 7907.39,
-          "ttiMs": 346.61
-        },
-        {
-          "launchedAt": 7620.69,
-          "readyAt": 8113.01,
-          "ttiMs": 360.46
-        },
-        {
-          "launchedAt": 7821.89,
-          "readyAt": 8319.84,
-          "ttiMs": 363.88
-        },
-        {
-          "launchedAt": 8021.51,
-          "readyAt": 8673.53,
-          "ttiMs": 522.21
-        },
-        {
-          "launchedAt": 8221.47,
-          "readyAt": 8707.01,
-          "ttiMs": 347.01
-        },
-        {
-          "launchedAt": 8422.72,
-          "readyAt": 9036.81,
-          "ttiMs": 482.06
-        },
-        {
-          "launchedAt": 8623.02,
-          "readyAt": 9096.7,
-          "ttiMs": 337.56
-        },
-        {
-          "launchedAt": 8823.11,
-          "readyAt": 9317.86,
-          "ttiMs": 362.44
-        },
-        {
-          "launchedAt": 9023.51,
-          "readyAt": 9485.38,
-          "ttiMs": 332.21
-        },
-        {
-          "launchedAt": 9224.82,
-          "readyAt": 9783.64,
-          "ttiMs": 429.53
-        },
-        {
-          "launchedAt": 9425.41,
-          "readyAt": 9894.29,
-          "ttiMs": 332.81
-        },
-        {
-          "launchedAt": 9625.59,
-          "readyAt": 10101.77,
-          "ttiMs": 344.21
-        },
-        {
-          "launchedAt": 9826.52,
-          "readyAt": 10337.77,
-          "ttiMs": 377.54
-        },
-        {
-          "launchedAt": 10027.47,
-          "readyAt": 10633.67,
-          "ttiMs": 475.52
-        },
-        {
-          "launchedAt": 10227.77,
-          "readyAt": 10705.57,
-          "ttiMs": 338.29
-        },
-        {
-          "launchedAt": 10428.11,
-          "readyAt": 11047.51,
-          "ttiMs": 467.24
-        },
-        {
-          "launchedAt": 10627.78,
-          "readyAt": 11133.45,
-          "ttiMs": 374.6
-        },
-        {
-          "launchedAt": 10828.32,
-          "readyAt": 11360.62,
-          "ttiMs": 401.98
-        },
-        {
-          "launchedAt": 11028.07,
-          "readyAt": 11645.11,
-          "ttiMs": 485.27
-        },
-        {
-          "launchedAt": 11228.85,
-          "readyAt": 11710.37,
-          "ttiMs": 342.16
-        },
-        {
-          "launchedAt": 11428.45,
-          "readyAt": 12041.91,
-          "ttiMs": 476.68
-        },
-        {
-          "launchedAt": 11629.59,
-          "readyAt": 12122.23,
-          "ttiMs": 360.84
-        },
-        {
-          "launchedAt": 11829.97,
-          "readyAt": 12293.39,
-          "ttiMs": 333.91
-        },
-        {
-          "launchedAt": 12030.07,
-          "readyAt": 12501.38,
-          "ttiMs": 340.21
-        },
-        {
-          "launchedAt": 12230.66,
-          "readyAt": 12836.5,
-          "ttiMs": 473.74
-        },
-        {
-          "launchedAt": 12431.05,
-          "readyAt": 12915.29,
-          "ttiMs": 345.44
-        },
-        {
-          "launchedAt": 12631.72,
-          "readyAt": 13119.16,
-          "ttiMs": 356.5
-        },
-        {
-          "launchedAt": 12832.28,
-          "readyAt": 13302.18,
-          "ttiMs": 338.57
-        },
-        {
-          "launchedAt": 13032.58,
-          "readyAt": 13592.24,
-          "ttiMs": 430.04
-        },
-        {
-          "launchedAt": 13232.54,
-          "readyAt": 13715.76,
-          "ttiMs": 338.37
-        },
-        {
-          "launchedAt": 13432.48,
-          "readyAt": 14016.37,
-          "ttiMs": 445.97
-        },
-        {
-          "launchedAt": 13632.48,
-          "readyAt": 14108.77,
-          "ttiMs": 344.69
-        },
-        {
-          "launchedAt": 13832.69,
-          "readyAt": 14338.86,
-          "ttiMs": 373.47
-        },
-        {
-          "launchedAt": 14032.57,
-          "readyAt": 14639.5,
-          "ttiMs": 475.82
-        },
-        {
-          "launchedAt": 14233.43,
-          "readyAt": 14712.93,
-          "ttiMs": 337.41
-        },
-        {
-          "launchedAt": 14433.72,
-          "readyAt": 14991.64,
-          "ttiMs": 422.61
-        },
-        {
-          "launchedAt": 14633.57,
-          "readyAt": 15108.74,
-          "ttiMs": 339.88
-        },
-        {
-          "launchedAt": 14834.32,
-          "readyAt": 15317.6,
-          "ttiMs": 352.41
-        },
-        {
-          "launchedAt": 15035.32,
-          "readyAt": 15513.75,
-          "ttiMs": 346.6
-        },
-        {
-          "launchedAt": 15235.66,
-          "readyAt": 15891.73,
-          "ttiMs": 526.51
-        },
-        {
-          "launchedAt": 15435.57,
-          "readyAt": 15900.79,
-          "ttiMs": 329.87
-        },
-        {
-          "launchedAt": 15635.84,
-          "readyAt": 16104.45,
-          "ttiMs": 337.94
-        },
-        {
-          "launchedAt": 15836.09,
-          "readyAt": 16328.83,
-          "ttiMs": 362.99
-        },
-        {
-          "launchedAt": 16037.37,
-          "readyAt": 16648.49,
-          "ttiMs": 474.28
-        },
-        {
-          "launchedAt": 16237.68,
-          "readyAt": 16797.01,
-          "ttiMs": 424.03
-        },
-        {
-          "launchedAt": 16438.15,
-          "readyAt": 16921.09,
-          "ttiMs": 352.24
-        },
-        {
-          "launchedAt": 16638.97,
-          "readyAt": 17117.61,
-          "ttiMs": 346.42
-        },
-        {
-          "launchedAt": 16838.52,
-          "readyAt": 17348.69,
-          "ttiMs": 375.98
-        },
-        {
-          "launchedAt": 17039.1,
-          "readyAt": 17654.43,
-          "ttiMs": 478.55
-        },
-        {
-          "launchedAt": 17240.11,
-          "readyAt": 17862.34,
-          "ttiMs": 471.49
-        },
-        {
-          "launchedAt": 17441,
-          "readyAt": 17932.64,
-          "ttiMs": 349.12
-        },
-        {
-          "launchedAt": 17641.99,
-          "readyAt": 18271.76,
-          "ttiMs": 493.42
-        },
-        {
-          "launchedAt": 17841.75,
-          "readyAt": 18319.17,
-          "ttiMs": 340.83
-        },
-        {
-          "launchedAt": 18041.51,
-          "readyAt": 18651.6,
-          "ttiMs": 478.96
-        },
-        {
-          "launchedAt": 18242.24,
-          "readyAt": 18788.09,
-          "ttiMs": 415.55
-        },
-        {
-          "launchedAt": 18443.5,
-          "readyAt": 18915.33,
-          "ttiMs": 341.64
-        },
-        {
-          "launchedAt": 18643.61,
-          "readyAt": 19144.96,
-          "ttiMs": 370.56
-        },
-        {
-          "launchedAt": 18843.61,
-          "readyAt": 19314.04,
-          "ttiMs": 340.23
-        },
-        {
-          "launchedAt": 19044.06,
-          "readyAt": 19668.68,
-          "ttiMs": 493.54
-        },
-        {
-          "launchedAt": 19244.5,
-          "readyAt": 19806.38,
-          "ttiMs": 429.57
-        },
-        {
-          "launchedAt": 19444.94,
-          "readyAt": 19928.17,
-          "ttiMs": 346.09
-        },
-        {
-          "launchedAt": 19645.67,
-          "readyAt": 20162.09,
-          "ttiMs": 377.51
-        },
-        {
-          "launchedAt": 19845.96,
-          "readyAt": 20312.7,
-          "ttiMs": 334.54
-        }
-      ],
+      "wallClockMs": 20334.04,
+      "timeToFirstReadyMs": 0,
+      "rampProfile": [],
       "iterations": [
         {
-          "ttiMs": 352.09
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 763.42
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 342.18
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 385.06
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 354.5
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 480.51
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 426.87
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 351.37
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 367.48
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 357.1
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 424.74
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 343.6
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 475.51
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 360.51
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 338.42
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 480.77
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 339.25
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 424.47
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 341.7
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 371.01
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 331.41
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 520.32
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 338.3
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 361.29
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 337.22
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 479.88
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 340.69
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 471.33
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 371.87
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 327.88
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 519.69
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 330.51
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 726.15
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 348.16
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 355.69
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 343.91
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 433.73
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 346.61
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 360.46
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 363.88
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 522.21
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 347.01
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 482.06
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 337.56
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 362.44
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 332.21
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 429.53
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 332.81
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 344.21
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 377.54
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 475.52
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 338.29
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 467.24
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 374.6
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 401.98
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 485.27
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 342.16
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 476.68
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 360.84
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 333.91
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 340.21
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 473.74
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 345.44
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 356.5
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 338.57
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 430.04
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 338.37
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 445.97
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 344.69
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 373.47
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 475.82
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 337.41
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 422.61
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 339.88
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 352.41
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 346.6
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 526.51
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 329.87
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 337.94
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 362.99
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 474.28
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 424.03
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 352.24
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 346.42
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 375.98
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 478.55
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 471.49
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 349.12
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 493.42
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 340.83
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 478.96
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 415.55
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 341.64
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 370.56
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 340.23
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 493.54
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 429.57
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 346.09
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 377.51
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         },
         {
-          "ttiMs": 334.54
+          "ttiMs": 0,
+          "error": "Sandbox identity check failed with exit code -1: Unknown error"
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 361.07,
-          "p95": 482.06,
-          "p99": 519.69
+          "median": 0,
+          "p95": 0,
+          "p99": 0
         }
       },
-      "compositeScore": 95.85,
-      "successRate": 1
+      "compositeScore": 0,
+      "successRate": 0
     }
   ]
 }
