@@ -24,7 +24,7 @@ export function fcspawn(opts: { baseUrl: string; apiKey: string }) {
 
   const create = async (options?: Record<string, any>) => {
     const shape = (options?.shape as string) || 's-1vcpu-1gb';
-    const rootfs = (options?.rootfs as string) || 'node';
+    const rootfs = (options?.rootfs as string) || process.env.FCSPAWN_ROOTFS || 'devbox:1';
     const r = await fetch(`${opts.baseUrl}/v1/sandboxes`, {
       method: 'POST',
       headers: h,
@@ -45,6 +45,12 @@ export function fcspawn(opts: { baseUrl: string; apiKey: string }) {
         if (cmd === 'node -v' || cmd.startsWith('node ')) {
           c = 'python3';
           args = ['-V'];
+        } else if (/[;&|<>$`(){}\[\]'"\\*?\s]/.test(cmd.trim().slice(1))) {
+          // Anything that smells like a shell pipeline (multiple tokens,
+          // redirections, substitutions) gets executed through sh -c so
+          // the framework's identity probe and similar one-liners work.
+          c = 'sh';
+          args = ['-c', cmd];
         } else {
           const parts = cmd.split(/\s+/).filter(Boolean);
           c = parts[0];
