@@ -52,7 +52,7 @@ export function fcspawn(opts: { baseUrl: string; apiKey: string }) {
           c = 'sh';
           args = ['-c', cmd];
         } else {
-          c = 'sh';
+          c = '/bin/sh';
           args = ['-c', cmd];
         }
         const r2 = await fetch(`${opts.baseUrl}/v1/sandboxes/${id}/exec`, {
