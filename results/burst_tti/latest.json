@@ -1,332 +1,110 @@
 {
   "version": "1.1",
-  "timestamp": "2026-06-30T06:51:34.399Z",
+  "timestamp": "2026-06-30T07:20:14.493Z",
   "environment": {
     "node": "v24.18.0",
     "platform": "linux",
     "arch": "x64"
   },
   "config": {
-    "iterations": 100,
+    "iterations": 10,
     "timeoutMs": 120000
   },
   "results": [
     {
-      "provider": "fcspawn",
+      "provider": "fcspawn (Helsinki, FI)",
       "mode": "concurrent",
-      "concurrency": 100,
-      "wallClockMs": 2244.23,
-      "timeToFirstReadyMs": 580.49,
+      "concurrency": 10,
+      "wallClockMs": 731.8,
+      "timeToFirstReadyMs": 233.95,
       "iterations": [
         {
-          "ttiMs": 675.63
+          "ttiMs": 337.09
         },
         {
-          "ttiMs": 738.47
+          "ttiMs": 297.84
         },
         {
-          "ttiMs": 833.19
+          "ttiMs": 253.82
         },
         {
-          "ttiMs": 580.49
+          "ttiMs": 233.95
         },
         {
-          "ttiMs": 600
+          "ttiMs": 517.75
         },
         {
-          "ttiMs": 1102.88
+          "ttiMs": 425.52
         },
         {
-          "ttiMs": 1331
+          "ttiMs": 491.88
         },
         {
-          "ttiMs": 1039.75
+          "ttiMs": 533.56
         },
         {
-          "ttiMs": 1004.14
+          "ttiMs": 573.06
         },
         {
-          "ttiMs": 1305.96
-        },
-        {
-          "ttiMs": 1251.48
-        },
-        {
-          "ttiMs": 1605.33
-        },
-        {
-          "ttiMs": 1276.5
-        },
-        {
-          "ttiMs": 1284.9
-        },
-        {
-          "ttiMs": 1357.17
-        },
-        {
-          "ttiMs": 1628.74
-        },
-        {
-          "ttiMs": 1649.96
-        },
-        {
-          "ttiMs": 1548.83
-        },
-        {
-          "ttiMs": 1579.63
-        },
-        {
-          "ttiMs": 1675.89
-        },
-        {
-          "ttiMs": 1551.68
-        },
-        {
-          "ttiMs": 1548.9
-        },
-        {
-          "ttiMs": 1624.67
-        },
-        {
-          "ttiMs": 1638.18
-        },
-        {
-          "ttiMs": 1642.49
-        },
-        {
-          "ttiMs": 1844.59
-        },
-        {
-          "ttiMs": 1632.02
-        },
-        {
-          "ttiMs": 1651.78
-        },
-        {
-          "ttiMs": 1763.5
-        },
-        {
-          "ttiMs": 1834.56
-        },
-        {
-          "ttiMs": 1703.16
-        },
-        {
-          "ttiMs": 1787.74
-        },
-        {
-          "ttiMs": 1672.44
-        },
-        {
-          "ttiMs": 1731.6
-        },
-        {
-          "ttiMs": 1598.58
-        },
-        {
-          "ttiMs": 1656.81
-        },
-        {
-          "ttiMs": 1625.62
-        },
-        {
-          "ttiMs": 1775.4
-        },
-        {
-          "ttiMs": 1775.61
-        },
-        {
-          "ttiMs": 1733.81
-        },
-        {
-          "ttiMs": 1843.22
-        },
-        {
-          "ttiMs": 1758.44
-        },
-        {
-          "ttiMs": 1597.23
-        },
-        {
-          "ttiMs": 1761.49
-        },
-        {
-          "ttiMs": 1652.43
-        },
-        {
-          "ttiMs": 1658.96
-        },
-        {
-          "ttiMs": 1754.29
-        },
-        {
-          "ttiMs": 1723.74
-        },
-        {
-          "ttiMs": 1658.46
-        },
-        {
-          "ttiMs": 1708
-        },
-        {
-          "ttiMs": 1645.53
-        },
-        {
-          "ttiMs": 1619.96
-        },
-        {
-          "ttiMs": 1665.1
-        },
-        {
-          "ttiMs": 1664.75
-        },
-        {
-          "ttiMs": 1754.1
-        },
-        {
-          "ttiMs": 1727.24
-        },
-        {
-          "ttiMs": 1878.92
-        },
-        {
-          "ttiMs": 1636.94
-        },
-        {
-          "ttiMs": 1879.1
-        },
-        {
-          "ttiMs": 1834.88
-        },
-        {
-          "ttiMs": 1753.91
-        },
-        {
-          "ttiMs": 1738.35
-        },
-        {
-          "ttiMs": 1811.57
-        },
-        {
-          "ttiMs": 1750.7
-        },
-        {
-          "ttiMs": 1622.56
-        },
-        {
-          "ttiMs": 1708.16
-        },
-        {
-          "ttiMs": 1762.33
-        },
-        {
-          "ttiMs": 1792.14
-        },
-        {
-          "ttiMs": 1805.55
-        },
-        {
-          "ttiMs": 1754.94
-        },
-        {
-          "ttiMs": 1766.23
-        },
-        {
-          "ttiMs": 1863.94
-        },
-        {
-          "ttiMs": 1757.49
-        },
-        {
-          "ttiMs": 1794.05
-        },
-        {
-          "ttiMs": 1828.56
-        },
-        {
-          "ttiMs": 1819.13
-        },
-        {
-          "ttiMs": 1827.49
-        },
-        {
-          "ttiMs": 1889.16
-        },
-        {
-          "ttiMs": 1797.01
-        },
-        {
-          "ttiMs": 1767.95
-        },
-        {
-          "ttiMs": 1804.09
-        },
-        {
-          "ttiMs": 1873.21
-        },
-        {
-          "ttiMs": 1883.92
-        },
-        {
-          "ttiMs": 1895.53
-        },
-        {
-          "ttiMs": 1782.39
-        },
-        {
-          "ttiMs": 1840.03
-        },
-        {
-          "ttiMs": 1781.93
-        },
-        {
-          "ttiMs": 1924.61
-        },
-        {
-          "ttiMs": 1943.4
-        },
-        {
-          "ttiMs": 1858.74
-        },
-        {
-          "ttiMs": 1770.57
-        },
-        {
-          "ttiMs": 2075.22
-        },
-        {
-          "ttiMs": 1951.25
-        },
-        {
-          "ttiMs": 1802.86
-        },
-        {
-          "ttiMs": 1845.52
-        },
-        {
-          "ttiMs": 1782.49
-        },
-        {
-          "ttiMs": 1829.45
-        },
-        {
-          "ttiMs": 1998.49
-        },
-        {
-          "ttiMs": 1992.95
-        },
-        {
-          "ttiMs": 1822.04
+          "ttiMs": 692.68
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 1752.31,
-          "p95": 1879.1,
-          "p99": 1924.61
+          "median": 458.7,
+          "p95": 692.68,
+          "p99": 692.68
         }
       },
-      "compositeScore": 81.9,
+      "compositeScore": 94.48,
+      "successRate": 1
+    },
+    {
+      "provider": "fcspawn (Chicago, US)",
+      "mode": "concurrent",
+      "concurrency": 10,
+      "wallClockMs": 1226.45,
+      "timeToFirstReadyMs": 455.53,
+      "iterations": [
+        {
+          "ttiMs": 595.78
+        },
+        {
+          "ttiMs": 455.53
+        },
+        {
+          "ttiMs": 457.02
+        },
+        {
+          "ttiMs": 528.13
+        },
+        {
+          "ttiMs": 549.96
+        },
+        {
+          "ttiMs": 708.04
+        },
+        {
+          "ttiMs": 727.96
+        },
+        {
+          "ttiMs": 706.6
+        },
+        {
+          "ttiMs": 1103.77
+        },
+        {
+          "ttiMs": 955.47
+        }
+      ],
+      "summary": {
+        "ttiMs": {
+          "median": 651.19,
+          "p95": 1103.77,
+          "p99": 1103.77
+        }
+      },
+      "compositeScore": 91.68,
       "successRate": 1
     }
   ]
