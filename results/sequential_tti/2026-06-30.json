@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "timestamp": "2026-06-30T06:26:57.137Z",
+  "timestamp": "2026-06-30T06:51:34.401Z",
   "environment": {
     "node": "v24.18.0",
     "platform": "linux",
@@ -15,415 +15,315 @@
       "provider": "fcspawn",
       "iterations": [
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 1667.11
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 805.93
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 711.64
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 762.15
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 759.29
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 748.16
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 707.52
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 716.82
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 754.09
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 595.39
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 754.03
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 810.69
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 699.62
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 750.07
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 789.2
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 757.2
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 754.71
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 753.05
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 752.6
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 759.02
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 579.96
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 717.94
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 756.35
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 756.77
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 703.9
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 755.07
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 753.59
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 758.97
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 761.49
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 572.6
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 749.08
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 702.1
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 802.57
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 750.71
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 757.59
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 749.34
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 762.96
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 767.22
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 698.02
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 563.18
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 757.1
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 755.43
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 749.21
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 707.21
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 755.54
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 714.4
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 750.01
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 775.63
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 751
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 805.66
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 759.69
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 747.47
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 705.31
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 800.99
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 770.93
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 763.86
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 706.8
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 803.43
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 753.44
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 771.49
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 580.91
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 758.12
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 749.58
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 758.7
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 754.52
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 755.31
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 757.06
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 703.13
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 749.78
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 584.1
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 753.54
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 752.99
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 722.36
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 756.6
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 795.3
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 704.16
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 808.16
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 747.4
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 696.84
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 566.21
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 754.71
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 758.46
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 755.68
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 750.61
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 760.38
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 749.26
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 755.86
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 752.62
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 765.27
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 577.85
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 748.83
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 758.37
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 750.95
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 706.2
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 699.71
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 746.74
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 809.03
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 746.67
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 566.92
         },
         {
-          "ttiMs": 0,
-          "error": "Sandbox identity check failed with exit code -1: Unknown error"
+          "ttiMs": 702.99
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 0,
-          "p95": 0,
-          "p99": 0
+          "median": 753.25,
+          "p95": 795.3,
+          "p99": 805.66
         }
       },
-      "compositeScore": 0,
-      "successRate": 0
+      "compositeScore": 92.28,
+      "successRate": 1
     }
   ]
 }
