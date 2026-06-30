@@ -66,56 +66,56 @@
   <!-- Row 1 -->
   <text class="rank rank-1" x="40" y="208">1</text>
   <text class="row provider" x="80" y="208">Browserbase</text>
-  <text class="row total" x="240" y="208">52.9</text>
-  <text class="row total fast" x="360" y="208">3.83/s</text>
-  <text class="row" x="500" y="208">13.07s</text>
-  <text class="row" x="640" y="208">17.10s</text>
-  <text class="row" x="780" y="208">203ms</text>
+  <text class="row total" x="240" y="208">38.0</text>
+  <text class="row total medium" x="360" y="208">3.39/s</text>
+  <text class="row" x="500" y="208">14.73s</text>
+  <text class="row" x="640" y="208">23.10s</text>
+  <text class="row" x="780" y="208">206ms</text>
   <text class="row" x="920" y="208">0.23s</text>
-  <text class="row" x="1040" y="208">13.67s</text>
-  <text class="row status" x="1180" y="208">10/10</text>
+  <text class="row" x="1040" y="208">15.38s</text>
+  <text class="row status" x="1180" y="208">83/100</text>
   <line class="divider" x1="24" y1="222" x2="1256" y2="222"/>
 
   <!-- Row 2 -->
   <text class="rank rank-2" x="40" y="252">2</text>
   <text class="row provider" x="80" y="252">Hyperbrowser</text>
-  <text class="row total" x="240" y="252">50.5</text>
-  <text class="row total fast" x="360" y="252">3.56/s</text>
-  <text class="row" x="500" y="252">14.06s</text>
-  <text class="row" x="640" y="252">17.69s</text>
-  <text class="row" x="780" y="252">412ms</text>
+  <text class="row total" x="240" y="252">37.4</text>
+  <text class="row total medium" x="360" y="252">3.23/s</text>
+  <text class="row" x="500" y="252">15.46s</text>
+  <text class="row" x="640" y="252">25.29s</text>
+  <text class="row" x="780" y="252">424ms</text>
   <text class="row" x="920" y="252">0.32s</text>
-  <text class="row" x="1040" y="252">15.84s</text>
-  <text class="row status" x="1180" y="252">10/10</text>
+  <text class="row" x="1040" y="252">16.23s</text>
+  <text class="row status" x="1180" y="252">87/100</text>
   <line class="divider" x1="24" y1="266" x2="1256" y2="266"/>
 
   <!-- Row 3 -->
   <text class="rank rank-3" x="40" y="296">3</text>
   <text class="row provider" x="80" y="296">Kernel</text>
-  <text class="row total" x="240" y="296">47.6</text>
-  <text class="row total medium" x="360" y="296">3.25/s</text>
-  <text class="row" x="500" y="296">15.38s</text>
-  <text class="row" x="640" y="296">18.60s</text>
-  <text class="row" x="780" y="296">379ms</text>
-  <text class="row" x="920" y="296">1.10s</text>
-  <text class="row" x="1040" y="296">17.02s</text>
-  <text class="row status" x="1180" y="296">10/10</text>
+  <text class="row total" x="240" y="296">34.8</text>
+  <text class="row total medium" x="360" y="296">3.14/s</text>
+  <text class="row" x="500" y="296">15.92s</text>
+  <text class="row" x="640" y="296">24.94s</text>
+  <text class="row" x="780" y="296">344ms</text>
+  <text class="row" x="920" y="296">0.32s</text>
+  <text class="row" x="1040" y="296">16.47s</text>
+  <text class="row status" x="1180" y="296">82/100</text>
   <line class="divider" x1="24" y1="310" x2="1256" y2="310"/>
 
   <!-- Row 4 -->
   <text class="rank" x="40" y="340">4</text>
   <text class="row provider" x="80" y="340">Steel</text>
-  <text class="row total" x="240" y="340">28.7</text>
-  <text class="row total medium" x="360" y="340">2.08/s</text>
-  <text class="row" x="500" y="340">24.06s</text>
-  <text class="row" x="640" y="340">28.94s</text>
-  <text class="row" x="780" y="340">616ms</text>
-  <text class="row" x="920" y="340">0.47s</text>
-  <text class="row" x="1040" y="340">25.39s</text>
-  <text class="row status" x="1180" y="340">10/10</text>
+  <text class="row total" x="240" y="340">19.3</text>
+  <text class="row total slow" x="360" y="340">1.88/s</text>
+  <text class="row" x="500" y="340">26.63s</text>
+  <text class="row" x="640" y="340">36.27s</text>
+  <text class="row" x="780" y="340">623ms</text>
+  <text class="row" x="920" y="340">0.36s</text>
+  <text class="row" x="1040" y="340">27.98s</text>
+  <text class="row status" x="1180" y="340">77/100</text>
 
   <!-- Timestamp -->
-  <text class="timestamp" x="1256" y="400" text-anchor="end">Last updated: Jun 29, 2026, 04:40 AM UTC</text>
+  <text class="timestamp" x="1256" y="400" text-anchor="end">Last updated: Jun 30, 2026, 05:22 AM UTC</text>
 
   <!-- Footnote -->
   <text class="timestamp" x="24" y="414">Each session runs 50 sequential actions (navigate, wait, screenshot, textContent, click, goBack) on Wikipedia. Higher APS is better.</text>
