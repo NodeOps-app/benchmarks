@@ -36,26 +36,21 @@ permissions:
   pull-requests: write
 
 jobs:
-  bench:
-    name: Bench ${{ matrix.provider }}
-    runs-on:
-      - ubuntu-latest
-      # - arc-runner-set
+  bench-ubuntu:
+    name: Bench fcspawn (ubuntu)
+    runs-on: ubuntu-latest
     timeout-minutes: 60
-    strategy:
-      fail-fast: false
-      matrix:
-        # fcspawn only. Other providers intentionally removed — this
-        # fork tracks only our numbers on the same harness. Add a
-        # provider back to this list if you want a cross-check run.
-        provider:
-          - fcspawn
     steps:
       - uses: actions/checkout@v4
-      - name: Print runner country
+      - name: Detect runner region
+        id: region
         run: |
           COUNTRY=$(curl -s https://ipinfo.io/country || echo "unknown")
-          echo "Runner country: $COUNTRY"
+          CITY=$(curl -s https://ipinfo.io/city || echo "unknown")
+          REGION=$(curl -s https://ipinfo.io/region || echo "unknown")
+          echo "Runner: ubuntu-latest"
+          echo "Location: $CITY, $REGION, $COUNTRY"
+          echo "suffix=${CITY}, ${COUNTRY}" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -79,7 +74,8 @@ jobs:
             MODE_FLAG="--mode ${{ github.event.inputs.mode }}"
           fi
           npm run bench -- \
-            --provider ${{ matrix.provider }} \
+            --provider fcspawn \
+            --provider-suffix "${{ steps.region.outputs.suffix }}" \
             --iterations ${{ github.event.inputs.iterations || (github.event_name == 'pull_request' && '10') || '100' }} \
             --concurrency ${{ github.event.inputs.concurrency || (github.event_name == 'pull_request' && '10') || '100' }} \
             $MODE_FLAG
@@ -87,16 +83,68 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: results-${{ matrix.provider }}
+          name: results-fcspawn-ubuntu
+          path: results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  bench-selfhosted:
+    name: Bench fcspawn (self-hosted)
+    runs-on: arc-runner-set
+    needs: bench-ubuntu
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect runner region
+        id: region
+        run: |
+          COUNTRY=$(curl -s https://ipinfo.io/country || echo "unknown")
+          CITY=$(curl -s https://ipinfo.io/city || echo "unknown")
+          REGION=$(curl -s https://ipinfo.io/region || echo "unknown")
+          echo "Runner: arc-runner-set (self-hosted)"
+          echo "Location: $CITY, $REGION, $COUNTRY"
+          echo "suffix=${CITY}, ${COUNTRY}" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+      - name: Install dependencies
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            npm update
+          else
+            npm ci
+          fi
+      - name: Clear stale results from checkout
+        run: rm -rf results/
+      - name: Run benchmark
+        env:
+          FCSPAWN_URL:   ${{ secrets.FCSPAWN_URL }}
+          FCSPAWN_TOKEN: ${{ secrets.FCSPAWN_TOKEN }}
+        run: |
+          MODE_FLAG=""
+          if [ -n "${{ github.event.inputs.mode }}" ]; then
+            MODE_FLAG="--mode ${{ github.event.inputs.mode }}"
+          fi
+          npm run bench -- \
+            --provider fcspawn \
+            --provider-suffix "${{ steps.region.outputs.suffix }}" \
+            --iterations ${{ github.event.inputs.iterations || (github.event_name == 'pull_request' && '10') || '100' }} \
+            --concurrency ${{ github.event.inputs.concurrency || (github.event_name == 'pull_request' && '10') || '100' }} \
+            $MODE_FLAG
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-fcspawn-selfhosted
           path: results/
           if-no-files-found: ignore
           retention-days: 7
 
   collect:
     name: Collect Results
-    runs-on:
-      - arc-runner-set
-    needs: bench
+    runs-on: arc-runner-set
+    needs: [bench-ubuntu, bench-selfhosted]
     if: always()
     steps:
       - uses: actions/checkout@v4

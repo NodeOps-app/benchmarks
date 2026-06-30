@@ -25,6 +25,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Parse CLI args
 const args = process.argv.slice(2);
 const providerFilter = getArgValue(args, '--provider');
+const providerSuffix = getArgValue(args, '--provider-suffix');
 const iterations = parseInt(getArgValue(args, '--iterations') || '100', 10);
 const rawMode = getArgValue(args, '--mode');
 const concurrency = parseInt(getArgValue(args, '--concurrency') || '100', 10);
@@ -272,10 +273,14 @@ async function main() {
   console.log(`Tests to run: ${modes.join(', ')}`);
   console.log(`Date: ${new Date().toISOString()}\n`);
 
-  // Filter sandbox providers
-  const toRun = providerFilter
+  // Filter sandbox providers and apply suffix if given
+  let toRun = providerFilter
     ? providers.filter(p => p.name === providerFilter)
     : providers;
+
+  if (providerSuffix) {
+    toRun = toRun.map(p => ({ ...p, name: `${p.name} (${providerSuffix})` }));
+  }
 
   if (toRun.length === 0) {
     console.error(`Unknown provider: ${providerFilter}`);
