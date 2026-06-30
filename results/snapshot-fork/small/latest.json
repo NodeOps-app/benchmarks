@@ -1,0 +1,207 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-06-30T14:55:14.963Z",
+  "environment": {
+    "node": "v24.18.0",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "config": {
+    "iterations": 3,
+    "timeoutMs": 60000
+  },
+  "results": [
+    {
+      "provider": "aws-s3",
+      "mode": "snapshot-fork",
+      "bucket": "aws-snapshot-benchmark",
+      "dataset": "small",
+      "datasetBytes": 10485760,
+      "objectCount": 10,
+      "iterations": [
+        {
+          "seedMs": 328.57,
+          "snapshotCreateMs": 1351.92,
+          "forkFromSnapshotMs": 1255.37,
+          "forkFromLiveMs": 1279.15,
+          "forkFirstReadMs": 92.17,
+          "verified": true,
+          "datasetBytes": 10485760,
+          "objectCount": 10
+        },
+        {
+          "seedMs": 102.92,
+          "snapshotCreateMs": 1302.54,
+          "forkFromSnapshotMs": 1272.44,
+          "forkFromLiveMs": 1286.42,
+          "forkFirstReadMs": 101.12,
+          "verified": true,
+          "datasetBytes": 10485760,
+          "objectCount": 10
+        },
+        {
+          "seedMs": 83.17,
+          "snapshotCreateMs": 1237.53,
+          "forkFromSnapshotMs": 1274.3,
+          "forkFromLiveMs": 1245.39,
+          "forkFirstReadMs": 101.44,
+          "verified": true,
+          "datasetBytes": 10485760,
+          "objectCount": 10
+        }
+      ],
+      "summary": {
+        "snapshotCreateMs": {
+          "median": 1302.54,
+          "p95": 1351.92,
+          "p99": 1351.92
+        },
+        "forkFromSnapshotMs": {
+          "median": 1272.44,
+          "p95": 1274.3,
+          "p99": 1274.3
+        },
+        "forkFromLiveMs": {
+          "median": 1279.15,
+          "p95": 1286.42,
+          "p99": 1286.42
+        },
+        "forkFirstReadMs": {
+          "median": 101.12,
+          "p95": 101.44,
+          "p99": 101.44
+        }
+      },
+      "compositeScore": 98.05,
+      "successRate": 1
+    },
+    {
+      "provider": "cloudflare-r2",
+      "mode": "snapshot-fork",
+      "bucket": "r2-snapshot-benchmark",
+      "dataset": "small",
+      "datasetBytes": 10485760,
+      "objectCount": 10,
+      "iterations": [
+        {
+          "seedMs": 950.18,
+          "snapshotCreateMs": 2606.84,
+          "forkFromSnapshotMs": 2229.41,
+          "forkFromLiveMs": 2159.47,
+          "forkFirstReadMs": 438.67,
+          "verified": true,
+          "datasetBytes": 10485760,
+          "objectCount": 10
+        },
+        {
+          "seedMs": 3075.18,
+          "snapshotCreateMs": 2297.83,
+          "forkFromSnapshotMs": 2541.36,
+          "forkFromLiveMs": 2729.97,
+          "forkFirstReadMs": 287.09,
+          "verified": true,
+          "datasetBytes": 10485760,
+          "objectCount": 10
+        },
+        {
+          "seedMs": 2258.68,
+          "snapshotCreateMs": 5274.64,
+          "forkFromSnapshotMs": 3155.1,
+          "forkFromLiveMs": 3129.19,
+          "forkFirstReadMs": 226.84,
+          "verified": true,
+          "datasetBytes": 10485760,
+          "objectCount": 10
+        }
+      ],
+      "summary": {
+        "snapshotCreateMs": {
+          "median": 2606.84,
+          "p95": 5274.64,
+          "p99": 5274.64
+        },
+        "forkFromSnapshotMs": {
+          "median": 2541.36,
+          "p95": 3155.1,
+          "p99": 3155.1
+        },
+        "forkFromLiveMs": {
+          "median": 2729.97,
+          "p95": 3129.19,
+          "p99": 3129.19
+        },
+        "forkFirstReadMs": {
+          "median": 287.09,
+          "p95": 438.67,
+          "p99": 438.67
+        }
+      },
+      "compositeScore": 96.05,
+      "successRate": 1
+    },
+    {
+      "provider": "tigris",
+      "mode": "snapshot-fork",
+      "bucket": "benchmark-snapshot",
+      "dataset": "small",
+      "datasetBytes": 10485760,
+      "objectCount": 10,
+      "iterations": [
+        {
+          "seedMs": 681.04,
+          "snapshotCreateMs": 72.28,
+          "forkFromSnapshotMs": 184.22,
+          "forkFromLiveMs": 122.29,
+          "forkFirstReadMs": 63.75,
+          "verified": true,
+          "datasetBytes": 10485760,
+          "objectCount": 10
+        },
+        {
+          "seedMs": 410.93,
+          "snapshotCreateMs": 44.5,
+          "forkFromSnapshotMs": 71.36,
+          "forkFromLiveMs": 119.32,
+          "forkFirstReadMs": 83.95,
+          "verified": true,
+          "datasetBytes": 10485760,
+          "objectCount": 10
+        },
+        {
+          "seedMs": 359.58,
+          "snapshotCreateMs": 71.49,
+          "forkFromSnapshotMs": 92.3,
+          "forkFromLiveMs": 97.12,
+          "forkFirstReadMs": 60.91,
+          "verified": true,
+          "datasetBytes": 10485760,
+          "objectCount": 10
+        }
+      ],
+      "summary": {
+        "snapshotCreateMs": {
+          "median": 71.49,
+          "p95": 72.28,
+          "p99": 72.28
+        },
+        "forkFromSnapshotMs": {
+          "median": 92.3,
+          "p95": 184.22,
+          "p99": 184.22
+        },
+        "forkFromLiveMs": {
+          "median": 119.32,
+          "p95": 122.29,
+          "p99": 122.29
+        },
+        "forkFirstReadMs": {
+          "median": 63.75,
+          "p95": 83.95,
+          "p99": 83.95
+        }
+      },
+      "compositeScore": 99.86,
+      "successRate": 1
+    }
+  ]
+}
