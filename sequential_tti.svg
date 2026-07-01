@@ -67,24 +67,24 @@
   <!-- Row 1 -->
   <text class="rank rank-1" x="40" y="208">1</text>
   <text class="row provider" x="80" y="208">Fcspawn (Helsinki, FI)</text>
-  <text class="row median" x="280" y="208">97.0</text>
-  <text class="row median fast" x="420" y="208">0.25s</text>
-  <text class="row" x="600" y="208">0.38s</text>
-  <text class="row" x="780" y="208">0.38s</text>
+  <text class="row median" x="280" y="208">96.4</text>
+  <text class="row median fast" x="420" y="208">0.30s</text>
+  <text class="row" x="600" y="208">0.45s</text>
+  <text class="row" x="780" y="208">0.45s</text>
   <text class="row status" x="960" y="208">100/100</text>
   <line class="divider" x1="24" y1="222" x2="1176" y2="222"/>
 
   <!-- Row 2 -->
   <text class="rank rank-2" x="40" y="252">2</text>
-  <text class="row provider" x="80" y="252">Fcspawn (Washington, US)</text>
-  <text class="row median" x="280" y="252">95.4</text>
-  <text class="row median fast" x="420" y="252">0.42s</text>
-  <text class="row" x="600" y="252">0.48s</text>
-  <text class="row" x="780" y="252">0.58s</text>
+  <text class="row provider" x="80" y="252">Fcspawn (Phoenix, US)</text>
+  <text class="row median" x="280" y="252">93.0</text>
+  <text class="row median fast" x="420" y="252">0.64s</text>
+  <text class="row" x="600" y="252">0.80s</text>
+  <text class="row" x="780" y="252">0.82s</text>
   <text class="row status" x="960" y="252">100/100</text>
 
   <!-- Timestamp -->
-  <text class="timestamp" x="1176" y="312" text-anchor="end">Last updated: Jul 1, 2026, 12:58 AM UTC</text>
+  <text class="timestamp" x="1176" y="312" text-anchor="end">Last updated: Jul 1, 2026, 04:19 PM UTC</text>
 
   <!-- Footnote -->
   <text class="timestamp" x="24" y="326">* Uses ComputeSDK orchestrator</text>
