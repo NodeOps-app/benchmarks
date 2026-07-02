@@ -54,7 +54,7 @@ jobs:
           - cloudflare
           - codesandbox
           # - collimate
-          - createos-sandbox
+          - createos
           - daytona
           - declaw
           - e2b

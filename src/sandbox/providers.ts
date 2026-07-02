@@ -67,7 +67,7 @@ export const providers: ProviderConfig[] = [
   //   createCompute: () => collimate({ apiKey: process.env.COLLIMATE_API_KEY! }),
   // },
   {
-    name: 'createos-sandbox',
+    name: 'createos',
     requiredEnvVars: ['CREATEOS_SANDBOX_API_KEY'],
     createCompute: () => createosSandbox({ apiKey: process.env.CREATEOS_SANDBOX_API_KEY! }),
   },
