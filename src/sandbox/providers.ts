@@ -44,7 +44,7 @@ export const providers: ProviderConfig[] = [
     name: 'beam',
     requiredEnvVars: ['BEAM_TOKEN', 'BEAM_WORKSPACE_ID'],
     createCompute: () => beam({ token: process.env.BEAM_TOKEN!, workspaceId: process.env.BEAM_WORKSPACE_ID! }),
-    sandboxOptions: { name: 'computesdk-benchmarks' },
+    sandboxOptions: { name: 'computesdk-benchmarks', runtime: 'node' },
   },
   {
     name: 'blaxel',
