@@ -17,8 +17,8 @@ const FIRST_HEADING = '#firstHeading';
 // and Parsoid read-HTML (protocol-relative absolute "//en.wikipedia.org/wiki/Foo").
 // :not([href*=":"]) still excludes namespace pages (Help:, File:) and external http(s) links.
 const ARTICLE_LINK = '#mw-content-text a[href*="/wiki/"]:not([href*=":"])';
-const LOOPS_PER_SESSION = 5;
-const ACTIONS_PER_LOOP = 10;
+const LOOPS_PER_SESSION = 1;
+const ACTIONS_PER_LOOP = 10; // fixed to match num of actions defined in benchmark
 const ACTIONS_PER_SESSION = LOOPS_PER_SESSION * ACTIONS_PER_LOOP; // 50
 
 const ACTION_TIMEOUT_MS = 30_000;
