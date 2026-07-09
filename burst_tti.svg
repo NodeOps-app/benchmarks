@@ -70,205 +70,205 @@
   <!-- Row 2 -->
   <text class="rank rank-2" x="40" y="252">2</text>
   <text class="row provider" x="80" y="252">Northflank</text>
-  <text class="row median" x="280" y="252">98.1</text>
-  <text class="row median fast" x="420" y="252">0.18s</text>
-  <text class="row" x="600" y="252">0.21s</text>
-  <text class="row" x="780" y="252">0.21s</text>
+  <text class="row median" x="280" y="252">98.0</text>
+  <text class="row median fast" x="420" y="252">0.19s</text>
+  <text class="row" x="600" y="252">0.22s</text>
+  <text class="row" x="780" y="252">0.22s</text>
   <text class="row status" x="960" y="252">100/100</text>
   <line class="divider" x1="24" y1="266" x2="1176" y2="266"/>
 
   <!-- Row 3 -->
   <text class="rank rank-3" x="40" y="296">3</text>
-  <text class="row provider" x="80" y="296">E2B</text>
-  <text class="row median" x="280" y="296">94.5</text>
-  <text class="row median fast" x="420" y="296">0.47s</text>
-  <text class="row" x="600" y="296">0.64s</text>
-  <text class="row" x="780" y="296">0.67s</text>
+  <text class="row provider" x="80" y="296">Declaw</text>
+  <text class="row median" x="280" y="296">97.2</text>
+  <text class="row median fast" x="420" y="296">0.23s</text>
+  <text class="row" x="600" y="296">0.34s</text>
+  <text class="row" x="780" y="296">0.41s</text>
   <text class="row status" x="960" y="296">100/100</text>
   <line class="divider" x1="24" y1="310" x2="1176" y2="310"/>
 
   <!-- Row 4 -->
   <text class="rank" x="40" y="340">4</text>
-  <text class="row provider" x="80" y="340">Modal</text>
+  <text class="row provider" x="80" y="340">Cloud-run</text>
   <text class="row median" x="280" y="340">94.1</text>
-  <text class="row median fast" x="420" y="340">0.55s</text>
+  <text class="row median fast" x="420" y="340">0.51s</text>
   <text class="row" x="600" y="340">0.60s</text>
-  <text class="row" x="780" y="340">0.71s</text>
+  <text class="row" x="780" y="340">0.89s</text>
   <text class="row status" x="960" y="340">100/100</text>
   <line class="divider" x1="24" y1="354" x2="1176" y2="354"/>
 
   <!-- Row 5 -->
   <text class="rank" x="40" y="384">5</text>
-  <text class="row provider" x="80" y="384">Vercel</text>
+  <text class="row provider" x="80" y="384">Modal</text>
   <text class="row median" x="280" y="384">94.0</text>
-  <text class="row median fast" x="420" y="384">0.52s</text>
-  <text class="row" x="600" y="384">0.69s</text>
-  <text class="row" x="780" y="384">0.76s</text>
+  <text class="row median fast" x="420" y="384">0.57s</text>
+  <text class="row" x="600" y="384">0.64s</text>
+  <text class="row" x="780" y="384">0.69s</text>
   <text class="row status" x="960" y="384">100/100</text>
   <line class="divider" x1="24" y1="398" x2="1176" y2="398"/>
 
   <!-- Row 6 -->
   <text class="rank" x="40" y="428">6</text>
-  <text class="row provider" x="80" y="428">Cloud-run</text>
-  <text class="row median" x="280" y="428">93.1</text>
-  <text class="row median fast" x="420" y="428">0.52s</text>
-  <text class="row" x="600" y="428">0.94s</text>
-  <text class="row" x="780" y="428">0.97s</text>
+  <text class="row provider" x="80" y="428">E2B</text>
+  <text class="row median" x="280" y="428">93.9</text>
+  <text class="row median fast" x="420" y="428">0.47s</text>
+  <text class="row" x="600" y="428">0.71s</text>
+  <text class="row" x="780" y="428">1.02s</text>
   <text class="row status" x="960" y="428">100/100</text>
   <line class="divider" x1="24" y1="442" x2="1176" y2="442"/>
 
   <!-- Row 7 -->
   <text class="rank" x="40" y="472">7</text>
   <text class="row provider" x="80" y="472">Daytona</text>
-  <text class="row median" x="280" y="472">92.0</text>
-  <text class="row median fast" x="420" y="472">0.72s</text>
-  <text class="row" x="600" y="472">0.90s</text>
-  <text class="row" x="780" y="472">0.94s</text>
+  <text class="row median" x="280" y="472">92.2</text>
+  <text class="row median fast" x="420" y="472">0.71s</text>
+  <text class="row" x="600" y="472">0.88s</text>
+  <text class="row" x="780" y="472">0.93s</text>
   <text class="row status" x="960" y="472">100/100</text>
   <line class="divider" x1="24" y1="486" x2="1176" y2="486"/>
 
   <!-- Row 8 -->
   <text class="rank" x="40" y="516">8</text>
-  <text class="row provider" x="80" y="516">Blaxel</text>
-  <text class="row median" x="280" y="516">91.0</text>
-  <text class="row median fast" x="420" y="516">0.77s</text>
-  <text class="row" x="600" y="516">1.00s</text>
-  <text class="row" x="780" y="516">1.24s</text>
+  <text class="row provider" x="80" y="516">Vercel</text>
+  <text class="row median" x="280" y="516">91.7</text>
+  <text class="row median fast" x="420" y="516">0.49s</text>
+  <text class="row" x="600" y="516">0.95s</text>
+  <text class="row" x="780" y="516">1.97s</text>
   <text class="row status" x="960" y="516">100/100</text>
   <line class="divider" x1="24" y1="530" x2="1176" y2="530"/>
 
   <!-- Row 9 -->
   <text class="rank" x="40" y="560">9</text>
-  <text class="row provider" x="80" y="560">Createos</text>
-  <text class="row median" x="280" y="560">89.1</text>
-  <text class="row median fast" x="420" y="560">0.98s</text>
-  <text class="row" x="600" y="560">1.25s</text>
-  <text class="row" x="780" y="560">1.28s</text>
+  <text class="row provider" x="80" y="560">Blaxel</text>
+  <text class="row median" x="280" y="560">90.1</text>
+  <text class="row median fast" x="420" y="560">0.91s</text>
+  <text class="row" x="600" y="560">1.11s</text>
+  <text class="row" x="780" y="560">1.13s</text>
   <text class="row status" x="960" y="560">100/100</text>
   <line class="divider" x1="24" y1="574" x2="1176" y2="574"/>
 
   <!-- Row 10 -->
   <text class="rank" x="40" y="604">10</text>
   <text class="row provider" x="80" y="604">Beam</text>
-  <text class="row median" x="280" y="604">89.1</text>
-  <text class="row median fast" x="420" y="604">0.91s</text>
-  <text class="row" x="600" y="604">1.32s</text>
-  <text class="row" x="780" y="604">1.45s</text>
+  <text class="row median" x="280" y="604">90.0</text>
+  <text class="row median fast" x="420" y="604">0.81s</text>
+  <text class="row" x="600" y="604">1.27s</text>
+  <text class="row" x="780" y="604">1.29s</text>
   <text class="row status" x="960" y="604">100/100</text>
   <line class="divider" x1="24" y1="618" x2="1176" y2="618"/>
 
   <!-- Row 11 -->
   <text class="rank" x="40" y="648">11</text>
-  <text class="row provider" x="80" y="648">Tensorlake</text>
-  <text class="row median" x="280" y="648">87.4</text>
-  <text class="row median medium" x="420" y="648">1.20s</text>
-  <text class="row" x="600" y="648">1.34s</text>
-  <text class="row" x="780" y="648">1.34s</text>
+  <text class="row provider" x="80" y="648">Runloop</text>
+  <text class="row median" x="280" y="648">89.9</text>
+  <text class="row median fast" x="420" y="648">0.97s</text>
+  <text class="row" x="600" y="648">1.07s</text>
+  <text class="row" x="780" y="648">1.09s</text>
   <text class="row status" x="960" y="648">100/100</text>
   <line class="divider" x1="24" y1="662" x2="1176" y2="662"/>
 
   <!-- Row 12 -->
   <text class="rank" x="40" y="692">12</text>
-  <text class="row provider" x="80" y="692">Archil</text>
-  <text class="row median" x="280" y="692">86.7</text>
-  <text class="row median medium" x="420" y="692">1.09s</text>
-  <text class="row" x="600" y="692">1.66s</text>
-  <text class="row" x="780" y="692">1.75s</text>
+  <text class="row provider" x="80" y="692">Createos</text>
+  <text class="row median" x="280" y="692">89.3</text>
+  <text class="row median fast" x="420" y="692">1.00s</text>
+  <text class="row" x="600" y="692">1.14s</text>
+  <text class="row" x="780" y="692">1.20s</text>
   <text class="row status" x="960" y="692">100/100</text>
   <line class="divider" x1="24" y1="706" x2="1176" y2="706"/>
 
   <!-- Row 13 -->
   <text class="rank" x="40" y="736">13</text>
-  <text class="row provider" x="80" y="736">Declaw</text>
-  <text class="row median" x="280" y="736">77.9</text>
-  <text class="row median slow" x="420" y="736">2.03s</text>
-  <text class="row" x="600" y="736">2.47s</text>
-  <text class="row" x="780" y="736">2.51s</text>
+  <text class="row provider" x="80" y="736">Tensorlake</text>
+  <text class="row median" x="280" y="736">88.8</text>
+  <text class="row median fast" x="420" y="736">0.96s</text>
+  <text class="row" x="600" y="736">1.04s</text>
+  <text class="row" x="780" y="736">1.89s</text>
   <text class="row status" x="960" y="736">100/100</text>
   <line class="divider" x1="24" y1="750" x2="1176" y2="750"/>
 
   <!-- Row 14 -->
   <text class="rank" x="40" y="780">14</text>
-  <text class="row provider" x="80" y="780">Runloop</text>
-  <text class="row median" x="280" y="780">72.6</text>
-  <text class="row median medium" x="420" y="780">1.49s</text>
-  <text class="row" x="600" y="780">4.62s</text>
-  <text class="row" x="780" y="780">4.62s</text>
+  <text class="row provider" x="80" y="780">Archil</text>
+  <text class="row median" x="280" y="780">87.1</text>
+  <text class="row median medium" x="420" y="780">1.10s</text>
+  <text class="row" x="600" y="780">1.51s</text>
+  <text class="row" x="780" y="780">1.69s</text>
   <text class="row status" x="960" y="780">100/100</text>
   <line class="divider" x1="24" y1="794" x2="1176" y2="794"/>
 
   <!-- Row 15 -->
   <text class="rank" x="40" y="824">15</text>
   <text class="row provider" x="80" y="824">Upstash</text>
-  <text class="row median" x="280" y="824">66.5</text>
-  <text class="row median slow" x="420" y="824">2.27s</text>
-  <text class="row" x="600" y="824">4.88s</text>
-  <text class="row" x="780" y="824">5.16s</text>
+  <text class="row median" x="280" y="824">70.0</text>
+  <text class="row median slow" x="420" y="824">2.13s</text>
+  <text class="row" x="600" y="824">4.26s</text>
+  <text class="row" x="780" y="824">4.34s</text>
   <text class="row status" x="960" y="824">100/100</text>
   <line class="divider" x1="24" y1="838" x2="1176" y2="838"/>
 
   <!-- Row 16 -->
   <text class="rank" x="40" y="868">16</text>
   <text class="row provider" x="80" y="868">Cloudflare</text>
-  <text class="row median" x="280" y="868">45.3</text>
-  <text class="row median slow" x="420" y="868">4.73s</text>
-  <text class="row" x="600" y="868">6.54s</text>
-  <text class="row" x="780" y="868">6.65s</text>
+  <text class="row median" x="280" y="868">51.2</text>
+  <text class="row median slow" x="420" y="868">4.29s</text>
+  <text class="row" x="600" y="868">5.64s</text>
+  <text class="row" x="780" y="868">5.97s</text>
   <text class="row status" x="960" y="868">100/100</text>
   <line class="divider" x1="24" y1="882" x2="1176" y2="882"/>
 
   <!-- Row 17 -->
   <text class="rank" x="40" y="912">17</text>
-  <text class="row provider" x="80" y="912">Superserve</text>
-  <text class="row median" x="280" y="912">20.5</text>
-  <text class="row median slow" x="420" y="912">5.41s</text>
-  <text class="row" x="600" y="912">5.92s</text>
-  <text class="row" x="780" y="912">6.14s</text>
-  <text class="row status" x="960" y="912">47/100</text>
+  <text class="row provider" x="80" y="912">Codesandbox</text>
+  <text class="row median" x="280" y="912">27.0</text>
+  <text class="row median slow" x="420" y="912">6.52s</text>
+  <text class="row" x="600" y="912">8.40s</text>
+  <text class="row" x="780" y="912">8.61s</text>
+  <text class="row status" x="960" y="912">100/100</text>
   <line class="divider" x1="24" y1="926" x2="1176" y2="926"/>
 
   <!-- Row 18 -->
   <text class="rank" x="40" y="956">18</text>
-  <text class="row provider" x="80" y="956">Codesandbox</text>
-  <text class="row median" x="280" y="956">17.4</text>
-  <text class="row median slow" x="420" y="956">7.11s</text>
-  <text class="row" x="600" y="956">13.28s</text>
-  <text class="row" x="780" y="956">14.77s</text>
-  <text class="row status" x="960" y="956">100/100</text>
+  <text class="row provider" x="80" y="956">Superserve</text>
+  <text class="row median" x="280" y="956">10.6</text>
+  <text class="row median slow" x="420" y="956">5.17s</text>
+  <text class="row" x="600" y="956">6.22s</text>
+  <text class="row" x="780" y="956">6.23s</text>
+  <text class="row status" x="960" y="956">24/100</text>
   <line class="divider" x1="24" y1="970" x2="1176" y2="970"/>
 
   <!-- Row 19 -->
   <text class="rank" x="40" y="1000">19</text>
   <text class="row provider" x="80" y="1000">Hopx</text>
   <text class="row median" x="280" y="1000">0.0</text>
-  <text class="row median slow" x="420" y="1000">--</text>
-  <text class="row" x="600" y="1000">--</text>
-  <text class="row" x="780" y="1000">--</text>
-  <text class="row status" x="960" y="1000">0/100</text>
+  <text class="row median slow" x="420" y="1000">12.86s</text>
+  <text class="row" x="600" y="1000">13.12s</text>
+  <text class="row" x="780" y="1000">13.12s</text>
+  <text class="row status" x="960" y="1000">16/100</text>
 
   <text class="metrics-label" x="24" y="1034">BURST METRICS</text>
-  <text class="metrics-row" x="34" y="1054">Isorun: 100 sandboxes | Wall clock: 0.11s | First ready: 0.03s</text>
-  <text class="metrics-row" x="34" y="1074">Northflank: 100 sandboxes | Wall clock: 0.38s | First ready: 0.10s</text>
-  <text class="metrics-row" x="34" y="1094">E2B: 100 sandboxes | Wall clock: 1.62s | First ready: 0.31s</text>
-  <text class="metrics-row" x="34" y="1114">Modal: 100 sandboxes | Wall clock: 1.54s | First ready: 0.49s</text>
-  <text class="metrics-row" x="34" y="1134">Vercel: 100 sandboxes | Wall clock: 2.52s | First ready: 0.34s</text>
-  <text class="metrics-row" x="34" y="1154">Cloud-run: 100 sandboxes | Wall clock: 1.62s | First ready: 0.44s</text>
-  <text class="metrics-row" x="34" y="1174">Daytona: 100 sandboxes | Wall clock: 1.81s | First ready: 0.22s</text>
-  <text class="metrics-row" x="34" y="1194">Blaxel: 100 sandboxes | Wall clock: 1.50s | First ready: 0.46s</text>
-  <text class="metrics-row" x="34" y="1214">Createos: 100 sandboxes | Wall clock: 1.87s | First ready: 0.57s</text>
-  <text class="metrics-row" x="34" y="1234">Beam: 100 sandboxes | Wall clock: 1.90s | First ready: 0.36s</text>
-  <text class="metrics-row" x="34" y="1254">Tensorlake: 100 sandboxes | Wall clock: 1.46s | First ready: 0.76s</text>
-  <text class="metrics-row" x="34" y="1274">Archil: 100 sandboxes | Wall clock: 2.34s | First ready: 0.33s</text>
-  <text class="metrics-row" x="34" y="1294">Declaw: 100 sandboxes | Wall clock: 18.48s | First ready: 1.23s</text>
-  <text class="metrics-row" x="34" y="1314">Runloop: 100 sandboxes | Wall clock: 4.84s | First ready: 0.91s</text>
-  <text class="metrics-row" x="34" y="1334">Upstash: 100 sandboxes | Wall clock: 5.89s | First ready: 0.33s</text>
-  <text class="metrics-row" x="34" y="1354">Cloudflare: 100 sandboxes | Wall clock: 10.37s | First ready: 1.09s</text>
-  <text class="metrics-row" x="34" y="1374">Superserve: 100 sandboxes | Wall clock: 10.28s | First ready: 1.22s</text>
-  <text class="metrics-row" x="34" y="1394">Codesandbox: 100 sandboxes | Wall clock: 18.28s | First ready: 4.60s</text>
-  <text class="metrics-row" x="34" y="1414">Hopx: 100 sandboxes | Wall clock: 54.83s | First ready: 0.00s</text>
+  <text class="metrics-row" x="34" y="1054">Isorun: 100 sandboxes | Wall clock: 0.10s | First ready: 0.03s</text>
+  <text class="metrics-row" x="34" y="1074">Northflank: 100 sandboxes | Wall clock: 0.39s | First ready: 0.11s</text>
+  <text class="metrics-row" x="34" y="1094">Declaw: 100 sandboxes | Wall clock: 0.80s | First ready: 0.13s</text>
+  <text class="metrics-row" x="34" y="1114">Cloud-run: 100 sandboxes | Wall clock: 2.25s | First ready: 0.42s</text>
+  <text class="metrics-row" x="34" y="1134">Modal: 100 sandboxes | Wall clock: 0.89s | First ready: 0.50s</text>
+  <text class="metrics-row" x="34" y="1154">E2B: 100 sandboxes | Wall clock: 2.32s | First ready: 0.34s</text>
+  <text class="metrics-row" x="34" y="1174">Daytona: 100 sandboxes | Wall clock: 1.39s | First ready: 0.32s</text>
+  <text class="metrics-row" x="34" y="1194">Vercel: 100 sandboxes | Wall clock: 3.15s | First ready: 0.31s</text>
+  <text class="metrics-row" x="34" y="1214">Blaxel: 100 sandboxes | Wall clock: 1.46s | First ready: 0.56s</text>
+  <text class="metrics-row" x="34" y="1234">Beam: 100 sandboxes | Wall clock: 1.53s | First ready: 0.36s</text>
+  <text class="metrics-row" x="34" y="1254">Runloop: 100 sandboxes | Wall clock: 1.28s | First ready: 0.82s</text>
+  <text class="metrics-row" x="34" y="1274">Createos: 100 sandboxes | Wall clock: 1.68s | First ready: 0.55s</text>
+  <text class="metrics-row" x="34" y="1294">Tensorlake: 100 sandboxes | Wall clock: 2.01s | First ready: 0.76s</text>
+  <text class="metrics-row" x="34" y="1314">Archil: 100 sandboxes | Wall clock: 2.17s | First ready: 0.36s</text>
+  <text class="metrics-row" x="34" y="1334">Upstash: 100 sandboxes | Wall clock: 5.29s | First ready: 0.36s</text>
+  <text class="metrics-row" x="34" y="1354">Cloudflare: 100 sandboxes | Wall clock: 8.94s | First ready: 1.01s</text>
+  <text class="metrics-row" x="34" y="1374">Codesandbox: 100 sandboxes | Wall clock: 10.32s | First ready: 4.08s</text>
+  <text class="metrics-row" x="34" y="1394">Superserve: 100 sandboxes | Wall clock: 12.62s | First ready: 4.67s</text>
+  <text class="metrics-row" x="34" y="1414">Hopx: 100 sandboxes | Wall clock: 28.30s | First ready: 2.19s</text>
 
   <!-- Timestamp -->
-  <text class="timestamp" x="1176" y="1480" text-anchor="end">Last updated: Jul 8, 2026, 10:05 AM CDT</text>
+  <text class="timestamp" x="1176" y="1480" text-anchor="end">Last updated: Jul 9, 2026, 01:03 AM UTC</text>
 
   <!-- Footnote -->
   <text class="timestamp" x="24" y="1494">Burst mode: 100 sandboxes launched simultaneously</text>
