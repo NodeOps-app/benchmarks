@@ -16,6 +16,7 @@ import {
 import { runBrowserBenchmark, writeBrowserResultsJson } from './browser/benchmark.js';
 import {
   emptySummary,
+  navUrlForIteration,
   runThroughputBenchmark,
   runThroughputIteration,
   summarizeIterations,
@@ -364,8 +365,10 @@ async function runBrowserThroughput(toRun: typeof throughputProviders): Promise<
     console.log('────────────  ────  ───────  ───────  ───────  ───────  ───────  ─────  ───────');
 
     for (let i = 0; i < iterationsToRun; i++) {
+      // Same URL for every provider in this round; different URL each round.
+      const navigateUrl = navUrlForIteration(i);
       for (const state of active) {
-        const result = await runThroughputIteration(state.provider, state.timeout, state.sessionCreateOptions);
+        const result = await runThroughputIteration(state.provider, state.timeout, state.sessionCreateOptions, navigateUrl);
         state.iterations.push(result);
 
         const pad = (n: number) => `${Math.round(n)}ms`.padStart(7);

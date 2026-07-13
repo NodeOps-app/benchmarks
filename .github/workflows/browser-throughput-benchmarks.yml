@@ -26,9 +26,37 @@ permissions:
   pull-requests: write
 
 jobs:
+  setup:
+    name: Resolve target pages
+    runs-on: namespace-profile-default
+    outputs:
+      urls: ${{ steps.pick.outputs.urls }}
+    steps:
+      - name: Resolve one shared random article per iteration
+        id: pick
+        run: |
+          # Resolve one concrete article per iteration up front so every
+          # provider benchmarks against the same page in a given round — but a
+          # different page each round, so we don't measure a warmed cache.
+          count=${{ github.event_name == 'pull_request' && '3' || github.event.inputs.iterations || '100' }}
+          urls=()
+          for i in $(seq 1 "$count"); do
+            # Follow Special:Random's redirect once to a concrete article URL.
+            url=$(curl -sL -A 'ComputeSDK-Benchmark' -o /dev/null -w '%{url_effective}' \
+              'https://en.wikipedia.org/wiki/Special:Random')
+            if [ -z "$url" ] || [[ "$url" == *"Special:Random"* ]]; then
+              url='https://en.wikipedia.org/wiki/Special:Random'
+            fi
+            urls+=("$url")
+          done
+          json=$(printf '%s\n' "${urls[@]}" | jq -R . | jq -cs .)
+          echo "urls=$json" >> "$GITHUB_OUTPUT"
+          echo "Resolved ${#urls[@]} shared article URLs for all providers"
+
   bench:
     name: Bench ${{ matrix.provider }}
     runs-on: namespace-profile-default
+    needs: setup
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -57,6 +85,7 @@ jobs:
         run: rm -rf results/browser-throughput/
       - name: Run browser throughput benchmark
         env:
+          THROUGHPUT_URLS: ${{ needs.setup.outputs.urls }}
           BROWSERBASE_API_KEY: ${{ secrets.BROWSERBASE_API_KEY }}
           BROWSERBASE_PROJECT_ID: ${{ secrets.BROWSERBASE_PROJECT_ID }}
           BROWSER_USE_API_KEY: ${{ secrets.BROWSER_USE_API_KEY }}

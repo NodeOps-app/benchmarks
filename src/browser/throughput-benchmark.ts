@@ -16,6 +16,33 @@ import {
 
 const RANDOM_URL = 'https://en.wikipedia.org/wiki/Special:Random';
 const FIRST_HEADING = '#firstHeading';
+
+// Providers must be benchmarked against the same pages to be comparable, but in
+// CI each provider runs as a separate job/process — so `Special:Random` makes
+// each one draw different articles. The workflow resolves one concrete article
+// URL per iteration up front and injects the list via THROUGHPUT_URLS (a JSON
+// array). Iteration i then navigates to urls[i] for *every* provider: the same
+// page across providers, but a different page each iteration so we don't measure
+// a warmed cache. Absent the env var (local runs), navigation stays random.
+const NAV_URLS: string[] = parseNavUrls();
+
+function parseNavUrls(): string[] {
+  const raw = process.env.THROUGHPUT_URLS;
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed.filter((u): u is string => typeof u === 'string' && u.length > 0);
+  } catch {
+    // Malformed input falls back to per-navigation random URLs below.
+  }
+  return [];
+}
+
+/** The article URL iteration `i` should navigate to (same across providers). */
+export function navUrlForIteration(i: number): string {
+  if (NAV_URLS.length > 0) return NAV_URLS[i % NAV_URLS.length];
+  return RANDOM_URL;
+}
 // Match article-body links across both classic MediaWiki HTML (relative "/wiki/Foo")
 // and Parsoid read-HTML (protocol-relative absolute "//en.wikipedia.org/wiki/Foo").
 // :not([href*=":"]) still excludes namespace pages (Help:, File:) and external http(s) links.
@@ -68,14 +95,14 @@ async function timeAction<T>(
   }
 }
 
-async function runActionLoop(page: Page, results: ActionResult[]): Promise<void> {
+async function runActionLoop(page: Page, results: ActionResult[], navigateUrl: string): Promise<void> {
   for (let loop = 0; loop < LOOPS_PER_SESSION; loop++) {
     const baseIdx = loop * ACTIONS_PER_LOOP;
 
-    // 1. Navigate to a random article
+    // 1. Navigate to the article for this iteration (shared across providers)
     {
       const r = await timeAction(() =>
-        page.goto(RANDOM_URL, { waitUntil: 'load' }) as Promise<unknown>,
+        page.goto(navigateUrl, { waitUntil: 'load' }) as Promise<unknown>,
       );
       results.push({ index: baseIdx + 1, type: 'navigate', durationMs: r.durationMs, success: r.success, error: r.error });
     }
@@ -147,6 +174,7 @@ export async function runThroughputIteration(
   provider: any,
   timeout: number,
   sessionCreateOptions: Record<string, unknown>,
+  navigateUrl: string,
 ): Promise<ThroughputTimingResult> {
   const totalStart = performance.now();
   const actions: ActionResult[] = [];
@@ -184,7 +212,7 @@ export async function runThroughputIteration(
 
     // 3. Run the 50-action loop. Individual action failures are recorded but
     // do not abort the session.
-    await runActionLoop(page, actions);
+    await runActionLoop(page, actions, navigateUrl);
   } catch (err) {
     iterationError = err instanceof Error ? err.message : String(err);
   } finally {
@@ -295,7 +323,7 @@ export async function runThroughputBenchmark(
   console.log('────  ───────  ───────  ───────  ───────  ───────  ─────  ───────');
 
   for (let i = 0; i < iterations; i++) {
-    const result = await runThroughputIteration(provider, timeout, sessionCreateOptions);
+    const result = await runThroughputIteration(provider, timeout, sessionCreateOptions, navUrlForIteration(i));
     results.push(result);
 
     const pad = (n: number) => `${Math.round(n)}ms`.padStart(7);
