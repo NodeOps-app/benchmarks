@@ -67,10 +67,10 @@
   <text class="row status" x="960" y="208">100/100</text>
 
   <text class="metrics-label" x="24" y="242">STAGGERED METRICS</text>
-  <text class="metrics-row" x="34" y="262">Createos: 100 sandboxes (200ms apart) | Wall clock: 19.92s | First ready: 0.06s</text>
+  <text class="metrics-row" x="34" y="262">Createos: 100 sandboxes (200ms apart) | Wall clock: 19.95s | First ready: 0.06s</text>
 
   <!-- Timestamp -->
-  <text class="timestamp" x="1176" y="328" text-anchor="end">Last updated: Jul 16, 2026, 12:36 PM UTC</text>
+  <text class="timestamp" x="1176" y="328" text-anchor="end">Last updated: Jul 16, 2026, 12:53 PM UTC</text>
 
   <!-- Footnote -->
   <text class="timestamp" x="24" y="342">Staggered mode: 100 sandboxes, 200ms between launches</text>
