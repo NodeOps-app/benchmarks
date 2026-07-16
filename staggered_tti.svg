@@ -78,10 +78,10 @@
 
   <text class="metrics-label" x="24" y="286">STAGGERED METRICS</text>
   <text class="metrics-row" x="34" y="306">Isorun: 10 sandboxes (200ms apart) | Wall clock: 1.83s | First ready: 0.01s</text>
-  <text class="metrics-row" x="34" y="326">Createos: 10 sandboxes (200ms apart) | Wall clock: 1.90s | First ready: 0.07s</text>
+  <text class="metrics-row" x="34" y="326">Createos: 10 sandboxes (200ms apart) | Wall clock: 1.89s | First ready: 0.07s</text>
 
   <!-- Timestamp -->
-  <text class="timestamp" x="1176" y="392" text-anchor="end">Last updated: Jul 16, 2026, 04:56 AM UTC</text>
+  <text class="timestamp" x="1176" y="392" text-anchor="end">Last updated: Jul 16, 2026, 05:05 AM UTC</text>
 
   <!-- Footnote -->
   <text class="timestamp" x="24" y="406">Staggered mode: 10 sandboxes, 200ms between launches</text>

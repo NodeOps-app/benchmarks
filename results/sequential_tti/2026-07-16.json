@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "timestamp": "2026-07-16T04:56:51.332Z",
+  "timestamp": "2026-07-16T05:05:26.835Z",
   "environment": {
     "node": "v24.18.0",
     "platform": "linux",
@@ -15,90 +15,89 @@
       "provider": "createos",
       "iterations": [
         {
-          "ttiMs": 258.24
+          "ttiMs": 149.33
         },
         {
-          "ttiMs": 81.48
+          "ttiMs": 77.85
         },
         {
-          "ttiMs": 72.34
+          "ttiMs": 74.65
         },
         {
-          "ttiMs": 68.85
+          "ttiMs": 74.32
         },
         {
-          "ttiMs": 82.79
+          "ttiMs": 70.23
         },
         {
-          "ttiMs": 66.06
+          "ttiMs": 65.65
         },
         {
-          "ttiMs": 76.26
+          "ttiMs": 64.53
         },
         {
-          "ttiMs": 69.09
+          "ttiMs": 69.45
         },
         {
-          "ttiMs": 69.2
+          "ttiMs": 67.04
         },
         {
-          "ttiMs": 66
+          "ttiMs": 70.06
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 70.77,
-          "p95": 258.24,
-          "p99": 258.24
+          "median": 70.15,
+          "p95": 149.33,
+          "p99": 149.33
         }
       },
-      "compositeScore": 98.54,
+      "compositeScore": 98.98,
       "successRate": 1
     },
     {
       "provider": "isorun",
       "iterations": [
         {
-          "ttiMs": 55.09
+          "ttiMs": 39.67
         },
         {
-          "ttiMs": 21.77
+          "ttiMs": 12.9
         },
         {
-          "ttiMs": 0,
-          "error": "First command execution timed out"
+          "ttiMs": 12.07
         },
         {
-          "ttiMs": 36.38
+          "ttiMs": 12.68
         },
         {
-          "ttiMs": 14.58
+          "ttiMs": 13.16
         },
         {
-          "ttiMs": 19.41
+          "ttiMs": 13.88
         },
         {
-          "ttiMs": 13.65
+          "ttiMs": 12.33
         },
         {
-          "ttiMs": 13.81
+          "ttiMs": 13.18
         },
         {
-          "ttiMs": 14.81
+          "ttiMs": 12.84
         },
         {
-          "ttiMs": 13.1
+          "ttiMs": 12.77
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 14.81,
-          "p95": 55.09,
-          "p99": 55.09
+          "median": 12.87,
+          "p95": 39.67,
+          "p99": 39.67
         }
       },
-      "compositeScore": 89.72,
-      "successRate": 0.9
+      "compositeScore": 99.76,
+      "successRate": 1
     }
   ]
 }
