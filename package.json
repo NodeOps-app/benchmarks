@@ -79,7 +79,7 @@
     "@aws-sdk/s3-presigned-post": "^3.1076.0",
     "@aws-sdk/s3-request-presigner": "^3.1076.0",
     "@azure/storage-blob": "^12.33.0",
-    "@bhautikin/ccos": "^0.1.4",
+    "@bhautikin/ccos": "^0.1.5",
     "@computesdk/anchorbrowser": "^0.2.4",
     "@computesdk/archil": "^0.4.6",
     "@computesdk/beam": "^0.2.0",
