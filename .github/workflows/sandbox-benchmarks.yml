@@ -69,7 +69,7 @@ jobs:
           # - declaw
           # - e2b
           # - hopx
-          - isorun
+          # - isorun
           # - lelantos
           # - lightning
           # - modal
@@ -84,6 +84,8 @@ jobs:
           # - upstash
           # - vercel
     steps:
+      - name: Print IP info
+        run: curl -s https://ipinfo.io
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
