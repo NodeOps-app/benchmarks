@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "timestamp": "2026-07-16T04:49:03.022Z",
+  "timestamp": "2026-07-16T04:56:51.333Z",
   "environment": {
     "node": "v24.18.0",
     "platform": "linux",
@@ -16,100 +16,100 @@
       "mode": "staggered",
       "concurrency": 10,
       "staggerDelayMs": 200,
-      "wallClockMs": 1908.16,
-      "timeToFirstReadyMs": 62.33,
+      "wallClockMs": 1900.31,
+      "timeToFirstReadyMs": 67.44,
       "rampProfile": [
         {
           "launchedAt": 0.01,
-          "readyAt": 100.24,
-          "ttiMs": 74.02
+          "readyAt": 103.39,
+          "ttiMs": 74.1
         },
         {
-          "launchedAt": 199.46,
-          "readyAt": 314.63,
-          "ttiMs": 92.56
+          "launchedAt": 200.72,
+          "readyAt": 302.32,
+          "ttiMs": 75.21
         },
         {
-          "launchedAt": 400.03,
-          "readyAt": 501.25,
-          "ttiMs": 70.69
+          "launchedAt": 400.65,
+          "readyAt": 511.79,
+          "ttiMs": 77.7
         },
         {
-          "launchedAt": 599.66,
+          "launchedAt": 601.08,
           "readyAt": 702.27,
-          "ttiMs": 72.5
+          "ttiMs": 69.95
         },
         {
-          "launchedAt": 799.68,
-          "readyAt": 894.47,
-          "ttiMs": 70.69
+          "launchedAt": 801.67,
+          "readyAt": 906.32,
+          "ttiMs": 73.93
         },
         {
-          "launchedAt": 999.71,
-          "readyAt": 1103.03,
-          "ttiMs": 70.5
+          "launchedAt": 1001.75,
+          "readyAt": 1099.77,
+          "ttiMs": 70.05
         },
         {
-          "launchedAt": 1200.26,
-          "readyAt": 1299.49,
-          "ttiMs": 66.61
+          "launchedAt": 1202.04,
+          "readyAt": 1300,
+          "ttiMs": 72.51
         },
         {
-          "launchedAt": 1400.82,
-          "readyAt": 1489.67,
-          "ttiMs": 65.93
+          "launchedAt": 1402.36,
+          "readyAt": 1499.45,
+          "ttiMs": 69.56
         },
         {
-          "launchedAt": 1601.07,
-          "readyAt": 1698.79,
-          "ttiMs": 62.33
+          "launchedAt": 1602.8,
+          "readyAt": 1699.04,
+          "ttiMs": 67.44
         },
         {
-          "launchedAt": 1801.17,
-          "readyAt": 1908.11,
-          "ttiMs": 72.25
+          "launchedAt": 1802.42,
+          "readyAt": 1900.27,
+          "ttiMs": 73.1
         }
       ],
       "iterations": [
         {
-          "ttiMs": 74.02
+          "ttiMs": 74.1
         },
         {
-          "ttiMs": 92.56
+          "ttiMs": 75.21
         },
         {
-          "ttiMs": 70.69
+          "ttiMs": 77.7
         },
         {
-          "ttiMs": 72.5
+          "ttiMs": 69.95
         },
         {
-          "ttiMs": 70.69
+          "ttiMs": 73.93
         },
         {
-          "ttiMs": 70.5
+          "ttiMs": 70.05
         },
         {
-          "ttiMs": 66.61
+          "ttiMs": 72.51
         },
         {
-          "ttiMs": 65.93
+          "ttiMs": 69.56
         },
         {
-          "ttiMs": 62.33
+          "ttiMs": 67.44
         },
         {
-          "ttiMs": 72.25
+          "ttiMs": 73.1
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 70.69,
-          "p95": 92.56,
-          "p99": 92.56
+          "median": 72.81,
+          "p95": 77.7,
+          "p99": 77.7
         }
       },
-      "compositeScore": 99.21,
+      "compositeScore": 99.25,
       "successRate": 1
     },
     {
@@ -117,100 +117,100 @@
       "mode": "staggered",
       "concurrency": 10,
       "staggerDelayMs": 200,
-      "wallClockMs": 1835.39,
-      "timeToFirstReadyMs": 14.61,
+      "wallClockMs": 1831.41,
+      "timeToFirstReadyMs": 13.04,
       "rampProfile": [
         {
           "launchedAt": 0.01,
-          "readyAt": 38.45,
-          "ttiMs": 22.04
+          "readyAt": 37.48,
+          "ttiMs": 21.95
         },
         {
-          "launchedAt": 200.9,
-          "readyAt": 232.16,
-          "ttiMs": 15.03
+          "launchedAt": 199.8,
+          "readyAt": 228.74,
+          "ttiMs": 13.51
         },
         {
-          "launchedAt": 401.55,
-          "readyAt": 433.88,
-          "ttiMs": 16.18
+          "launchedAt": 400.18,
+          "readyAt": 430.46,
+          "ttiMs": 14.57
         },
         {
-          "launchedAt": 601.23,
-          "readyAt": 633.73,
-          "ttiMs": 15.18
+          "launchedAt": 600.9,
+          "readyAt": 629.17,
+          "ttiMs": 13.06
         },
         {
-          "launchedAt": 801.2,
-          "readyAt": 832.67,
-          "ttiMs": 14.61
+          "launchedAt": 800.53,
+          "readyAt": 828.64,
+          "ttiMs": 13.08
         },
         {
-          "launchedAt": 1001.07,
-          "readyAt": 1032.07,
-          "ttiMs": 14.83
+          "launchedAt": 1001.01,
+          "readyAt": 1029.66,
+          "ttiMs": 13.68
         },
         {
-          "launchedAt": 1201.53,
-          "readyAt": 1232.61,
-          "ttiMs": 14.9
+          "launchedAt": 1201.05,
+          "readyAt": 1229.79,
+          "ttiMs": 13.04
         },
         {
-          "launchedAt": 1402.03,
-          "readyAt": 1435.49,
-          "ttiMs": 16
+          "launchedAt": 1401.24,
+          "readyAt": 1431.45,
+          "ttiMs": 13.66
         },
         {
-          "launchedAt": 1602.94,
-          "readyAt": 1635.92,
-          "ttiMs": 15.78
+          "launchedAt": 1601.82,
+          "readyAt": 1631.52,
+          "ttiMs": 13.93
         },
         {
-          "launchedAt": 1803.32,
-          "readyAt": 1835.32,
-          "ttiMs": 15.08
+          "launchedAt": 1801.88,
+          "readyAt": 1831.35,
+          "ttiMs": 14.06
         }
       ],
       "iterations": [
         {
-          "ttiMs": 22.04
+          "ttiMs": 21.95
         },
         {
-          "ttiMs": 15.03
+          "ttiMs": 13.51
         },
         {
-          "ttiMs": 16.18
+          "ttiMs": 14.57
         },
         {
-          "ttiMs": 15.18
+          "ttiMs": 13.06
         },
         {
-          "ttiMs": 14.61
+          "ttiMs": 13.08
         },
         {
-          "ttiMs": 14.83
+          "ttiMs": 13.68
         },
         {
-          "ttiMs": 14.9
+          "ttiMs": 13.04
         },
         {
-          "ttiMs": 16
+          "ttiMs": 13.66
         },
         {
-          "ttiMs": 15.78
+          "ttiMs": 13.93
         },
         {
-          "ttiMs": 15.08
+          "ttiMs": 14.06
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 15.13,
-          "p95": 22.04,
-          "p99": 22.04
+          "median": 13.67,
+          "p95": 21.95,
+          "p99": 21.95
         }
       },
-      "compositeScore": 99.82,
+      "compositeScore": 99.83,
       "successRate": 1
     }
   ]
