@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "timestamp": "2026-07-16T04:47:13.822Z",
+  "timestamp": "2026-07-16T04:49:03.019Z",
   "environment": {
     "node": "v24.18.0",
     "platform": "linux",
@@ -15,96 +15,96 @@
       "provider": "createos",
       "mode": "concurrent",
       "concurrency": 10,
-      "wallClockMs": 887.98,
-      "timeToFirstReadyMs": 150.55,
+      "wallClockMs": 920.25,
+      "timeToFirstReadyMs": 132.89,
       "iterations": [
         {
-          "ttiMs": 150.55
+          "ttiMs": 132.89
         },
         {
-          "ttiMs": 210.23
+          "ttiMs": 195.82
         },
         {
-          "ttiMs": 269.44
+          "ttiMs": 246.84
         },
         {
-          "ttiMs": 321.17
+          "ttiMs": 310
         },
         {
-          "ttiMs": 380.3
+          "ttiMs": 363.34
         },
         {
-          "ttiMs": 439.58
+          "ttiMs": 420.82
         },
         {
-          "ttiMs": 493.36
+          "ttiMs": 474.71
         },
         {
-          "ttiMs": 556.91
+          "ttiMs": 540.65
         },
         {
-          "ttiMs": 614.76
+          "ttiMs": 602.19
         },
         {
-          "ttiMs": 674.38
+          "ttiMs": 659.89
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 409.94,
-          "p95": 674.38,
-          "p99": 674.38
+          "median": 392.08,
+          "p95": 659.89,
+          "p99": 659.89
         }
       },
-      "compositeScore": 94.84,
+      "compositeScore": 95.01,
       "successRate": 1
     },
     {
       "provider": "isorun",
       "mode": "concurrent",
       "concurrency": 10,
-      "wallClockMs": 45.9,
-      "timeToFirstReadyMs": 24.28,
+      "wallClockMs": 42.78,
+      "timeToFirstReadyMs": 24.04,
       "iterations": [
         {
-          "ttiMs": 29.61
+          "ttiMs": 24.13
         },
         {
-          "ttiMs": 24.55
+          "ttiMs": 24.81
         },
         {
-          "ttiMs": 27.09
+          "ttiMs": 24.38
         },
         {
-          "ttiMs": 24.93
+          "ttiMs": 24.04
         },
         {
-          "ttiMs": 26.69
+          "ttiMs": 24.39
         },
         {
-          "ttiMs": 24.28
+          "ttiMs": 24.74
         },
         {
-          "ttiMs": 29.35
+          "ttiMs": 24.51
         },
         {
-          "ttiMs": 25.18
+          "ttiMs": 24.58
         },
         {
-          "ttiMs": 29.2
+          "ttiMs": 24.68
         },
         {
-          "ttiMs": 24.61
+          "ttiMs": 26.26
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 25.93,
-          "p95": 29.61,
-          "p99": 29.61
+          "median": 24.54,
+          "p95": 26.26,
+          "p99": 26.26
         }
       },
-      "compositeScore": 99.73,
+      "compositeScore": 99.75,
       "successRate": 1
     }
   ]

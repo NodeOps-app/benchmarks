@@ -62,8 +62,8 @@
   <text class="row provider" x="80" y="208">Isorun</text>
   <text class="row median" x="280" y="208">99.8</text>
   <text class="row median fast" x="420" y="208">0.02s</text>
-  <text class="row" x="600" y="208">0.04s</text>
-  <text class="row" x="780" y="208">0.04s</text>
+  <text class="row" x="600" y="208">0.02s</text>
+  <text class="row" x="780" y="208">0.02s</text>
   <text class="row status" x="960" y="208">10/10</text>
   <line class="divider" x1="24" y1="222" x2="1176" y2="222"/>
 
@@ -72,16 +72,16 @@
   <text class="row provider" x="80" y="252">Createos</text>
   <text class="row median" x="280" y="252">99.2</text>
   <text class="row median fast" x="420" y="252">0.07s</text>
-  <text class="row" x="600" y="252">0.08s</text>
-  <text class="row" x="780" y="252">0.08s</text>
+  <text class="row" x="600" y="252">0.09s</text>
+  <text class="row" x="780" y="252">0.09s</text>
   <text class="row status" x="960" y="252">10/10</text>
 
   <text class="metrics-label" x="24" y="286">STAGGERED METRICS</text>
-  <text class="metrics-row" x="34" y="306">Isorun: 10 sandboxes (200ms apart) | Wall clock: 1.83s | First ready: 0.01s</text>
-  <text class="metrics-row" x="34" y="326">Createos: 10 sandboxes (200ms apart) | Wall clock: 1.90s | First ready: 0.06s</text>
+  <text class="metrics-row" x="34" y="306">Isorun: 10 sandboxes (200ms apart) | Wall clock: 1.84s | First ready: 0.01s</text>
+  <text class="metrics-row" x="34" y="326">Createos: 10 sandboxes (200ms apart) | Wall clock: 1.91s | First ready: 0.06s</text>
 
   <!-- Timestamp -->
-  <text class="timestamp" x="1176" y="392" text-anchor="end">Last updated: Jul 16, 2026, 04:47 AM UTC</text>
+  <text class="timestamp" x="1176" y="392" text-anchor="end">Last updated: Jul 16, 2026, 04:49 AM UTC</text>
 
   <!-- Footnote -->
   <text class="timestamp" x="24" y="406">Staggered mode: 10 sandboxes, 200ms between launches</text>
