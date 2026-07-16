@@ -77,7 +77,8 @@ export const providers: ProviderConfig[] = [
   {
     name: 'createos',
     requiredEnvVars: ['CREATEOS_SANDBOX_API_KEY'],
-    createCompute: () => createosSandbox({ apiKey: process.env.CREATEOS_SANDBOX_API_KEY! }),
+    createCompute: () => createosSandbox({ apiKey: process.env.CREATEOS_SANDBOX_API_KEY!,  shape: 's-1vcpu-1gb',
+      rootfs: 'devbox:1', }),
   },
   {
     name: 'daytona',
