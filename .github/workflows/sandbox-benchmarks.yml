@@ -57,32 +57,32 @@ jobs:
       fail-fast: false
       matrix:
         provider:
-          - archil
-          - beam
-          - blaxel
-          - cloud-run
-          - cloudflare
-          - codesandbox
+          # - archil
+          # - beam
+          # - blaxel
+          # - cloud-run
+          # - cloudflare
+          # - codesandbox
           # - collimate
           - createos
-          - daytona
-          - declaw
-          - e2b
-          - hopx
+          # - daytona
+          # - declaw
+          # - e2b
+          # - hopx
           - isorun
           # - lelantos
-          - lightning
-          - modal
+          # - lightning
+          # - modal
           # - namespace
-          - northflank
+          # - northflank
           # - quilt
           # - railway
-          - runloop
-          - superserve
+          # - runloop
+          # - superserve
           # - tenki
-          - tensorlake
-          - upstash
-          - vercel
+          # - tensorlake
+          # - upstash
+          # - vercel
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -191,13 +191,13 @@ jobs:
           pattern: results-*
       - name: Merge results
         run: npx tsx src/merge-results.ts --input artifacts
-      - name: Ingest results to platform
-        if: github.event_name != 'pull_request' && github.event.inputs.dry_run != 'true'
-        continue-on-error: true
-        env:
-          INGEST_URL: ${{ secrets.INGEST_URL }}
-          INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
-        run: npx tsx src/ingest.ts --type sandbox
+      # - name: Ingest results to platform
+      #   if: github.event_name != 'pull_request' && github.event.inputs.dry_run != 'true'
+      #   continue-on-error: true
+      #   env:
+      #     INGEST_URL: ${{ secrets.INGEST_URL }}
+      #     INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
+      #   run: npx tsx src/ingest.ts --type sandbox
       - run: npm run generate-svg
       - run: npm run generate-pricing-svg
       - name: Upload SVGs as artifacts

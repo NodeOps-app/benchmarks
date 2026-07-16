@@ -5,7 +5,7 @@ import { codesandbox } from '@computesdk/codesandbox';
 import { cloudRun } from '@computesdk/cloud-run';
 // import { collimate } from '@computesdk/collimate';
 import { cloudflare } from '@computesdk/cloudflare';
-import { createosSandbox } from '@computesdk/createos-sandbox';
+import { createosSandbox } from '@bhautikin/compute-createos';
 import { daytona } from '@computesdk/daytona';
 import { declaw } from '@computesdk/declaw';
 import { e2b } from '@computesdk/e2b';
