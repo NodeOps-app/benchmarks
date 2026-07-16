@@ -62,12 +62,12 @@
   <text class="row provider" x="80" y="208">Createos</text>
   <text class="row median" x="280" y="208">99.3</text>
   <text class="row median fast" x="420" y="208">0.07s</text>
-  <text class="row" x="600" y="208">0.08s</text>
+  <text class="row" x="600" y="208">0.07s</text>
   <text class="row" x="780" y="208">0.08s</text>
   <text class="row status" x="960" y="208">100/100</text>
 
   <!-- Timestamp -->
-  <text class="timestamp" x="1176" y="268" text-anchor="end">Last updated: Jul 16, 2026, 11:22 AM UTC</text>
+  <text class="timestamp" x="1176" y="268" text-anchor="end">Last updated: Jul 16, 2026, 12:36 PM UTC</text>
 
   <!-- Footnote -->
   <text class="timestamp" x="24" y="282">* Uses ComputeSDK orchestrator</text>
