@@ -67,7 +67,7 @@
   <text class="row status" x="960" y="208">100/100</text>
 
   <!-- Timestamp -->
-  <text class="timestamp" x="1176" y="268" text-anchor="end">Last updated: Jul 16, 2026, 01:46 PM UTC</text>
+  <text class="timestamp" x="1176" y="268" text-anchor="end">Last updated: Jul 17, 2026, 02:27 AM UTC</text>
 
   <!-- Footnote -->
   <text class="timestamp" x="24" y="282">* Uses ComputeSDK orchestrator</text>
