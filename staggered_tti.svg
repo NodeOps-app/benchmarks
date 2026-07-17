@@ -70,7 +70,7 @@
   <text class="metrics-row" x="34" y="262">Createos: 100 sandboxes (200ms apart) | Wall clock: 19.94s | First ready: 0.06s</text>
 
   <!-- Timestamp -->
-  <text class="timestamp" x="1176" y="328" text-anchor="end">Last updated: Jul 17, 2026, 02:27 AM UTC</text>
+  <text class="timestamp" x="1176" y="328" text-anchor="end">Last updated: Jul 17, 2026, 06:18 AM UTC</text>
 
   <!-- Footnote -->
   <text class="timestamp" x="24" y="342">Staggered mode: 100 sandboxes, 200ms between launches</text>
