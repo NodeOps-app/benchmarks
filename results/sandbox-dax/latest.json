@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-07-18T08:21:36.510Z",
+  "timestamp": "2026-07-18T08:31:27.155Z",
   "config": {
     "mode": "sandbox-dax"
   },
@@ -10,11 +10,11 @@
       "mode": "sandbox-dax",
       "iterations": [
         {
-          "totalMs": 4579.42,
+          "totalMs": 4654.71,
           "phasesCompleted": 0,
           "phasesTotal": 7,
-          "prepareMs": 4467,
-          "error": "Script exited with code 1"
+          "prepareMs": 4577,
+          "error": "Script exited with code 1: | Provider | CPU / RAM | Region / CPU | Clone | Install | Typecheck | Workload total | Result | | |---|---|---|---:|---:|---:|---:|---| | | **createos** | 1 CPU / 0.96 GiB | unknown, AMD EPYC | 0.000s | 0.000s | — | — | ❌ prepare |"
         }
       ],
       "summary": {
