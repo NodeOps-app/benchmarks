@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-07-18T03:04:05.707Z",
+  "timestamp": "2026-07-18T03:06:26.342Z",
   "config": {
     "mode": "sandbox-dax"
   },
@@ -10,10 +10,10 @@
       "mode": "sandbox-dax",
       "iterations": [
         {
-          "totalMs": 6454.23,
+          "totalMs": 6616.48,
           "phasesCompleted": 0,
           "phasesTotal": 7,
-          "prepareMs": 6345,
+          "prepareMs": 6504,
           "error": "Script exited with code 1: Traceback (most recent call last): |   File \"<string>\", line 1, in <module> | ModuleNotFoundError: No module named 'setuptools'"
         }
       ],
