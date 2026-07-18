@@ -184,8 +184,10 @@ for (const line of stderr.split('\n')) {
 }
 
 if (exitCode !== 0 && !benchError) {
-  // Include last few lines of stderr for diagnostics
-  const tail = stderr.trim().split('\n').slice(-3).join(' | ');
+  // Include last few lines of stderr (or stdout if stderr is empty) for diagnostics
+  const stderrTail = stderr.trim().split('\n').slice(-3).join(' | ');
+  const stdoutTail = stdout.trim().split('\n').slice(-3).join(' | ');
+  const tail = stderrTail || stdoutTail;
   benchError = 'Script exited with code ' + exitCode + (tail ? ': ' + tail : '');
 }
 if (result.error) {
