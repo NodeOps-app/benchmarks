@@ -37,6 +37,9 @@ import type { ThroughputBenchmarkResult } from './browser/throughput-types.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
+const SANDBOX_WORKLOAD_DIRS = new Set([
+  'sandbox-dax',
+]);
 
 const args = process.argv.slice(2);
 function getArgValue(flag: string): string | undefined {
@@ -74,6 +77,7 @@ function modeToDir(mode: string): string {
     case 'staggered': return 'staggered_tti';
     case 'burst':
     case 'concurrent': return 'burst_tti';
+    case 'sandbox-dax': return 'sandbox-dax';
     default: return `${mode}_tti`;
   }
 }
@@ -168,6 +172,55 @@ async function main() {
     await writeResultsJson(deduped, outPath);
 
     // Copy to latest.json
+    const latestPath = path.join(resultsDir, 'latest.json');
+    fs.copyFileSync(outPath, latestPath);
+    console.log(`Copied latest: ${latestPath}`);
+  }
+
+  // Merge sandbox workload benchmark results (e.g. sandbox-dax)
+  const workloadByMode: Record<string, { results: { result: any; fromSingleProvider: boolean }[] }> = {};
+
+  for (const file of jsonFiles) {
+    const raw = JSON.parse(fs.readFileSync(file, 'utf-8')) as { results?: any[] };
+    if (!raw.results || raw.results.length === 0) continue;
+
+    const dirName = path.basename(path.dirname(file));
+    if (!SANDBOX_WORKLOAD_DIRS.has(dirName)) continue;
+
+    const fromSingleProvider = raw.results.length === 1;
+    if (!workloadByMode[dirName]) workloadByMode[dirName] = { results: [] };
+    for (const result of raw.results) {
+      workloadByMode[dirName].results.push({ result, fromSingleProvider });
+    }
+  }
+
+  for (const [mode, { results }] of Object.entries(workloadByMode)) {
+    const seen = new Map<string, { result: any; fromSingleProvider: boolean }>();
+    for (const entry of results) {
+      const existing = seen.get(entry.result.provider);
+      if (!existing || (entry.fromSingleProvider && !existing.fromSingleProvider)) {
+        seen.set(entry.result.provider, entry);
+      }
+    }
+
+    const deduped = Array.from(seen.values()).map(e => e.result);
+    console.log(`\nMerging ${deduped.length} provider results for mode: ${mode}`);
+
+    const timestamp = new Date().toISOString().slice(0, 10);
+    const resultsDir = path.resolve(ROOT, `results/${modeToDir(mode)}`);
+    fs.mkdirSync(resultsDir, { recursive: true });
+
+    const output = {
+      version: '1.0',
+      timestamp: new Date().toISOString(),
+      config: { mode },
+      results: deduped,
+    };
+
+    const outPath = path.join(resultsDir, `${timestamp}.json`);
+    fs.writeFileSync(outPath, JSON.stringify(output, null, 2));
+    console.log(`Results written to ${outPath}`);
+
     const latestPath = path.join(resultsDir, 'latest.json');
     fs.copyFileSync(outPath, latestPath);
     console.log(`Copied latest: ${latestPath}`);

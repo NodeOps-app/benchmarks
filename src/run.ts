@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import { runBenchmark } from './sandbox/benchmark.js';
 import { runConcurrentBenchmark } from './sandbox/concurrent.js';
 import { runStaggeredBenchmark } from './sandbox/staggered.js';
+import { runDaxBenchmark, writeDaxResultsJson } from './sandbox/dax.js';
 import { runStorageBenchmark, writeStorageResultsJson } from './storage/benchmark.js';
 import {
   runSnapshotForkBenchmark,
@@ -58,18 +59,19 @@ function getArgValue(args: string[], flag: string): string | undefined {
 }
 
 /** Resolve which modes to run */
-function getModesToRun(): BenchmarkMode[] | ['storage'] | ['snapshot-fork'] | ['browser'] | ['browser-throughput'] {
+function getModesToRun(): BenchmarkMode[] | ['storage'] | ['snapshot-fork'] | ['browser'] | ['browser-throughput'] | ['sandbox-dax'] {
   if (!rawMode) return ['sequential', 'staggered', 'burst'];
   if (rawMode === 'storage') return ['storage'];
   if (rawMode === 'snapshot-fork') return ['snapshot-fork'];
   if (rawMode === 'browser') return ['browser'];
   if (rawMode === 'browser-throughput') return ['browser-throughput'];
+  if (rawMode === 'sandbox-dax') return ['sandbox-dax'];
   const m = rawMode === 'concurrent' ? 'burst' : rawMode as BenchmarkMode;
   return [m];
 }
 
 /** Map mode to results subdirectory name */
-function modeToDir(m: BenchmarkMode | 'storage' | 'snapshot-fork' | 'browser-throughput'): string {
+function modeToDir(m: BenchmarkMode | 'storage' | 'snapshot-fork' | 'browser-throughput' | 'sandbox-dax'): string {
   switch (m) {
     case 'sequential': return 'sequential_tti';
     case 'staggered': return 'staggered_tti';
@@ -78,6 +80,7 @@ function modeToDir(m: BenchmarkMode | 'storage' | 'snapshot-fork' | 'browser-thr
     case 'storage': return 'storage';
     case 'snapshot-fork': return 'snapshot-fork';
     case 'browser-throughput': return 'browser-throughput';
+    case 'sandbox-dax': return 'sandbox-dax';
     default: return `${m}_tti`;
   }
 }
@@ -432,6 +435,42 @@ async function runBrowserThroughput(toRun: typeof throughputProviders): Promise<
   console.log(`Copied latest: ${latestPath}`);
 }
 
+async function runSandboxDax(toRun: typeof providers): Promise<void> {
+  console.log('\n' + '='.repeat(70));
+  console.log('  MODE: SANDBOX DAX');
+  console.log(`  Iterations per provider: ${iterations}`);
+  console.log('='.repeat(70));
+
+  const results = [];
+
+  for (const providerConfig of toRun) {
+    const result = await runDaxBenchmark({ ...providerConfig, iterations });
+    results.push(result);
+  }
+
+  console.log('\n--- Sandbox Dax Benchmark Results ---');
+  for (const r of results) {
+    if (r.skipped) {
+      console.log(`${r.provider}: SKIPPED (${r.skipReason})`);
+      continue;
+    }
+    const ok = r.iterations.filter(i => !i.error).length;
+    const total = r.iterations.length;
+    const latest = [...r.iterations].reverse().find(i => i.phasesCompleted != null);
+    const phaseScore = latest ? `${latest.phasesCompleted}/${latest.phasesTotal}` : '--';
+    console.log(`${r.provider}: ${phaseScore} phases | total ${(r.summary.totalMs.median / 1000).toFixed(2)}s | prepare ${(r.summary.prepareMs.median / 1000).toFixed(2)}s | clone ${(r.summary.cloneMs.median / 1000).toFixed(2)}s | install ${(r.summary.installMs.median / 1000).toFixed(2)}s | typecheck ${(r.summary.typecheckMs.median / 1000).toFixed(2)}s (${ok}/${total} OK)`);
+  }
+
+  const timestamp = new Date().toISOString().slice(0, 10);
+  const resultsDir = path.resolve(__dirname, `../results/${modeToDir('sandbox-dax')}`);
+  fs.mkdirSync(resultsDir, { recursive: true });
+  const outPath = path.join(resultsDir, `${timestamp}.json`);
+  await writeDaxResultsJson(results, outPath);
+  const latestPath = path.join(resultsDir, 'latest.json');
+  fs.copyFileSync(outPath, latestPath);
+  console.log(`Copied latest: ${latestPath}`);
+}
+
 async function main() {
   const modes = getModesToRun();
 
@@ -524,6 +563,22 @@ async function main() {
 
     await runSnapshotFork(toRun, datasetArg);
     console.log('\nAll snapshot/fork tests complete.');
+    return;
+  }
+
+  if (modes[0] === 'sandbox-dax') {
+    const toRun = providerFilter
+      ? providers.filter(p => p.name === providerFilter)
+      : providers;
+
+    if (toRun.length === 0) {
+      console.error(`Unknown provider: ${providerFilter}`);
+      console.error(`Available: ${providers.map(p => p.name).join(', ')}`);
+      process.exit(1);
+    }
+
+    await runSandboxDax(toRun);
+    console.log('\nAll sandbox dax tests complete.');
     return;
   }
 

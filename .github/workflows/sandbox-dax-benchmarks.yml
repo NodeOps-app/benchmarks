@@ -1,0 +1,248 @@
+name: Sandbox Dax Benchmark
+
+on:
+  pull_request:
+    paths:
+      - 'src/sandbox/dax.ts'
+      - 'src/run.ts'
+      - 'src/merge-results.ts'
+      - 'package.json'
+      - '.github/workflows/sandbox-dax-benchmarks.yml'
+  schedule:
+    - cron: '0 0 * * 5' # Weekly on Friday at midnight UTC
+  workflow_dispatch:
+    inputs:
+      iterations:
+        description: 'Iterations per provider'
+        required: false
+        default: '1'
+      provider:
+        description: 'Provider to run (leave empty for all)'
+        required: false
+        default: ''
+      dry_run:
+        description: 'Run without ingesting or committing results'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: dax-benchmarks
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  dax:
+    name: Dax ${{ matrix.provider }}
+    runs-on: namespace-profile-default
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        provider:
+          # - archil
+          # - beam
+          # - blaxel
+          # - cloud-run
+          # - cloudflare
+          # - codesandbox
+          - createos
+          # - daytona
+          # - declaw
+          # - e2b
+          # - hopx
+          # - isorun
+          # - lightning
+          # - modal
+          # - northflank
+          # - runloop
+          # - superserve
+          # - tensorlake
+          # - upstash
+          # - vercel
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+      - name: Install dependencies
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            npm update
+          else
+            npm ci
+          fi
+      - name: Clear stale results from checkout
+        run: rm -rf results/
+      - name: Run dax benchmark
+        env:
+          COMPUTESDK_API_KEY: ${{ secrets.COMPUTESDK_API_KEY }}
+          ARCHIL_API_KEY: ${{ secrets.ARCHIL_API_KEY }}
+          ARCHIL_REGION: ${{ secrets.ARCHIL_REGION }}
+          ARCHIL_DISK_ID: ${{ secrets.ARCHIL_DISK_ID }}
+          BEAM_TOKEN: ${{ secrets.BEAM_TOKEN }}
+          BEAM_WORKSPACE_ID: ${{ secrets.BEAM_WORKSPACE_ID }}
+          CLOUD_RUN_SANDBOX_URL: ${{ secrets.CLOUD_RUN_SANDBOX_URL }}
+          CLOUD_RUN_SANDBOX_SECRET: ${{ secrets.CLOUD_RUN_SANDBOX_SECRET }}
+          BL_API_KEY: ${{ secrets.BL_API_KEY }}
+          BL_WORKSPACE: ${{ secrets.BL_WORKSPACE }}
+          CLOUDFLARE_SANDBOX_URL: ${{ secrets.CLOUDFLARE_SANDBOX_URL }}
+          CLOUDFLARE_SANDBOX_SECRET: ${{ secrets.CLOUDFLARE_SANDBOX_SECRET }}
+          CSB_API_KEY: ${{ secrets.CSB_API_KEY }}
+          CREATEOS_SANDBOX_API_KEY: ${{ secrets.CREATEOS_SANDBOX_API_KEY }}
+          DAYTONA_API_KEY: ${{ secrets.DAYTONA_API_KEY }}
+          DECLAW_API_KEY: ${{ secrets.DECLAW_API_KEY }}
+          E2B_API_KEY: ${{ secrets.E2B_API_KEY }}
+          HOPX_API_KEY: ${{ secrets.HOPX_API_KEY }}
+          ISORUN_API_KEY: ${{ secrets.ISORUN_API_KEY }}
+          LIGHTNING_API_KEY: ${{ secrets.LIGHTNING_API_KEY }}
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+          NORTHFLANK_TOKEN: ${{ secrets.NORTHFLANK_TOKEN }}
+          NORTHFLANK_PROJECT_ID: ${{ secrets.NORTHFLANK_PROJECT_ID }}
+          RUNLOOP_API_KEY: ${{ secrets.RUNLOOP_API_KEY }}
+          SUPERSERVE_API_KEY: ${{ secrets.SUPERSERVE_API_KEY }}
+          TENSORLAKE_API_KEY: ${{ secrets.TENSORLAKE_API_KEY }}
+          UPSTASH_BOX_API_KEY: ${{ secrets.UPSTASH_BOX_API_KEY }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          npm run bench -- \
+            --provider ${{ matrix.provider }} \
+            --mode sandbox-dax \
+            --iterations ${{ github.event.inputs.iterations || '1' }}
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-${{ matrix.provider }}-sandbox-dax
+          path: results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  collect:
+    name: Collect Dax Results
+    runs-on: namespace-profile-default
+    needs: dax
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+      - name: Install dependencies
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            npm update
+          else
+            npm ci
+          fi
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+          pattern: results-*
+      - name: Merge results
+        run: npx tsx src/merge-results.ts --input artifacts
+      - name: Ingest results to platform
+        if: github.event_name != 'pull_request' && github.event.inputs.dry_run != 'true'
+        continue-on-error: true
+        env:
+          INGEST_URL: ${{ secrets.INGEST_URL }}
+          INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
+        run: npx tsx src/ingest.ts --type sandbox
+      - name: Post results to PR
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const latestPath = path.join('results', 'sandbox-dax', 'latest.json');
+            let body = '## Sandbox Dax Benchmark Results\n\n';
+            let hasResults = false;
+
+            if (fs.existsSync(latestPath)) {
+              const data = JSON.parse(fs.readFileSync(latestPath, 'utf-8'));
+              const results = data.results.filter(r => !r.skipped);
+              if (results.length > 0) {
+                hasResults = true;
+                body += '| Provider | Phases | Total | Prepare | Clone | Install | Typecheck | Status |\n';
+                body += '|----------|--------|-------|---------|-------|---------|-----------|--------|\n';
+                for (const r of results) {
+                  const latest = [...r.iterations].reverse().find(i => i.phasesCompleted != null);
+                  const score = latest ? `${latest.phasesCompleted}/${latest.phasesTotal}` : '--';
+                  const ok = r.iterations.filter(it => !it.error).length;
+                  const total = r.iterations.length;
+                  const total_s = (r.summary.totalMs.median / 1000).toFixed(2) + 's';
+                  const prepare_s = (r.summary.prepareMs.median / 1000).toFixed(2) + 's';
+                  const clone_s = (r.summary.cloneMs.median / 1000).toFixed(2) + 's';
+                  const install_s = (r.summary.installMs.median / 1000).toFixed(2) + 's';
+                  const typecheck_s = (r.summary.typecheckMs.median / 1000).toFixed(2) + 's';
+                  body += `| ${r.provider} | ${score} | ${total_s} | ${prepare_s} | ${clone_s} | ${install_s} | ${typecheck_s} | ${ok}/${total} OK |\n`;
+                }
+              }
+            }
+
+            if (!hasResults) {
+              body += '> No dax benchmark results were generated.\n\n';
+            }
+
+            body += `---\n*[View full run](${runUrl})*`;
+
+            const marker = '## Sandbox Dax Benchmark Results';
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find(c => c.body.startsWith(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+      - name: Commit and push
+        if: github.event_name != 'pull_request' && github.event.inputs.dry_run != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add results/sandbox-dax/
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "chore: update dax benchmark results [skip ci]"
+
+          branch="${GITHUB_REF#refs/heads/}"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin "${branch}"
+            git rebase "origin/${branch}" || { git rebase --abort; exit 1; }
+            if git push origin "HEAD:${branch}"; then
+              echo "Pushed on attempt ${attempt}"
+              exit 0
+            fi
+            echo "Push rejected (attempt ${attempt}); will rebase and retry"
+          done
+          echo "Failed to push after multiple attempts" >&2
+          exit 1
