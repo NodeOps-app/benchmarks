@@ -63,6 +63,7 @@ jobs:
           - northflank
           - runloop
           - superserve
+          - tenki
           - tensorlake
           - upstash
           - vercel
@@ -120,6 +121,7 @@ jobs:
           NORTHFLANK_PROJECT_ID: ${{ secrets.NORTHFLANK_PROJECT_ID }}
           RUNLOOP_API_KEY: ${{ secrets.RUNLOOP_API_KEY }}
           SUPERSERVE_API_KEY: ${{ secrets.SUPERSERVE_API_KEY }}
+          TENKI_API_KEY: ${{ secrets.TENKI_API_KEY }}
           TENSORLAKE_API_KEY: ${{ secrets.TENSORLAKE_API_KEY }}
           UPSTASH_BOX_API_KEY: ${{ secrets.UPSTASH_BOX_API_KEY }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
