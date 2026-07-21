@@ -114,7 +114,7 @@
     "@computesdk/superserve": "^0.2.1",
     "@computesdk/tenki": "^0.1.1",
     "@computesdk/tensorlake": "^0.1.9",
-    "@computesdk/upstash": "^0.3.7",
+    "@computesdk/upstash": "^0.3.8",
     "@computesdk/vercel": "^1.7.31",
     "@google-cloud/storage": "^7.21.0",
     "@storagesdk/adapters": "^0.7.1",
