@@ -21,7 +21,7 @@ import { northflank } from '@computesdk/northflank';
 import { runloop } from '@computesdk/runloop';
 import { sprites } from '@computesdk/sprites';
 import { superserve } from '@computesdk/superserve';
-// import { tenki } from '@computesdk/tenki';
+import { tenki } from '@computesdk/tenki';
 import { tensorlake } from '@computesdk/tensorlake'
 import { upstash } from '@computesdk/upstash';
 import { vercel } from '@computesdk/vercel';
@@ -169,11 +169,11 @@ export const providers: ProviderConfig[] = [
     // Default template (superserve/base) has no Node; the `node -v` readiness probe needs it.
     sandboxOptions: { templateId: 'superserve/node-22' },
   },
-  // {
-  //   name: 'tenki',
-  //   requiredEnvVars: ['TENKI_API_KEY'],
-  //   createCompute: () => tenki({ apiKey: process.env.TENKI_API_KEY! }),
-  // },
+  {
+    name: 'tenki',
+    requiredEnvVars: ['TENKI_API_KEY'],
+    createCompute: () => tenki({ apiKey: process.env.TENKI_API_KEY! }),
+  },
   {
     name: 'tensorlake',
     requiredEnvVars: ['TENSORLAKE_API_KEY'],
