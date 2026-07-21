@@ -2,6 +2,9 @@ import { chromium, type Browser, type Page } from 'playwright-core';
 import { withTimeout } from '../util/timeout.js';
 import {
   ACTION_TYPES,
+  ACTIONS_PER_LOOP,
+  ACTIONS_PER_SESSION,
+  LOOPS_PER_SESSION,
   type ActionResult,
   type ActionType,
   type ThroughputBenchmarkResult,
@@ -13,10 +16,53 @@ import {
 
 const RANDOM_URL = 'https://en.wikipedia.org/wiki/Special:Random';
 const FIRST_HEADING = '#firstHeading';
-const ARTICLE_LINK = '#mw-content-text a[href^="/wiki/"]:not([href*=":"])';
-const LOOPS_PER_SESSION = 5;
-const ACTIONS_PER_LOOP = 10;
-const ACTIONS_PER_SESSION = LOOPS_PER_SESSION * ACTIONS_PER_LOOP; // 50
+
+// Providers must be benchmarked against the same pages to be comparable, but in
+// CI each provider runs as a separate job/process — so `Special:Random` makes
+// each one draw different articles. The workflow resolves one concrete article
+// URL per iteration up front and injects the list via THROUGHPUT_URLS (a JSON
+// array). Iteration i then navigates to urls[i] for *every* provider: the same
+// page across providers, but a different page each iteration so we don't measure
+// a warmed cache. Absent the env var (local runs), navigation stays random.
+const NAV_URLS: string[] = parseNavUrls();
+
+function parseNavUrls(): string[] {
+  const raw = process.env.THROUGHPUT_URLS?.trim();
+  if (!raw) return [];
+  // Accept either a JSON array or a plain newline/whitespace-delimited list, so
+  // the workflow can emit the URLs with pure bash and not depend on jq/python
+  // being present on the runner image.
+  if (raw.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed.filter((u): u is string => typeof u === 'string' && u.length > 0);
+    } catch {
+      // Malformed JSON falls through to whitespace splitting below.
+    }
+  }
+  return raw.split(/\s+/).filter(u => u.length > 0);
+}
+
+/** The article URL iteration `i` should navigate to (same across providers). */
+export function navUrlForIteration(i: number): string {
+  if (NAV_URLS.length > 0) return NAV_URLS[i % NAV_URLS.length];
+  return RANDOM_URL;
+}
+// Match article-body links across classic MediaWiki HTML (relative "/wiki/Foo"),
+// Parsoid read-HTML (protocol-relative "//en.wikipedia.org/wiki/Foo"), and the
+// newer absolute form ("https://en.wikipedia.org/wiki/Foo").
+// We can't use :not([href*=":"]) because that also rejects https: URLs. Instead
+// we select all /wiki/ links in the content area and filter in JS by checking
+// that the path segment after /wiki/ has no namespace colon (Help:, File:, etc.).
+const ARTICLE_LINK_SELECTOR = '#mw-content-text a[href*="/wiki/"]';
+
+/** Returns true if an href points to a real article (not a namespace page). */
+function isArticleLink(href: string | null): boolean {
+  if (!href) return false;
+  const match = href.match(/\/wiki\/([^#]*)/);
+  if (!match) return false;
+  return !match[1].includes(':');
+}
 
 const ACTION_TIMEOUT_MS = 30_000;
 
@@ -65,14 +111,14 @@ async function timeAction<T>(
   }
 }
 
-async function runActionLoop(page: Page, results: ActionResult[]): Promise<void> {
+async function runActionLoop(page: Page, results: ActionResult[], navigateUrl: string): Promise<void> {
   for (let loop = 0; loop < LOOPS_PER_SESSION; loop++) {
     const baseIdx = loop * ACTIONS_PER_LOOP;
 
-    // 1. Navigate to a random article
+    // 1. Navigate to the article for this iteration (shared across providers)
     {
       const r = await timeAction(() =>
-        page.goto(RANDOM_URL, { waitUntil: 'load' }) as Promise<unknown>,
+        page.goto(navigateUrl, { waitUntil: 'load' }) as Promise<unknown>,
       );
       results.push({ index: baseIdx + 1, type: 'navigate', durationMs: r.durationMs, success: r.success, error: r.error });
     }
@@ -96,12 +142,36 @@ async function runActionLoop(page: Page, results: ActionResult[]): Promise<void>
     }
 
     // 5. Click first article link (filter out meta pages like Help:, File:, etc.)
+    let clickSucceeded = false;
     {
       const r = await timeAction(async () => {
-        const link = await page.waitForSelector(ARTICLE_LINK, { timeout: 10_000 });
-        await link.click();
+        // Wait for any /wiki/ link to appear, then filter in JS for article
+        // links (no namespace colon after /wiki/). This handles relative,
+        // protocol-relative, and absolute https:// URL formats.
+        await page.waitForSelector(ARTICLE_LINK_SELECTOR, { timeout: 10_000 });
+        const links = await page.$$(ARTICLE_LINK_SELECTOR);
+        for (const link of links) {
+          const href = await link.getAttribute('href');
+          if (isArticleLink(href)) {
+            await link.click();
+            return;
+          }
+        }
+        throw new Error('No article body link found on page');
       });
+      clickSucceeded = r.success;
       results.push({ index: baseIdx + 5, type: 'click', durationMs: r.durationMs, success: r.success, error: r.error });
+    }
+
+    // If the click failed (e.g. stub article with no body links), skip the
+    // remaining actions that depend on having navigated to a new page.
+    // Without this, goBack navigates to a blank page and the final
+    // waitForSelector times out for 30s, inflating task time.
+    if (!clickSucceeded) {
+      for (const idx of [6, 7, 8, 9, 10]) {
+        results.push({ index: baseIdx + idx, type: idx <= 8 ? (idx === 6 || idx === 10 ? 'waitForSelector' : idx === 7 ? 'screenshot' : 'textContent') : 'goBack', durationMs: 0, success: false, error: 'skipped: click failed' });
+      }
+      continue;
     }
 
     // 6. Wait for #firstHeading on the new page
@@ -144,6 +214,7 @@ export async function runThroughputIteration(
   provider: any,
   timeout: number,
   sessionCreateOptions: Record<string, unknown>,
+  navigateUrl: string,
 ): Promise<ThroughputTimingResult> {
   const totalStart = performance.now();
   const actions: ActionResult[] = [];
@@ -181,7 +252,7 @@ export async function runThroughputIteration(
 
     // 3. Run the 50-action loop. Individual action failures are recorded but
     // do not abort the session.
-    await runActionLoop(page, actions);
+    await runActionLoop(page, actions, navigateUrl);
   } catch (err) {
     iterationError = err instanceof Error ? err.message : String(err);
   } finally {
@@ -292,7 +363,7 @@ export async function runThroughputBenchmark(
   console.log('────  ───────  ───────  ───────  ───────  ───────  ─────  ───────');
 
   for (let i = 0; i < iterations; i++) {
-    const result = await runThroughputIteration(provider, timeout, sessionCreateOptions);
+    const result = await runThroughputIteration(provider, timeout, sessionCreateOptions, navUrlForIteration(i));
     results.push(result);
 
     const pad = (n: number) => `${Math.round(n)}ms`.padStart(7);

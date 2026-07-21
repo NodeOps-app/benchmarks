@@ -10,8 +10,7 @@ import type { ThroughputProviderConfig } from './throughput-types.js';
  * Throughput benchmark provider configurations.
  *
  * Mirrors src/browser/providers.ts but overrides sessionCreateOptions to
- * include stealth + a 1920x1080 viewport for every provider — these are the
- * settings agent workloads typically use.
+ * use a consistent 1920x1080 viewport for every provider.
  */
 const VIEWPORT = { width: 1920, height: 1080 };
 
@@ -25,9 +24,12 @@ export const throughputProviders: ThroughputProviderConfig[] = [
     }),
     sessionCreateOptions: {
       region: 'us-east-1',
-      stealth: true,
+      stealth: false,
+      proxies: false,
       headless: true,
       viewport: VIEWPORT,
+      recordSession: false,
+      enableNativeSelectPolyfill: false,
     },
   },
   {
@@ -37,7 +39,8 @@ export const throughputProviders: ThroughputProviderConfig[] = [
       apiKey: process.env.BROWSER_USE_API_KEY!,
     }),
     sessionCreateOptions: {
-      stealth: true,
+      stealth: false,
+      proxies: false,
       headless: true,
       viewport: VIEWPORT,
     },
@@ -50,7 +53,8 @@ export const throughputProviders: ThroughputProviderConfig[] = [
     }),
     sessionCreateOptions: {
       region: 'us-east',
-      stealth: true,
+      stealth: false,
+      proxies: false,
       headless: true,
       viewport: VIEWPORT,
     },
@@ -62,7 +66,8 @@ export const throughputProviders: ThroughputProviderConfig[] = [
       apiKey: process.env.KERNEL_API_KEY!,
     }),
     sessionCreateOptions: {
-      stealth: true,
+      stealth: false,
+      proxies: false,
       headless: true,
       viewport: VIEWPORT,
     },
@@ -74,7 +79,8 @@ export const throughputProviders: ThroughputProviderConfig[] = [
       apiKey: process.env.NOTTE_API_KEY!,
     }),
     sessionCreateOptions: {
-      stealth: true,
+      stealth: false,
+      proxies: false,
       headless: true,
       viewport: VIEWPORT,
     },
@@ -86,7 +92,8 @@ export const throughputProviders: ThroughputProviderConfig[] = [
       apiKey: process.env.STEEL_API_KEY!,
     }),
     sessionCreateOptions: {
-      stealth: true,
+      stealth: false,
+      proxies: false,
       headless: true,
       viewport: VIEWPORT,
     },

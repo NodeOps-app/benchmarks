@@ -1,3 +1,10 @@
+/** How many times the fixed action loop repeats within a single session. */
+export const LOOPS_PER_SESSION = 1;
+/** Number of discrete actions in one loop (fixed to the actions defined in the benchmark). */
+export const ACTIONS_PER_LOOP = 10;
+/** Total actions a session runs end-to-end. A "full success" completes exactly this many. */
+export const ACTIONS_PER_SESSION = LOOPS_PER_SESSION * ACTIONS_PER_LOOP;
+
 export type ActionType = 'navigate' | 'waitForSelector' | 'screenshot' | 'textContent' | 'click' | 'goBack';
 
 export const ACTION_TYPES: ActionType[] = [

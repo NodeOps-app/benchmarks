@@ -1,3 +1,73 @@
+## Partners
+
+Our partners support our independent benchmarks.
+
+<p align="center"><sub><strong>★ SILVER</strong></sub></p>
+<p align="center">
+  <a href="https://latitude.sh/?utm_source=github&utm_medium=readme&utm_campaign=benchmarks-sponsor">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://logos.computesdk.com/api/svg/latitude/bounded/logo-dark">
+      <img src="https://logos.computesdk.com/api/svg/latitude/bounded/logo-light" alt="Latitude" height="36">
+    </picture>
+  </a>
+  &nbsp;&nbsp;&nbsp;
+  <a href="https://cloud.google.com/run?utm_source=github&utm_medium=readme&utm_campaign=benchmarks-sponsor">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://logos.computesdk.com/api/svg/google-cloud-run/bounded/logo-dark">
+      <img src="https://logos.computesdk.com/api/svg/google-cloud-run/bounded/logo-light" alt="Google Cloud Run" height="36">
+    </picture>
+  </a>
+</p>
+
+<p align="center"><sub><strong>+ BRONZE</strong></sub></p>
+<p align="center">
+  <a href="https://www.browserbase.com/?utm_source=github&utm_medium=readme&utm_campaign=benchmarks-sponsor">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://logos.computesdk.com/api/svg/browserbase/bounded/logo-dark">
+      <img src="https://logos.computesdk.com/api/svg/browserbase/bounded/logo-light" alt="Browserbase" height="26">
+    </picture>
+  </a>
+  &nbsp;&nbsp;&nbsp;
+  <a href="https://www.tigrisdata.com/?utm_source=github&utm_medium=readme&utm_campaign=benchmarks-sponsor">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://logos.computesdk.com/api/svg/tigris/bounded/logo-dark">
+      <img src="https://logos.computesdk.com/api/svg/tigris/bounded/logo-light" alt="Tigris" height="26">
+    </picture>
+  </a>
+  &nbsp;&nbsp;&nbsp;
+  <a href="https://neon.com/?utm_source=github&utm_medium=readme&utm_campaign=benchmarks-sponsor">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://logos.computesdk.com/api/svg/neon/bounded/logo-dark">
+      <img src="https://logos.computesdk.com/api/svg/neon/bounded/logo-light" alt="Neon" height="26">
+    </picture>
+  </a>
+  &nbsp;&nbsp;&nbsp;
+  <a href="https://www.gitbook.com/?utm_source=github&utm_medium=readme&utm_campaign=benchmarks-sponsor">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://logos.computesdk.com/api/svg/gitbook/bounded/logo-dark">
+      <img src="https://logos.computesdk.com/api/svg/gitbook/bounded/logo-light" alt="GitBook" height="26">
+    </picture>
+  </a>
+</p>
+
+<p align="center"><sub><strong>BENCHMARKS POWERED BY</strong></sub></p>
+<p align="center">
+  <a href="https://namespace.so/?utm_source=github&utm_medium=readme&utm_campaign=benchmarks-sponsor">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://logos.computesdk.com/api/svg/namespace/bounded/logo-dark">
+      <img src="https://logos.computesdk.com/api/svg/namespace/bounded/logo-light" alt="Namespace" height="30">
+    </picture>
+  </a>
+</p>
+
+<p align="center"><a href="./SPONSORSHIP.md">Become a sponsor →</a></p>
+
+<br>
+
+---
+
+<br>
+
 ### [Sequential TTI](#sequential-tti)
 
 ![Sequential TTI](./sequential_tti.svg)
@@ -30,7 +100,6 @@
 
 ![Object Storage Snapshot & Fork](./snapshot_fork_small.svg)
 
-[![Benchmarks](https://github.com/computesdk/benchmarks/actions/workflows/benchmarks.yml/badge.svg)](https://github.com/computesdk/benchmarks/actions/workflows/benchmarks.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 **TTI (Time to Interactive)** = API call to first command execution. Lower is better.
@@ -86,28 +155,13 @@ All tests run on GitHub Actions at 00:00 UTC daily. Providers are tested using C
 
 <br>
 
-## Sponsors
-
-Sponsors enable independent benchmark infrastructure.
-
-<p align="center">
-  <a href="https://dub.sh/CwsSQul"><img src="./sponsors/tier-1/archil-logo.svg" alt="Archil Logo" height="40"></a>&nbsp;&nbsp;&nbsp;
-  <a href="https://dub.sh/zqttNSR"><img src="./sponsors/tier-1/latitude-logo.svg" alt="Latitude.sh Logo" height="40"></a>&nbsp;&nbsp;&nbsp;
-  <a href="https://dub.sh/RuX0uKg"><img src="./sponsors/tier-2/tigris-logo.svg" alt="Tigris Logo" height="40"></a>&nbsp;&nbsp;&nbsp;
-  <a href="https://dub.sh/sD1N8hG"><img src="./sponsors/tier-2/browserbase-logo.svg" alt="Browserbase Logo" height="40"></a>
-</p>
-
-[Learn more →](./SPONSORSHIP.md)
-
-<br>
-
 ## Roadmap
 
 - [x] computesdk.com/benchmarks
 - [x] Add P95 & P99
 - [x] TTI n=100 test
 - [x] TTI n=100 concurrency test (staggered + burst)
-- [ ] 10,000 concurrent sandbox stress test
+- [x] 100,000 concurrent sandbox stress test
 - [ ] Cold start vs warm start metrics
 - [ ] Multi-region testing
 - [x] Cost-per-sandbox-minute

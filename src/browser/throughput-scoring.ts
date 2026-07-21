@@ -1,4 +1,4 @@
-import type { ThroughputBenchmarkResult } from './throughput-types.js';
+import { ACTIONS_PER_SESSION, type ThroughputBenchmarkResult } from './throughput-types.js';
 
 export interface ThroughputScoringWeights {
   apsMedian: number;
@@ -33,14 +33,13 @@ function scoreLatency(valueMs: number): number {
  * Compute the success rate for a throughput benchmark result (0 to 1).
  *
  * A session counts as successful iff it ran end-to-end without an iteration
- * error AND completed all 50 actions. Partial completions still contribute
- * timing data but are not counted as full successes.
+ * error AND completed all ACTIONS_PER_SESSION actions. Partial completions
+ * still contribute timing data but are not counted as full successes.
  */
 export function computeThroughputSuccessRate(result: ThroughputBenchmarkResult): number {
   if (result.skipped || result.iterations.length === 0) return 0;
-  const expectedActions = 50;
   const fullySuccessful = result.iterations.filter(
-    i => !i.error && i.actionsCompleted === expectedActions,
+    i => !i.error && i.actionsCompleted === ACTIONS_PER_SESSION,
   ).length;
   return fullySuccessful / result.iterations.length;
 }

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import type { ThroughputBenchmarkResult } from './throughput-types.js';
+import { ACTIONS_PER_SESSION, type ThroughputBenchmarkResult } from './throughput-types.js';
 import {
   computeThroughputCompositeScores,
   sortThroughputByCompositeScore,
@@ -10,41 +10,6 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
 const RESULTS_DIR = path.join(ROOT, 'results', 'browser-throughput');
-const SPONSORS_DIR_TIER1 = path.join(ROOT, 'sponsors', 'tier-1');
-const SPONSORS_DIR_TIER2 = path.join(ROOT, 'sponsors', 'tier-2');
-
-function loadSponsorImages(): { dataUri: string; name: string }[] {
-  const allSponsors: { dataUri: string; name: string }[] = [];
-
-  const mimeTypes: Record<string, string> = {
-    '.png': 'image/png',
-    '.jpg': 'image/jpeg',
-    '.jpeg': 'image/jpeg',
-    '.svg': 'image/svg+xml',
-  };
-
-  const loadFromDir = (dir: string) => {
-    if (!fs.existsSync(dir)) return;
-
-    const files = fs.readdirSync(dir)
-      .filter(f => /\.(png|jpe?g|svg)$/i.test(f))
-      .sort();
-
-    for (const file of files) {
-      const ext = path.extname(file).toLowerCase();
-      const mime = mimeTypes[ext] || 'image/png';
-      const raw = fs.readFileSync(path.join(dir, file));
-      const b64 = raw.toString('base64');
-      const name = path.basename(file, ext);
-      allSponsors.push({ dataUri: `data:${mime};base64,${b64}`, name });
-    }
-  };
-
-  loadFromDir(SPONSORS_DIR_TIER1);
-  loadFromDir(SPONSORS_DIR_TIER2);
-
-  return allSponsors;
-}
 
 const LOGO_C_PATH = `M1036.26,1002.28h237.87l-.93,19.09c-8.38,110.32-49.81,198.3-123.82,262.07-73.09,63.31-170.84,95.43-290.48,95.43-130.81,0-235.55-44.69-311.43-133.6-74.48-87.98-112.65-209.48-112.65-361.23v-60.51c0-96.83,17.7-183.41,51.68-257.43,34.91-74.95,85.19-133.61,149.89-173.63,64.7-40.04,140.12-60.52,225.3-60.52,117.77,0,214.13,32.12,286.29,95.9,72.62,63.3,114.98,153.61,126.15,267.67l1.86,19.08h-238.34l-.93-15.83c-4.65-59.11-20.95-101.94-47.95-127.08-27-25.6-69.83-38.17-127.08-38.17-61.91,0-107.06,20.95-137.33,65.17-31.65,45.15-47.94,117.77-48.87,215.53v74.48c0,102.41,15.36,177.83,45.62,223.91,28.86,44.22,74.01,65.63,137.79,65.63,58.19,0,101.48-12.57,128.95-38.17,26.99-25.14,43.29-66.1,47.48-121.5l.93-16.3Z`;
 
@@ -64,8 +29,6 @@ function formatSeconds(ms: number): string {
 function formatMs(ms: number): string {
   return `${Math.round(ms)}ms`;
 }
-
-const sponsorImages = loadSponsorImages();
 
 function generateSVG(results: ThroughputBenchmarkResult[], timestamp: string): string {
   if (!results.every(r => r.compositeScore !== undefined)) {
@@ -99,7 +62,7 @@ function generateSVG(results: ThroughputBenchmarkResult[], timestamp: string): s
   };
 
   const title = 'Browser Step Throughput Benchmarks';
-  const subtitle = '50-action Wikipedia loop per session — agent-style sequential actions';
+  const subtitle = `${ACTIONS_PER_SESSION}-action Wikipedia loop per session — agent-style sequential actions`;
 
   let svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
   <defs>
@@ -144,18 +107,6 @@ function generateSVG(results: ThroughputBenchmarkResult[], timestamp: string): s
   <!-- Title -->
   <text class="title" x="${padding + 76}" y="55">${title}</text>
   <text class="subtitle" x="${padding + 76}" y="78">${subtitle}</text>
-${sponsorImages.length > 0 ? (() => {
-  const logoW = 100;
-  const logoH = 32;
-  const logoGap = 12;
-  const totalLogosW = sponsorImages.length * logoW + (sponsorImages.length - 1) * logoGap;
-  const logosStartX = width - padding - totalLogosW;
-  return `
-  <!-- Sponsors -->
-  <text font-size="11" font-family="Inter, SF Pro Display, sans-serif" fill="#8c959f" x="${logosStartX + totalLogosW / 2}" y="36" text-anchor="middle" letter-spacing="1">SPONSORED BY</text>
-  ${sponsorImages.map((img, i) => `<image href="${img.dataUri}" x="${logosStartX + i * (logoW + logoGap)}" y="46" width="${logoW}" height="${logoH}" preserveAspectRatio="xMidYMid meet"/>`).join('\n  ')}`;
-})()
- : ''}
   <!-- Table header background -->
   <rect class="table-header-bg" y="${tableTop}" width="${width}" height="${tableHeaderHeight}"/>
 
@@ -182,8 +133,7 @@ ${sponsorImages.length > 0 ? (() => {
     const screenshotMed = r.summary.perActionType.screenshot?.median ?? 0;
     const createMed = r.summary.createMs.median;
 
-    const expectedActions = 50;
-    const fullSuccess = r.iterations.filter(it => !it.error && it.actionsCompleted === expectedActions).length;
+    const fullSuccess = r.iterations.filter(it => !it.error && it.actionsCompleted === ACTIONS_PER_SESSION).length;
     const total = r.iterations.length;
     const allFailed = fullSuccess === 0;
     const score = r.compositeScore !== undefined ? r.compositeScore.toFixed(1) : '--';
@@ -239,7 +189,7 @@ ${sponsorImages.length > 0 ? (() => {
   <text class="timestamp" x="${width - padding}" y="${height - 28}" text-anchor="end">Last updated: ${date}</text>
 
   <!-- Footnote -->
-  <text class="timestamp" x="${padding}" y="${height - 14}">Each session runs 50 sequential actions (navigate, wait, screenshot, textContent, click, goBack) on Wikipedia. Higher APS is better.</text>
+  <text class="timestamp" x="${padding}" y="${height - 14}">Each session runs ${ACTIONS_PER_SESSION} sequential actions (navigate, wait, screenshot, textContent, click, goBack) on Wikipedia. Higher APS is better.</text>
 
 </svg>`;
 

@@ -19,7 +19,12 @@ export const browserProviders: BrowserProviderConfig[] = [
       apiKey: process.env.BROWSERBASE_API_KEY!,
       projectId: process.env.BROWSERBASE_PROJECT_ID!,
     }),
-    sessionCreateOptions: { region: 'us-east-1' },
+    sessionCreateOptions: {
+      region: 'us-east-1',
+      stealth: false,
+      recordSession: false,
+      enableNativeSelectPolyfill: false,
+    },
   },
   {
     name: 'browseruse',
@@ -27,6 +32,10 @@ export const browserProviders: BrowserProviderConfig[] = [
     createBrowserProvider: () => browseruse({
       apiKey: process.env.BROWSER_USE_API_KEY!
     }),
+    sessionCreateOptions: {
+      proxies: false,
+      stealth: false,
+    },
   },
   {
     name: 'hyperbrowser',
@@ -34,7 +43,10 @@ export const browserProviders: BrowserProviderConfig[] = [
     createBrowserProvider: () => hyperbrowser({
       apiKey: process.env.HYPERBROWSER_API_KEY!
     }),
-    sessionCreateOptions: { region: 'us-east' },
+    sessionCreateOptions: {
+      region: 'us-east',
+      stealth: false,
+    },
   },
   {
     name: 'kernel',
@@ -42,6 +54,7 @@ export const browserProviders: BrowserProviderConfig[] = [
     createBrowserProvider: () => kernel({
       apiKey: process.env.KERNEL_API_KEY!
     }),
+    sessionCreateOptions: { stealth: false },
   },
   {
     name: 'notte',
@@ -49,6 +62,7 @@ export const browserProviders: BrowserProviderConfig[] = [
     createBrowserProvider: () => notte({
       apiKey: process.env.NOTTE_API_KEY!
     }),
+    sessionCreateOptions: { stealth: false },
   },
   {
     name: 'steel',
@@ -56,6 +70,7 @@ export const browserProviders: BrowserProviderConfig[] = [
     createBrowserProvider: () => steel({
       apiKey: process.env.STEEL_API_KEY!
     }),
+    sessionCreateOptions: { stealth: false },
   },
   // add browser providers above
 ];

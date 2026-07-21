@@ -54,7 +54,7 @@ async function runStorageIteration(
     return { uploadMs, downloadMs, throughputMbps, fileSizeBytes };
   } catch (err) {
     const error = formatError(err);
-    
+
     // Attempt cleanup even on failure
     try {
       await withTimeout(storage.delete(key), 10000, 'Delete timed out');

@@ -9,7 +9,7 @@ on:
       - 'src/merge-results.ts'
       - 'package.json'
   schedule:
-    - cron: '0 3 * * *' # Daily at 03:00 UTC (offset from main browser benchmark)
+    - cron: '0 3 * * 5' # Weekly on Friday at 03:00 UTC (offset from main browser benchmark)
   workflow_dispatch:
     inputs:
       iterations:
@@ -26,9 +26,61 @@ permissions:
   pull-requests: write
 
 jobs:
+  setup:
+    name: Resolve target pages
+    runs-on: namespace-profile-default
+    outputs:
+      urls: ${{ steps.pick.outputs.urls }}
+    steps:
+      - name: Resolve one shared random article per iteration
+        id: pick
+        run: |
+          # Resolve one concrete article per iteration up front so every
+          # provider benchmarks against the same page in a given round — but a
+          # different page each round, so we don't measure a warmed cache.
+          count=${{ github.event_name == 'pull_request' && '3' || github.event.inputs.iterations || '100' }}
+          urls=()
+          for i in $(seq 1 "$count"); do
+            # Follow Special:Random's redirect once to a concrete article URL.
+            # Retry up to 5 times until we find an article that has at least
+            # one article-body link (href containing "/wiki/" without a colon,
+            # which excludes namespace pages like Help:, File:, Special:).
+            # Stub articles without body links cause the click action to time
+            # out and skew throughput results.
+            for attempt in 1 2 3 4 5; do
+              url=$(curl -sL -A 'ComputeSDK-Benchmark' -o /dev/null -w '%{url_effective}' \
+                'https://en.wikipedia.org/wiki/Special:Random')
+              if [ -z "$url" ] || [[ "$url" == *"Special:Random"* ]]; then
+                url='https://en.wikipedia.org/wiki/Special:Random'
+                break
+              fi
+              # Fetch the article HTML and check for article-body links.
+              # The benchmark selects #mw-content-text a[href*="/wiki/"] and
+              # filters in JS for links without a namespace colon after /wiki/.
+              # Body links appear as protocol-relative (//en.wikipedia.org/wiki/)
+              # or absolute (https://en.wikipedia.org/wiki/) URLs.
+              html=$(curl -sL -A 'ComputeSDK-Benchmark' "$url")
+              if echo "$html" | grep -qP 'href="(//en\.wikipedia\.org)?/wiki/[^"]*" *' \
+                 && echo "$html" | grep -oP 'href="[^"]*"' \
+                    | grep -qP '/wiki/[^:]*$'; then
+                break
+              fi
+            done
+            urls+=("$url")
+          done
+          # Emit as a newline-delimited multiline output. Pure bash — avoids a
+          # jq/python dependency that may be absent on the runner image.
+          {
+            echo "urls<<URLS_EOF"
+            printf '%s\n' "${urls[@]}"
+            echo "URLS_EOF"
+          } >> "$GITHUB_OUTPUT"
+          echo "Resolved ${#urls[@]} shared article URLs for all providers"
+
   bench:
     name: Bench ${{ matrix.provider }}
     runs-on: namespace-profile-default
+    needs: setup
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -57,6 +109,7 @@ jobs:
         run: rm -rf results/browser-throughput/
       - name: Run browser throughput benchmark
         env:
+          THROUGHPUT_URLS: ${{ needs.setup.outputs.urls }}
           BROWSERBASE_API_KEY: ${{ secrets.BROWSERBASE_API_KEY }}
           BROWSERBASE_PROJECT_ID: ${{ secrets.BROWSERBASE_PROJECT_ID }}
           BROWSER_USE_API_KEY: ${{ secrets.BROWSER_USE_API_KEY }}
@@ -135,6 +188,7 @@ jobs:
               body += '> No browser-throughput benchmark results were generated.\n\n';
             } else {
               const data = JSON.parse(fs.readFileSync(latestPath, 'utf-8'));
+              const expectedActions = data.config?.actionsPerSession ?? 0;
               const results = data.results
                 .filter(r => !r.skipped)
                 .sort((a, b) => (b.compositeScore || 0) - (a.compositeScore || 0));
@@ -152,7 +206,6 @@ jobs:
                   const taskMed = (r.summary.taskMs.median / 1000).toFixed(2) + 's';
                   const taskP95 = (r.summary.taskMs.p95 / 1000).toFixed(2) + 's';
                   const screenshotMed = Math.round(r.summary.perActionType.screenshot?.median || 0) + 'ms';
-                  const expectedActions = 50;
                   const ok = r.iterations.filter(it => !it.error && it.actionsCompleted === expectedActions).length;
                   const count = r.iterations.length;
                   body += `| ${i + 1} | ${name} | ${score} | ${aps} | ${taskMed} | ${taskP95} | ${screenshotMed} | ${ok}/${count} |\n`;

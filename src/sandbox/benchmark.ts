@@ -117,13 +117,26 @@ export async function runIteration(
 
     sandbox = await withTimeout(compute.sandbox.create(sandboxOptions), timeout, 'Sandbox creation timed out');
 
-    const markerA = '/tmp/.bench_ephemeral_check';
-    const markerB = '/var/tmp/.bench_ephemeral_check';
-    const probeToken = reuseDetector
-      ? `${reuseDetector.runNonce}:${Date.now().toString(36)}:${Math.random().toString(36).slice(2, 10)}`
-      : `${Date.now().toString(36)}:${Math.random().toString(36).slice(2, 10)}`;
+    const result = await withTimeout(
+      sandbox.runCommand('node -v'),
+      30_000,
+      'First command execution timed out'
+    ) as { exitCode: number; stderr?: string };
 
-    const identityProbeCommand = [
+    if (result.exitCode !== 0) {
+      throw new Error(`Command failed with exit code ${result.exitCode}: ${result.stderr || 'Unknown error'}`);
+    }
+
+    const ttiMs = performance.now() - start;
+
+    try {
+      const markerA = '/tmp/.bench_ephemeral_check';
+      const markerB = '/var/tmp/.bench_ephemeral_check';
+      const probeToken = reuseDetector
+        ? `${reuseDetector.runNonce}:${Date.now().toString(36)}:${Math.random().toString(36).slice(2, 10)}`
+        : `${Date.now().toString(36)}:${Math.random().toString(36).slice(2, 10)}`;
+
+      const identityProbeCommand = [
       `marker_a='${markerA}'`,
       `marker_b='${markerB}'`,
       "marker_path=''",
@@ -149,46 +162,37 @@ export async function runIteration(
       "printf 'uptime=%s\\n' \"$uptime\"",
       `printf '%s' '${probeToken}' > ${markerA}`,
       `printf '%s' '${probeToken}' > ${markerB}`,
-    ].join('; ');
+      ].join('; ');
 
-    const identityResult = await withTimeout(
-      sandbox.runCommand(identityProbeCommand),
-      30_000,
-      'Sandbox identity check timed out'
-    ) as { exitCode: number; stdout?: string; stderr?: string };
+      const identityResult = await withTimeout(
+        sandbox.runCommand(identityProbeCommand),
+        30_000,
+        'Sandbox identity check timed out'
+      ) as { exitCode: number; stdout?: string; stderr?: string };
 
-    if (identityResult.exitCode !== 0) {
-      throw new Error(`Sandbox identity check failed with exit code ${identityResult.exitCode}: ${identityResult.stderr || 'Unknown error'}`);
-    }
-
-    const identity = parseKeyValueOutput(identityResult.stdout || '');
-
-    if (reuseDetector) {
-      if (identity.marker_path) {
-        throw new Error(`Sandbox/container reuse detected: persistent marker at ${identity.marker_path}`);
+      if (identityResult.exitCode !== 0) {
+        throw new Error(`Sandbox identity check failed with exit code ${identityResult.exitCode}: ${identityResult.stderr || 'Unknown error'}`);
       }
 
-      const strongMatches = countStrongSignalMatches(identity, reuseDetector);
-      if (strongMatches >= 3) {
-        if (process.env.BENCH_REUSE_DEBUG === '1') {
-          console.warn(`    [reuse-check] Sandbox/container reuse suspected: ${strongMatches} strong runtime signals repeated`);
+      const identity = parseKeyValueOutput(identityResult.stdout || '');
+
+      if (reuseDetector) {
+        if (identity.marker_path) {
+          throw new Error(`Sandbox/container reuse detected: persistent marker at ${identity.marker_path}`);
         }
+
+        const strongMatches = countStrongSignalMatches(identity, reuseDetector);
+        if (strongMatches >= 3) {
+          if (process.env.BENCH_REUSE_DEBUG === '1') {
+            console.warn(`    [reuse-check] Sandbox/container reuse suspected: ${strongMatches} strong runtime signals repeated`);
+          }
+        }
+
+        rememberSignals(identity, reuseDetector);
       }
-
-      rememberSignals(identity, reuseDetector);
+    } catch (err) {
+      console.warn(`    [identity-check] failed after TTI: ${err instanceof Error ? err.message : String(err)}`);
     }
-
-    const result = await withTimeout(
-      sandbox.runCommand('node -v'),
-      30_000,
-      'First command execution timed out'
-    ) as { exitCode: number; stderr?: string };
-
-    if (result.exitCode !== 0) {
-      throw new Error(`Command failed with exit code ${result.exitCode}: ${result.stderr || 'Unknown error'}`);
-    }
-
-    const ttiMs = performance.now() - start;
 
     return { ttiMs };
   } finally {

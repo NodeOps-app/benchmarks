@@ -2,7 +2,7 @@ import { archil } from '@computesdk/archil';
 import { beam } from '@computesdk/beam';
 import { blaxel } from '@computesdk/blaxel';
 import { codesandbox } from '@computesdk/codesandbox';
-// import { cloudRun } from '@computesdk/cloud-run';
+import { cloudRun } from '@computesdk/cloud-run';
 // import { collimate } from '@computesdk/collimate';
 import { cloudflare } from '@computesdk/cloudflare';
 import { createosSandbox } from '@computesdk/createos-sandbox';
@@ -12,8 +12,9 @@ import { e2b } from '@computesdk/e2b';
 import { hopx } from '@computesdk/hopx';
 import { isorun } from '@computesdk/isorun';
 // import { lelantos } from '@computesdk/lelantos';
+import { lightning } from '@computesdk/lightning';
 import { modal } from '@computesdk/modal';
-// import { namespace } from '@computesdk/namespace';
+import { namespace } from '@computesdk/namespace';
 import { northflank } from '@computesdk/northflank';
 // import { quilt } from '@computesdk/quilt';
 // import { railway } from '@computesdk/railway';
@@ -52,11 +53,11 @@ export const providers: ProviderConfig[] = [
     requiredEnvVars: ['BL_API_KEY', 'BL_WORKSPACE'],
     createCompute: () => blaxel({ apiKey: process.env.BL_API_KEY!, workspace: process.env.BL_WORKSPACE!, region: 'us-was-1' }),
   },
-  // {
-  //   name: 'cloud-run',
-  //   requiredEnvVars: ['CLOUD_RUN_SANDBOX_URL', 'CLOUD_RUN_SANDBOX_SECRET'],
-  //   createCompute: () => cloudRun({ sandboxUrl: process.env.CLOUD_RUN_SANDBOX_URL!, sandboxSecret: process.env.CLOUD_RUN_SANDBOX_SECRET! }),
-  // },
+  {
+    name: 'cloud-run',
+    requiredEnvVars: ['CLOUD_RUN_SANDBOX_URL', 'CLOUD_RUN_SANDBOX_SECRET'],
+    createCompute: () => cloudRun({ sandboxUrl: process.env.CLOUD_RUN_SANDBOX_URL!, sandboxSecret: process.env.CLOUD_RUN_SANDBOX_SECRET! }),
+  },
   {
     name: 'cloudflare',
     requiredEnvVars: ['CLOUDFLARE_SANDBOX_URL', 'CLOUDFLARE_SANDBOX_SECRET'],
@@ -82,7 +83,7 @@ export const providers: ProviderConfig[] = [
     name: 'daytona',
     requiredEnvVars: ['DAYTONA_API_KEY'],
     createCompute: () => daytona({ apiKey: process.env.DAYTONA_API_KEY! }),
-    sandboxOptions: { autoStopInterval: 15, autoDeleteInterval: 0 },
+    sandboxOptions: { autoStopInterval: 15, autoDeleteInterval: 0, image: 'node:22' },
   },
   {
     name: 'declaw',
@@ -93,6 +94,7 @@ export const providers: ProviderConfig[] = [
     name: 'e2b',
     requiredEnvVars: ['E2B_API_KEY'],
     createCompute: () => e2b({ apiKey: process.env.E2B_API_KEY! }),
+    sandboxOptions: { templateId: 'base-8cpu-16gb', timeout: 600_000 },
   },
   {
     name: 'hopx',
@@ -111,16 +113,26 @@ export const providers: ProviderConfig[] = [
   //   createCompute: () => lelantos({ apiKey: process.env.LELANTOS_API_KEY! }),
   // },
   {
+    name: 'lightning',
+    requiredEnvVars: ['LIGHTNING_API_KEY'],
+    createCompute: () => lightning({ apiKey: process.env.LIGHTNING_API_KEY! }),
+  },
+  {
     name: 'modal',
     requiredEnvVars: ['MODAL_TOKEN_ID', 'MODAL_TOKEN_SECRET'],
     createCompute: () => modal({ tokenId: process.env.MODAL_TOKEN_ID!, tokenSecret: process.env.MODAL_TOKEN_SECRET!, scalableSandboxes: true }),
   },
-  // {
-  //   name: 'namespace',
-  //   requiredEnvVars: ['NSC_TOKEN'],
-  //   createCompute: () => namespace({ token: process.env.NSC_TOKEN! }),
-  //   sandboxOptions: { image: 'node:22' },
-  // },
+  {
+    name: 'namespace',
+    requiredEnvVars: ['NSC_TOKEN'],
+    createCompute: () =>
+      namespace({
+        token: process.env.NSC_TOKEN!,
+        virtualCpu: 8,
+        memoryMegabytes: 16384,
+      }),
+    // Use namespace's builtin:base image (default in @computesdk/namespace@1.6.14+)
+  },
   {
     name: 'northflank',
     requiredEnvVars: ['NORTHFLANK_TOKEN', 'NORTHFLANK_PROJECT_ID'],
@@ -171,7 +183,11 @@ export const providers: ProviderConfig[] = [
     name: 'upstash',
     requiredEnvVars: ['UPSTASH_BOX_API_KEY'],
     createCompute: () => upstash({ apiKey: process.env.UPSTASH_BOX_API_KEY! }),
-    sandboxOptions: { ephemeral: true },
+    // Note: ephemeral: true is intentionally omitted. The ComputeSDK wrapper's
+    // ephemeral path doesn't forward `size` to EphemeralBox.create(), so
+    // size: 'large' would be silently dropped. Using a regular Box ensures
+    // the resource sizing from DAX_RESOURCE_OPTIONS is applied.
+    sandboxOptions: {},
   },
   {
     name: 'vercel',
