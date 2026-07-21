@@ -17,6 +17,8 @@ const BENCH_SCRIPT_PATH = path.resolve(import.meta.dirname, '../../scripts/dax-b
 // Each provider uses different parameter names and units, so we map per-provider.
 // Providers not listed here don't support CPU/memory configuration at sandbox creation time.
 // Note: E2B sets CPU/memory at template build time, not at sandbox creation.
+// Note: lightning is sized via LIGHTNING_INSTANCE_TYPE=cpu-8 (8 vCPU / 16 GiB), applied on
+// the provider factory in providers.ts — the SDK ignores an instanceType passed to create().
 const DAX_RESOURCE_OPTIONS: Record<string, Record<string, any>> = {
   modal:        { cpu: 4, cpuLimit: 4, memoryMiB: 16384 }, // Modal: 1 core = 2 vCPUs, so 4 cores = 8 vCPUs
   tensorlake:   { cpus: 8, memoryMb: 16384 },

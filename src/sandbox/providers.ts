@@ -115,7 +115,15 @@ export const providers: ProviderConfig[] = [
   {
     name: 'lightning',
     requiredEnvVars: ['LIGHTNING_API_KEY'],
-    createCompute: () => lightning({ apiKey: process.env.LIGHTNING_API_KEY! }),
+    // Lightning sizes sandboxes via `instanceType` on the provider factory (the SDK
+    // ignores an instanceType passed to sandbox.create()), so it can't be sized through
+    // DAX_RESOURCE_OPTIONS like most providers. The dax workflow sets
+    // LIGHTNING_INSTANCE_TYPE=cpu-8 for the standardized 8 vCPU / 16 GiB profile;
+    // it defaults to cpu-1 (the SDK default) everywhere else.
+    createCompute: () => lightning({
+      apiKey: process.env.LIGHTNING_API_KEY!,
+      instanceType: process.env.LIGHTNING_INSTANCE_TYPE || 'cpu-1',
+    }),
   },
   {
     name: 'modal',
