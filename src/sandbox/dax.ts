@@ -233,6 +233,9 @@ async function runDaxIteration(sandbox: any, providerName: string, timeout: numb
   // The script's phase() function emits BENCH_PHASE even for the failing phase (it prints timing before checking exit code).
   // When there's an error, the last phase that emitted a BENCH_PHASE line is the one that failed, so don't count it.
   const phasesCompleted = benchError ? Math.max(0, rawPhasesCompleted - 1) : rawPhasesCompleted;
+  // Determine which phase failed so we can exclude its timing from the result.
+  // The failed phase is the last one that emitted BENCH_PHASE (index rawPhasesCompleted - 1).
+  const failedPhaseKey = benchError && rawPhasesCompleted > 0 ? phaseKeys[rawPhasesCompleted - 1] : null;
 
   // If no phases completed, the script didn't actually run (e.g. heredoc failure)
   if (phasesCompleted === 0 && !benchError) {
@@ -244,13 +247,13 @@ async function runDaxIteration(sandbox: any, providerName: string, timeout: numb
     totalMs,
     phasesCompleted,
     phasesTotal: phaseKeys.length,
-    prepareMs: phases.prepare,
-    cacheClearMs: phases.cache_clear,
-    bunDownloadMs: phases.bun_download,
-    bunUnpackMs: phases.bun_unpack,
-    cloneMs: phases.clone,
-    installMs: phases.install,
-    typecheckMs: phases.typecheck,
+    prepareMs: failedPhaseKey === 'prepare' ? undefined : phases.prepare,
+    cacheClearMs: failedPhaseKey === 'cache_clear' ? undefined : phases.cache_clear,
+    bunDownloadMs: failedPhaseKey === 'bun_download' ? undefined : phases.bun_download,
+    bunUnpackMs: failedPhaseKey === 'bun_unpack' ? undefined : phases.bun_unpack,
+    cloneMs: failedPhaseKey === 'clone' ? undefined : phases.clone,
+    installMs: failedPhaseKey === 'install' ? undefined : phases.install,
+    typecheckMs: failedPhaseKey === 'typecheck' ? undefined : phases.typecheck,
     diskAfterClone: disk.after_clone,
     diskAfterInstall: disk.after_install,
     diskAfterTypecheck: disk.after_typecheck,
