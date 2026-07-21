@@ -128,8 +128,8 @@ export const providers: ProviderConfig[] = [
     createCompute: () =>
       namespace({
         token: process.env.NSC_TOKEN!,
-        virtualCpu: 16,
-        memoryMegabytes: 32768,
+        virtualCpu: 8,
+        memoryMegabytes: 16384,
       }),
     // Use namespace's builtin:base image (default in @computesdk/namespace@1.6.14+)
   },
