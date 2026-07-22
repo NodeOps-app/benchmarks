@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "timestamp": "2026-07-22T15:35:52.732Z",
+  "timestamp": "2026-07-22T15:37:26.179Z",
   "environment": {
     "node": "v24.18.0",
     "platform": "linux",
@@ -15,48 +15,48 @@
       "provider": "createos",
       "mode": "concurrent",
       "concurrency": 10,
-      "wallClockMs": 120.61,
-      "timeToFirstReadyMs": 70.48,
+      "wallClockMs": 129.6,
+      "timeToFirstReadyMs": 61.14,
       "iterations": [
         {
-          "ttiMs": 72.3
+          "ttiMs": 94.21
         },
         {
-          "ttiMs": 76.18
+          "ttiMs": 61.14
         },
         {
-          "ttiMs": 92.69
+          "ttiMs": 84.88
         },
         {
-          "ttiMs": 83.01
+          "ttiMs": 84.19
         },
         {
-          "ttiMs": 74.25
+          "ttiMs": 97.06
         },
         {
-          "ttiMs": 73.35
+          "ttiMs": 78.86
         },
         {
-          "ttiMs": 84.74
+          "ttiMs": 68.29
         },
         {
-          "ttiMs": 77.16
+          "ttiMs": 62.44
         },
         {
-          "ttiMs": 70.48
+          "ttiMs": 89.02
         },
         {
-          "ttiMs": 89.61
+          "ttiMs": 74.92
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 76.67,
-          "p95": 92.69,
-          "p99": 92.69
+          "median": 81.52,
+          "p95": 97.06,
+          "p99": 97.06
         }
       },
-      "compositeScore": 99.17,
+      "compositeScore": 99.12,
       "successRate": 1
     }
   ]

@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "timestamp": "2026-07-22T15:35:52.733Z",
+  "timestamp": "2026-07-22T15:37:26.180Z",
   "environment": {
     "node": "v24.18.0",
     "platform": "linux",
@@ -16,100 +16,100 @@
       "mode": "staggered",
       "concurrency": 10,
       "staggerDelayMs": 200,
-      "wallClockMs": 1893.29,
-      "timeToFirstReadyMs": 50.5,
+      "wallClockMs": 1892.75,
+      "timeToFirstReadyMs": 42.84,
       "rampProfile": [
         {
           "launchedAt": 0.01,
-          "readyAt": 76.72,
-          "ttiMs": 53.42
+          "readyAt": 66.22,
+          "ttiMs": 44.61
         },
         {
-          "launchedAt": 201.31,
-          "readyAt": 283.12,
-          "ttiMs": 52.96
+          "launchedAt": 200.61,
+          "readyAt": 287.03,
+          "ttiMs": 55.7
         },
         {
-          "launchedAt": 401.53,
-          "readyAt": 485.04,
-          "ttiMs": 52.04
+          "launchedAt": 401.48,
+          "readyAt": 464.9,
+          "ttiMs": 42.84
         },
         {
-          "launchedAt": 601.57,
-          "readyAt": 683.4,
-          "ttiMs": 52.92
+          "launchedAt": 602.15,
+          "readyAt": 666.64,
+          "ttiMs": 44.19
         },
         {
-          "launchedAt": 802.14,
-          "readyAt": 879.68,
-          "ttiMs": 52.62
+          "launchedAt": 802.09,
+          "readyAt": 879.35,
+          "ttiMs": 54.44
         },
         {
-          "launchedAt": 1003.26,
-          "readyAt": 1083.83,
-          "ttiMs": 56.39
+          "launchedAt": 1002.62,
+          "readyAt": 1085.39,
+          "ttiMs": 54.19
         },
         {
-          "launchedAt": 1208.33,
-          "readyAt": 1284.28,
-          "ttiMs": 50.5
+          "launchedAt": 1202.75,
+          "readyAt": 1289.47,
+          "ttiMs": 51.08
         },
         {
-          "launchedAt": 1408.93,
-          "readyAt": 1525.95,
-          "ttiMs": 52.69
+          "launchedAt": 1402.87,
+          "readyAt": 1481.55,
+          "ttiMs": 51.36
         },
         {
-          "launchedAt": 1609.51,
-          "readyAt": 1692.34,
-          "ttiMs": 55.37
+          "launchedAt": 1602.88,
+          "readyAt": 1681.26,
+          "ttiMs": 49.6
         },
         {
-          "launchedAt": 1810.08,
-          "readyAt": 1893.2,
-          "ttiMs": 53.08
+          "launchedAt": 1803.67,
+          "readyAt": 1892.69,
+          "ttiMs": 60.16
         }
       ],
       "iterations": [
         {
-          "ttiMs": 53.42
+          "ttiMs": 44.61
         },
         {
-          "ttiMs": 52.96
+          "ttiMs": 55.7
         },
         {
-          "ttiMs": 52.04
+          "ttiMs": 42.84
         },
         {
-          "ttiMs": 52.92
+          "ttiMs": 44.19
         },
         {
-          "ttiMs": 52.62
+          "ttiMs": 54.44
         },
         {
-          "ttiMs": 56.39
+          "ttiMs": 54.19
         },
         {
-          "ttiMs": 50.5
+          "ttiMs": 51.08
         },
         {
-          "ttiMs": 52.69
+          "ttiMs": 51.36
         },
         {
-          "ttiMs": 55.37
+          "ttiMs": 49.6
         },
         {
-          "ttiMs": 53.08
+          "ttiMs": 60.16
         }
       ],
       "summary": {
         "ttiMs": {
-          "median": 52.94,
-          "p95": 56.39,
-          "p99": 56.39
+          "median": 51.22,
+          "p95": 60.16,
+          "p99": 60.16
         }
       },
-      "compositeScore": 99.46,
+      "compositeScore": 99.45,
       "successRate": 1
     }
   ]
