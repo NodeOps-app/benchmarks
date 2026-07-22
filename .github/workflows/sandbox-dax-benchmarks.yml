@@ -85,6 +85,11 @@ jobs:
         env:
           E2B_API_KEY: ${{ secrets.E2B_API_KEY }}
         run: npx tsx scripts/build-e2b-template.ts
+      - name: Build Superserve template with 8 vCPU / 16 GiB
+        if: matrix.provider == 'superserve'
+        env:
+          SUPERSERVE_API_KEY: ${{ secrets.SUPERSERVE_API_KEY }}
+        run: npx tsx scripts/build-superserve-template.ts
       - name: Find Northflank plan for 8 vCPU / 16 GiB
         if: matrix.provider == 'northflank'
         env:
