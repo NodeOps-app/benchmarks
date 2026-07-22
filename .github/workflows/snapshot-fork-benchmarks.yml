@@ -1,7 +1,8 @@
 name: Snapshot/Fork Benchmark
 
 on:
-  pull_request:
+  push:
+    branches: [master]
     paths:
       - 'src/storage/**'
       - 'src/util/**'
@@ -112,7 +113,7 @@ jobs:
             --mode snapshot-fork \
             --provider ${{ matrix.provider }} \
             --dataset ${{ github.event.inputs.dataset || 'small' }} \
-            --iterations ${{ (github.event_name == 'schedule' && '100') || github.event.inputs.iterations || (github.event_name == 'pull_request' && '1') || '3' }}
+            --iterations ${{ (github.event_name == 'schedule' && '100') || github.event.inputs.iterations || (github.event_name == 'push' && '1') || '3' }}
       - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4
@@ -169,15 +170,15 @@ jobs:
             echo "No snapshot/fork results to render"
           fi
       - name: Upload SVGs as artifacts
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'push'
         uses: actions/upload-artifact@v4
         with:
           name: snapshot-fork-benchmark-svgs
           path: snapshot_fork_*.svg
           if-no-files-found: ignore
           retention-days: 7
-      - name: Post snapshot/fork results to PR
-        if: github.event_name == 'pull_request'
+      - name: Post snapshot/fork results to merged PR
+        if: github.event_name == 'push'
         continue-on-error: true
         uses: actions/github-script@v7
         with:
@@ -254,12 +255,34 @@ jobs:
 
             body += `---\n*[View full run](${runUrl})*`;
 
-            // Find and update existing comment or create new one
-            const marker = '## Snapshot/Fork Benchmark Results';
-            const { data: comments } = await github.rest.issues.listComments({
+            // This push is a merge to master — post results to the PR it closed.
+            // A commit can be associated with several PRs (backports, merge
+            // queue), so pick the one merged into the branch we pushed to.
+            const target = context.ref.replace('refs/heads/', '');
+            const { data: prs } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              commit_sha: context.sha,
+            });
+            const pr = prs.find(p => p.merged_at && p.base.ref === target);
+            if (!pr) {
+              // Direct push with no associated PR — fall back to a commit comment.
+              await github.rest.repos.createCommitComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: context.sha,
+                body,
+              });
+              return;
+            }
+
+            // Find and update existing comment or create new one
+            const marker = '## Snapshot/Fork Benchmark Results';
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              per_page: 100,
             });
 
             const existing = comments.find(c => c.body.startsWith(marker));
@@ -275,12 +298,12 @@ jobs:
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: context.issue.number,
+                issue_number: pr.number,
                 body,
               });
             }
       - name: Commit and push
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
