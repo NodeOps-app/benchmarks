@@ -266,12 +266,15 @@ jobs:
             body += `---\n*[View full run](${runUrl}) · SVGs available as [build artifacts](${runUrl}#artifacts)*`;
 
             // This push is a merge to master — post results to the PR it closed.
+            // A commit can be associated with several PRs (backports, merge
+            // queue), so pick the one merged into the branch we pushed to.
+            const target = context.ref.replace('refs/heads/', '');
             const { data: prs } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
               owner: context.repo.owner,
               repo: context.repo.repo,
               commit_sha: context.sha,
             });
-            const pr = prs[0];
+            const pr = prs.find(p => p.merged_at && p.base.ref === target);
             if (!pr) {
               // Direct push with no associated PR — fall back to a commit comment.
               await github.rest.repos.createCommitComment({
@@ -285,10 +288,11 @@ jobs:
 
             // Find and update existing comment or create new one
             const marker = '## Sandbox Benchmark Results';
-            const { data: comments } = await github.rest.issues.listComments({
+            const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: pr.number,
+              per_page: 100,
             });
 
             const existing = comments.find(c => c.body.startsWith(marker));
