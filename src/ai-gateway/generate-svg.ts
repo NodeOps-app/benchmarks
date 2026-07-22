@@ -38,7 +38,7 @@ function generateSVG(results: AIGatewayBenchmarkResult[], timestamp: string): st
   const headerHeight = 110;
   const tableHeaderHeight = 44;
   const padding = 24;
-  const width = 1200;
+  const width = 1120;
   const tableTop = headerHeight + padding;
   const tableBottom = tableTop + tableHeaderHeight + (sorted.length * rowHeight);
   const footnoteHeight = 20;
@@ -46,12 +46,16 @@ function generateSVG(results: AIGatewayBenchmarkResult[], timestamp: string): st
   const height = tableBottom + padding + 30 + footnoteHeight;
 
   const cols = {
-    rank: 40,
-    provider: 80,
-    score: 300,
-    coldE2e: 420,
-    warmTtft: 620,
-    tokensPerSec: 820,
+    rank: 30,
+    provider: 65,
+    score: 250,
+    coldE2e: 320,
+    dns: 430,
+    tcp: 505,
+    tls: 580,
+    ttft: 655,
+    warmTtft: 760,
+    tokensPerSec: 880,
     status: 1000,
   };
 
@@ -108,7 +112,11 @@ function generateSVG(results: AIGatewayBenchmarkResult[], timestamp: string): st
   <text class="table-header" x="${cols.rank}" y="${tableTop + 28}">#</text>
   <text class="table-header" x="${cols.provider}" y="${tableTop + 28}">Gateway</text>
   <text class="table-header" x="${cols.score}" y="${tableTop + 28}">Score</text>
-  <text class="table-header" x="${cols.coldE2e}" y="${tableTop + 28}">Cold E2E TTFT</text>
+  <text class="table-header" x="${cols.coldE2e}" y="${tableTop + 28}">Cold E2E</text>
+  <text class="table-header" x="${cols.dns}" y="${tableTop + 28}">DNS</text>
+  <text class="table-header" x="${cols.tcp}" y="${tableTop + 28}">TCP</text>
+  <text class="table-header" x="${cols.tls}" y="${tableTop + 28}">TLS</text>
+  <text class="table-header" x="${cols.ttft}" y="${tableTop + 28}">Cold TTFT</text>
   <text class="table-header" x="${cols.warmTtft}" y="${tableTop + 28}">Warm TTFT</text>
   <text class="table-header" x="${cols.tokensPerSec}" y="${tableTop + 28}">Tokens/sec</text>
   <text class="table-header" x="${cols.status}" y="${tableTop + 28}">Status</text>
@@ -133,6 +141,10 @@ function generateSVG(results: AIGatewayBenchmarkResult[], timestamp: string): st
     else if (rank === 3) rankClass = 'rank rank-3';
 
     const coldE2eDisplay = allFailed ? '--' : formatMs(coldE2eMs);
+    const dnsDisplay = allFailed ? '--' : formatMs(r.summary.dnsMs.median);
+    const tcpDisplay = allFailed ? '--' : formatMs(r.summary.tcpMs.median);
+    const tlsDisplay = allFailed ? '--' : formatMs(r.summary.tlsMs.median);
+    const ttftDisplay = allFailed ? '--' : formatMs(r.summary.coldTtftMs.median);
     const warmTtftDisplay = allFailed ? '--' : formatMs(r.summary.warmTtftMs.median);
     const tokensPerSecDisplay = allFailed ? '--' : r.summary.outputTokensPerSec.median.toFixed(1);
 
@@ -142,6 +154,10 @@ function generateSVG(results: AIGatewayBenchmarkResult[], timestamp: string): st
   <text class="row provider" x="${cols.provider}" y="${y}">${formatProviderName(r.provider)}</text>
   <text class="row total" x="${cols.score}" y="${y}">${score}</text>
   <text class="row total ${speedClass}" x="${cols.coldE2e}" y="${y}">${coldE2eDisplay}</text>
+  <text class="row" x="${cols.dns}" y="${y}">${dnsDisplay}</text>
+  <text class="row" x="${cols.tcp}" y="${y}">${tcpDisplay}</text>
+  <text class="row" x="${cols.tls}" y="${y}">${tlsDisplay}</text>
+  <text class="row" x="${cols.ttft}" y="${y}">${ttftDisplay}</text>
   <text class="row" x="${cols.warmTtft}" y="${y}">${warmTtftDisplay}</text>
   <text class="row" x="${cols.tokensPerSec}" y="${y}">${tokensPerSecDisplay}</text>
   <text class="row status" x="${cols.status}" y="${y}">${ok}/${total}</text>
@@ -168,7 +184,7 @@ function generateSVG(results: AIGatewayBenchmarkResult[], timestamp: string): st
   <text class="timestamp" x="${width - padding}" y="${height - 28}" text-anchor="end">Last updated: ${date}</text>
 
   <!-- Footnote -->
-  <text class="timestamp" x="${padding}" y="${height - 14}">Cold E2E = DNS + TCP + TLS + TTFT (fresh connection). Warm TTFT = TTFT on a reused connection. Lower is better.</text>
+  <text class="timestamp" x="${padding}" y="${height - 14}">Cold E2E = DNS + TCP + TLS + TTFT (fresh connection). Warm TTFT = TTFT on a reused connection. All latency/throughput values are medians across iterations. Lower is better (higher for Tokens/sec).</text>
 
 </svg>`;
 
