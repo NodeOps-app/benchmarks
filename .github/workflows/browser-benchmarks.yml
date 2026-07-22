@@ -1,7 +1,8 @@
 name: Browser Benchmark
 
 on:
-  pull_request:
+  push:
+    branches: [master]
     paths:
       - 'src/browser/**'
       - 'src/util/**'
@@ -70,7 +71,7 @@ jobs:
           npm run bench -- \
             --mode browser \
             --provider ${{ matrix.provider }} \
-            --iterations ${{ github.event_name == 'pull_request' && '10' || github.event.inputs.iterations || '100' }}
+            --iterations ${{ github.event_name == 'push' && '10' || github.event.inputs.iterations || '100' }}
       - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4
@@ -111,7 +112,7 @@ jobs:
       - name: Merge results
         run: npx tsx src/merge-results.ts --input artifacts --mode browser
       - name: Ingest results to platform
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'push'
         continue-on-error: true
         env:
           INGEST_URL: ${{ secrets.INGEST_URL }}
@@ -119,15 +120,15 @@ jobs:
         run: npx tsx src/ingest.ts --type browser
       - run: npm run generate-browser-svg
       - name: Upload SVG as artifact
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'push'
         uses: actions/upload-artifact@v4
         with:
           name: browser-benchmark-svg
           path: browser.svg
           if-no-files-found: ignore
           retention-days: 7
-      - name: Post results to PR
-        if: github.event_name == 'pull_request'
+      - name: Post results to merged PR
+        if: github.event_name == 'push'
         continue-on-error: true
         uses: actions/github-script@v7
         with:
@@ -173,11 +174,29 @@ jobs:
 
             body += `---\n*[View full run](${runUrl}) · SVG available as [build artifact](${runUrl}#artifacts)*`;
 
+            // This push is a merge to master — post results to the PR it closed.
+            const { data: prs } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+            });
+            const pr = prs[0];
+            if (!pr) {
+              // Direct push with no associated PR — fall back to a commit comment.
+              await github.rest.repos.createCommitComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: context.sha,
+                body,
+              });
+              return;
+            }
+
             const marker = '## Browser Benchmark Results';
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number: pr.number,
             });
 
             const existing = comments.find(c => c.body.startsWith(marker));
@@ -193,12 +212,12 @@ jobs:
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: context.issue.number,
+                issue_number: pr.number,
                 body,
               });
             }
       - name: Commit and push
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

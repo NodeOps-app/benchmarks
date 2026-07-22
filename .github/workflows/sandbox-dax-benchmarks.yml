@@ -1,7 +1,8 @@
 name: Sandbox Dax Benchmark
 
 on:
-  pull_request:
+  push:
+    branches: [master]
     paths:
       - 'src/sandbox/dax.ts'
       - 'src/sandbox/providers.ts'
@@ -169,14 +170,14 @@ jobs:
       - name: Merge results
         run: npx tsx src/merge-results.ts --input artifacts
       - name: Ingest results to platform
-        if: github.event_name != 'pull_request' && github.event.inputs.dry_run != 'true'
+        if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         continue-on-error: true
         env:
           INGEST_URL: ${{ secrets.INGEST_URL }}
           INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
         run: npx tsx src/ingest.ts --type sandbox
-      - name: Post results to PR
-        if: github.event_name == 'pull_request'
+      - name: Post results to merged PR
+        if: github.event_name == 'push'
         continue-on-error: true
         uses: actions/github-script@v7
         with:
@@ -217,11 +218,29 @@ jobs:
 
             body += `---\n*[View full run](${runUrl})*`;
 
+            // This push is a merge to master — post results to the PR it closed.
+            const { data: prs } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+            });
+            const pr = prs[0];
+            if (!pr) {
+              // Direct push with no associated PR — fall back to a commit comment.
+              await github.rest.repos.createCommitComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: context.sha,
+                body,
+              });
+              return;
+            }
+
             const marker = '## Sandbox Dax Benchmark Results';
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number: pr.number,
             });
 
             const existing = comments.find(c => c.body.startsWith(marker));
@@ -237,12 +256,12 @@ jobs:
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: context.issue.number,
+                issue_number: pr.number,
                 body,
               });
             }
       - name: Commit and push
-        if: github.event_name != 'pull_request' && github.event.inputs.dry_run != 'true'
+        if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
