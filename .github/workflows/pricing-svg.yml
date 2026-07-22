@@ -13,7 +13,7 @@ permissions:
 jobs:
   generate:
     name: Generate Pricing SVG
-    runs-on: ubuntu-latest
+    runs-on: createos
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
