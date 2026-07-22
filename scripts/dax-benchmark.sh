@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Cold OpenCode clone/install/typecheck benchmark for a fresh VM (Debian/Ubuntu x86_64 or aarch64).
+# Cold OpenCode clone/install/typecheck benchmark for a fresh VM.
+# Supports Debian/Ubuntu (apt), RHEL/Fedora (dnf), and Alpine (apk) on x86_64 or aarch64.
 
 set -euo pipefail
 
@@ -32,15 +33,27 @@ case "$ARCH" in
     exit 1
     ;;
 esac
-BUN_FILENAME="bun-linux-${BUN_ARCH}${BUN_BASELINE_SUFFIX}.zip"
-BUN_INTERNAL_PATH="bun-linux-${BUN_ARCH}${BUN_BASELINE_SUFFIX}/bun"
+# Detect the C library. Alpine (and other minimal images) ship musl instead of
+# glibc, and Bun publishes separate `-musl` release assets that must be used
+# there — the default glibc binary segfaults on musl. Node.js has no official
+# musl build, but Alpine images ship Node pre-installed, so prepare() reuses it.
+BUN_MUSL_SUFFIX=""
+if [ -f /lib/ld-musl-x86_64.so.1 ] || [ -f /lib/ld-musl-aarch64.so.1 ] || (ldd --version 2>&1 | grep -qi musl); then
+  BUN_MUSL_SUFFIX="-musl"
+fi
 
-# Detect the available package manager (apt-get on Debian/Ubuntu, dnf on RHEL/Fedora).
+BUN_FILENAME="bun-linux-${BUN_ARCH}${BUN_MUSL_SUFFIX}${BUN_BASELINE_SUFFIX}.zip"
+BUN_INTERNAL_PATH="bun-linux-${BUN_ARCH}${BUN_MUSL_SUFFIX}${BUN_BASELINE_SUFFIX}/bun"
+
+# Detect the available package manager (apt-get on Debian/Ubuntu, dnf on
+# RHEL/Fedora, apk on Alpine).
 PKG_MANAGER=""
 if command -v apt-get >/dev/null 2>&1; then
   PKG_MANAGER="apt"
 elif command -v dnf >/dev/null 2>&1; then
   PKG_MANAGER="dnf"
+elif command -v apk >/dev/null 2>&1; then
+  PKG_MANAGER="apk"
 else
   printf 'BENCH_ERROR\tprepare\tno_package_manager_found\n' >&2
   exit 1
@@ -48,8 +61,18 @@ fi
 
 declare -A PHASE_MS=()
 
+# Return a nanosecond epoch timestamp. GNU coreutils `date` supports %N and
+# yields a 19-digit value. BusyBox `date` (Alpine) does not expand %N, emitting
+# only the 10-digit seconds (or a literal "N"), which would collapse every phase
+# delta to 0. In that case fall back to bash's builtin EPOCHREALTIME
+# (seconds.microseconds, locale radix normalized to a dot), padded to ns.
 timestamp() {
-  date +%s%N
+  local ns="$(date +%s%N 2>/dev/null)"
+  if [[ "$ns" == *[!0-9]* || ${#ns} -lt 19 ]]; then
+    local real="${EPOCHREALTIME/,/.}"
+    ns="${real%.*}${real#*.}000"
+  fi
+  printf '%s' "$ns"
 }
 
 phase() {
@@ -122,6 +145,11 @@ prepare() {
       "${SUDO[@]}" dnf makecache --quiet
       "${SUDO[@]}" dnf install -y --allowerasing \
         bash gcc gcc-c++ make ca-certificates curl git python3 python3-setuptools unzip
+      ;;
+    apk)
+      # build-base is Alpine's meta-package for gcc/g++/make/libc-dev.
+      "${SUDO[@]}" apk add --no-cache \
+        bash build-base ca-certificates curl git python3 py3-setuptools unzip
       ;;
   esac
 
