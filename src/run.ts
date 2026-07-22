@@ -64,7 +64,7 @@ const datasetArg = getArgValue(args, '--dataset') || 'small';
 // every active gateway (see runAIGatewayBenchmarks) rather than finishing
 // one gateway before starting the next — that only makes an observable
 // difference when more than one gateway is active at once.
-const aiGatewayDefaultIterations = iterationsArg ? iterations : 5;
+const aiGatewayDefaultIterations = iterationsArg ? iterations : 10;
 const aiGatewayIterationsCold = parseInt(getArgValue(args, '--ai-gateway-iterations-cold') || String(aiGatewayDefaultIterations), 10);
 const aiGatewayIterationsWarm = parseInt(getArgValue(args, '--ai-gateway-iterations-warm') || String(aiGatewayDefaultIterations), 10);
 const AI_GATEWAY_PROMPT = 'Write a two-sentence description of how distributed systems handle partial failures.';

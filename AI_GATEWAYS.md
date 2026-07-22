@@ -105,7 +105,7 @@ Cold E2E and warm TTFT are weighted equally (30% median + 15% p95 each) because 
 ## Running it
 
 ```bash
-# All four gateways, default 5 cold + 5 warm iterations each
+# All four gateways, default 10 cold + 10 warm iterations each
 npm run bench:ai-gateway
 
 # One gateway
@@ -142,7 +142,6 @@ Since the core methodology is adapted from [rbadillap/ai-gateways-benchmark](htt
 - Warm methodology: a throwaway request discarded, then a second request measured on the same reused socket.
 - Round-robin execution: interleave every gateway per round rather than finishing one gateway before starting the next.
 - The TTFT-detection regex (`"(?:content|text)"\s*:\s*"[^"]`), which matches both OpenAI's and Anthropic's streaming delta fields — used as-is from the reference.
-- Default sample size: 5 cold + 5 warm iterations.
 - The "cold ≠ provider-side cold start" distinction, stated in both.
 - Receipt-header capture (`x-vercel-id`, `cf-ray`, `x-request-id`, etc.) for tracing a specific measured request.
 - No TLS session resumption between cold connections. The reference guarantees this with a fresh `SSLContext` per connection; we use a fresh `https.Agent` per cold call instead. We verified this empirically rather than assuming it: six consecutive cold connections to the same host held steady at ~43–46ms TLS handshake time with no drop after the first call — a resumed handshake would show a sharp drop after connection 1, since it skips certificate verification and asymmetric key exchange.
@@ -151,6 +150,7 @@ Since the core methodology is adapted from [rbadillap/ai-gateways-benchmark](htt
 
 | | Reference | This implementation | Why |
 |---|---|---|---|
+| Default sample size | 5 cold + 5 warm iterations | 10 cold + 10 warm iterations | Tighter medians at the cost of a longer run and more paid API calls per run |
 | Cloudflare routing | Proxied through OpenRouter | Direct Anthropic passthrough, no intermediary | Isolates each gateway's own overhead in isolation, at the cost of not showing the chained-gateway scenario |
 | Participants | 3 gateways, no baseline | 3 gateways + a direct-to-Anthropic control | Measures how much latency each gateway adds on top of the underlying provider |
 | Prompt / `max_tokens` | `"Reply with: pong"`, 16 tokens | Longer prompt, 200 tokens | Needed a real generation to measure tokens/sec |
