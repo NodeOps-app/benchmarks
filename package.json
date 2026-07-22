@@ -91,7 +91,7 @@
     "@computesdk/cloudflare": "^1.6.14",
     "@computesdk/codesandbox": "^1.5.51",
     "@computesdk/collimate": "^0.1.0",
-    "@computesdk/createos-sandbox": "^0.1.3",
+    "@computesdk/createos-sandbox": "^0.1.4",
     "@computesdk/daytona": "^1.7.32",
     "@computesdk/declaw": "0.2.8",
     "@computesdk/e2b": "^1.7.52",
