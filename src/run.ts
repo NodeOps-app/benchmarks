@@ -23,15 +23,18 @@ import {
   summarizeIterations,
   writeThroughputResultsJson,
 } from './browser/throughput-benchmark.js';
+import { runAIGatewayBenchmarks, writeAIGatewayResultsJson } from './ai-gateway/benchmark.js';
 import { printResultsTable, writeResultsJson } from './sandbox/table.js';
 import { providers } from './sandbox/providers.js';
 import { storageProviders } from './storage/providers.js';
 import { browserProviders } from './browser/providers.js';
 import { throughputProviders } from './browser/throughput-providers.js';
+import { providers as aiGatewayProviders } from './ai-gateway/providers.js';
 import { computeCompositeScores } from './sandbox/scoring.js';
 import { computeStorageCompositeScores } from './storage/scoring.js';
 import { computeBrowserCompositeScores } from './browser/scoring.js';
 import { computeThroughputCompositeScores } from './browser/throughput-scoring.js';
+import { computeAIGatewayCompositeScores } from './ai-gateway/scoring.js';
 import type { BenchmarkResult, BenchmarkMode } from './sandbox/types.js';
 import type { StorageBenchmarkResult } from './storage/types.js';
 import type { SnapshotForkBenchmarkResult } from './storage/snapshot-fork-types.js';
@@ -39,6 +42,7 @@ import type { DatasetPreset } from './storage/snapshot-fork-types.js';
 import type { BrowserBenchmarkResult } from './browser/types.js';
 import { ACTIONS_PER_SESSION } from './browser/throughput-types.js';
 import type { ThroughputBenchmarkResult, ThroughputTimingResult } from './browser/throughput-types.js';
+import type { AIGatewayBenchmarkResult } from './ai-gateway/types.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -53,6 +57,19 @@ const storageConcurrency = parseInt(getArgValue(args, '--storage-concurrency') |
 const staggerDelay = parseInt(getArgValue(args, '--stagger-delay') || '200', 10);
 const fileSizeArg = getArgValue(args, '--file-size') || '10MB';
 const datasetArg = getArgValue(args, '--dataset') || 'small';
+// Like snapshot-fork/browser-throughput: defaults to a smaller, mode-specific
+// count (these hit real paid gateway APIs), but --iterations overrides both
+// cold and warm at once if passed. --ai-gateway-iterations-cold/-warm are
+// only needed for an asymmetric split. Iterations run round-robin across
+// every active gateway (see runAIGatewayBenchmarks) rather than finishing
+// one gateway before starting the next — that only makes an observable
+// difference when more than one gateway is active at once.
+const aiGatewayDefaultIterations = iterationsArg ? iterations : 5;
+const aiGatewayIterationsCold = parseInt(getArgValue(args, '--ai-gateway-iterations-cold') || String(aiGatewayDefaultIterations), 10);
+const aiGatewayIterationsWarm = parseInt(getArgValue(args, '--ai-gateway-iterations-warm') || String(aiGatewayDefaultIterations), 10);
+const AI_GATEWAY_PROMPT = 'Write a two-sentence description of how distributed systems handle partial failures.';
+const AI_GATEWAY_MAX_TOKENS = 200;
+const AI_GATEWAY_TIMEOUT_MS = 45_000;
 
 function getArgValue(args: string[], flag: string): string | undefined {
   const idx = args.indexOf(flag);
@@ -60,19 +77,20 @@ function getArgValue(args: string[], flag: string): string | undefined {
 }
 
 /** Resolve which modes to run */
-function getModesToRun(): BenchmarkMode[] | ['storage'] | ['snapshot-fork'] | ['browser'] | ['browser-throughput'] | ['sandbox-dax'] {
+function getModesToRun(): BenchmarkMode[] | ['storage'] | ['snapshot-fork'] | ['browser'] | ['browser-throughput'] | ['sandbox-dax'] | ['ai-gateway'] {
   if (!rawMode) return ['sequential', 'staggered', 'burst'];
   if (rawMode === 'storage') return ['storage'];
   if (rawMode === 'snapshot-fork') return ['snapshot-fork'];
   if (rawMode === 'browser') return ['browser'];
   if (rawMode === 'browser-throughput') return ['browser-throughput'];
   if (rawMode === 'sandbox-dax') return ['sandbox-dax'];
+  if (rawMode === 'ai-gateway') return ['ai-gateway'];
   const m = rawMode === 'concurrent' ? 'burst' : rawMode as BenchmarkMode;
   return [m];
 }
 
 /** Map mode to results subdirectory name */
-function modeToDir(m: BenchmarkMode | 'storage' | 'snapshot-fork' | 'browser-throughput' | 'sandbox-dax'): string {
+function modeToDir(m: BenchmarkMode | 'storage' | 'snapshot-fork' | 'browser-throughput' | 'sandbox-dax' | 'ai-gateway'): string {
   switch (m) {
     case 'sequential': return 'sequential_tti';
     case 'staggered': return 'staggered_tti';
@@ -82,6 +100,7 @@ function modeToDir(m: BenchmarkMode | 'storage' | 'snapshot-fork' | 'browser-thr
     case 'snapshot-fork': return 'snapshot-fork';
     case 'browser-throughput': return 'browser-throughput';
     case 'sandbox-dax': return 'sandbox-dax';
+    case 'ai-gateway': return 'ai-gateway';
     default: return `${m}_tti`;
   }
 }
@@ -471,8 +490,73 @@ async function runSandboxDax(toRun: typeof providers): Promise<void> {
   console.log(`Copied latest: ${latestPath}`);
 }
 
+async function runAIGateway(toRun: typeof aiGatewayProviders): Promise<void> {
+  console.log('\n' + '='.repeat(70));
+  console.log('  MODE: AI GATEWAY');
+  console.log(`  Cold iterations: ${aiGatewayIterationsCold}, Warm iterations: ${aiGatewayIterationsWarm} (round-robin across gateways)`);
+  console.log('='.repeat(70));
+
+  const results: AIGatewayBenchmarkResult[] = await runAIGatewayBenchmarks(toRun, {
+    iterationsCold: aiGatewayIterationsCold,
+    iterationsWarm: aiGatewayIterationsWarm,
+    prompt: AI_GATEWAY_PROMPT,
+    maxTokens: AI_GATEWAY_MAX_TOKENS,
+    timeout: AI_GATEWAY_TIMEOUT_MS,
+  });
+
+  // Compute composite scores
+  computeAIGatewayCompositeScores(results);
+
+  // Print summary
+  console.log('\n--- AI Gateway Benchmark Results ---');
+  for (const r of results) {
+    if (r.skipped) {
+      console.log(`${r.provider}: SKIPPED (${r.skipReason})`);
+      continue;
+    }
+    const ok = r.iterations.filter(i => !i.error).length;
+    const total = r.iterations.length;
+    console.log(`${r.provider}:`);
+    console.log(`  Cold E2E TTFT: ${r.summary.coldE2eMs.median.toFixed(0)}ms (median), Warm TTFT: ${r.summary.warmTtftMs.median.toFixed(0)}ms (median), ${r.summary.outputTokensPerSec.median.toFixed(1)} tok/s`);
+    console.log(`  Score: ${r.compositeScore?.toFixed(1) || '--'} (${ok}/${total} OK)`);
+  }
+
+  // Write JSON results to ai-gateway subdirectory
+  const timestamp = new Date().toISOString().slice(0, 10);
+  const resultsDir = path.resolve(__dirname, `../results/${modeToDir('ai-gateway')}`);
+  fs.mkdirSync(resultsDir, { recursive: true });
+
+  const outPath = path.join(resultsDir, `${timestamp}.json`);
+  await writeAIGatewayResultsJson(results, outPath);
+
+  // Copy results to latest.json
+  const latestPath = path.join(resultsDir, 'latest.json');
+  fs.copyFileSync(outPath, latestPath);
+  console.log(`Copied latest: ${latestPath}`);
+}
+
 async function main() {
   const modes = getModesToRun();
+
+  // Handle ai-gateway mode separately
+  if (modes[0] === 'ai-gateway') {
+    console.log('ComputeSDK AI Gateway Benchmarks');
+    console.log(`Date: ${new Date().toISOString()}\n`);
+
+    const toRun = providerFilter
+      ? aiGatewayProviders.filter(p => p.name === providerFilter)
+      : aiGatewayProviders;
+
+    if (toRun.length === 0) {
+      console.error(`Unknown AI gateway provider: ${providerFilter}`);
+      console.error(`Available: ${aiGatewayProviders.map(p => p.name).join(', ')}`);
+      process.exit(1);
+    }
+
+    await runAIGateway(toRun);
+    console.log('\nAll AI gateway tests complete.');
+    return;
+  }
 
   // Handle browser-throughput mode separately
   if (modes[0] === 'browser-throughput') {
