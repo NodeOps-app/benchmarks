@@ -4,6 +4,7 @@ import { hyperbrowser } from '@computesdk/hyperbrowser';
 import { kernel } from '@computesdk/kernel';
 import { notte } from '@computesdk/notte';
 import { steel } from '@computesdk/steel';
+// import { tilion } from '@computesdk/tilion';
 import type { ThroughputProviderConfig } from './throughput-types.js';
 
 /**
@@ -98,4 +99,17 @@ export const throughputProviders: ThroughputProviderConfig[] = [
       viewport: VIEWPORT,
     },
   },
+  // {
+  //   name: 'tilion',
+  //   requiredEnvVars: ['TILION_API_KEY'],
+  //   createBrowserProvider: () => tilion({
+  //     apiKey: process.env.TILION_API_KEY!,
+  //   }),
+  //   sessionCreateOptions: {
+  //     stealth: false,
+  //     proxies: false,
+  //     headless: true,
+  //     viewport: VIEWPORT,
+  //   },
+  // },
 ];

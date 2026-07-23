@@ -76,6 +76,7 @@ jobs:
           - modal
           # - namespace
           - northflank
+          # - opencomputer
           # - quilt
           # - railway
           - runloop

@@ -77,6 +77,7 @@ const GATEWAY_PROVIDERS = ['render'];
 
 function formatProviderName(s: string): string {
   if (s.toLowerCase() === 'e2b') return 'E2B';
+  if (s.toLowerCase() === 'opencomputer') return 'OpenComputer';
   const name = s.charAt(0).toUpperCase() + s.slice(1);
   return GATEWAY_PROVIDERS.includes(s.toLowerCase()) ? name + '*' : name;
 }
