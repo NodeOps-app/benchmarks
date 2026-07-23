@@ -105,13 +105,14 @@ Cold E2E and warm TTFT are weighted equally (30% median + 15% p95 each) because 
 ## Running it
 
 ```bash
-# All four gateways, default 10 cold + 10 warm iterations each
+# All five gateways, default 10 cold + 10 warm iterations each
 npm run bench:ai-gateway
 
 # One gateway
 npm run bench:ai-gateway:openrouter
 npm run bench:ai-gateway:vercel
 npm run bench:ai-gateway:cloudflare
+npm run bench:ai-gateway:llmgateway
 npm run bench:ai-gateway:anthropic
 
 # Custom iteration count (applies to both cold and warm)
@@ -121,7 +122,7 @@ npm run bench:ai-gateway -- --iterations 20
 npx tsx src/run.ts --mode ai-gateway --ai-gateway-iterations-cold 20 --ai-gateway-iterations-warm 0
 ```
 
-Required environment variables (`env.example`): `OPENROUTER_API_KEY`, `VERCEL_AI_GATEWAY_API_KEY`, `LLMGATEWAY_API_KEY`, `CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID` + `CLOUDFLARE_AI_GATEWAY_GATEWAY_ID` (+ optional `CLOUDFLARE_AI_GATEWAY_TOKEN` if the gateway has Authenticated Gateway enabled), `ANTHROPIC_API_KEY` (shared by Cloudflare's passthrough and the direct baseline). Missing credentials cause that gateway to be reported as `SKIPPED` rather than failing the run.
+Required environment variables (`env.example`): `OPENROUTER_API_KEY`, `VERCEL_AI_GATEWAY_API_KEY`, `LLM_GATEWAY_API_KEY`, `CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID` + `CLOUDFLARE_AI_GATEWAY_GATEWAY_ID` (+ optional `CLOUDFLARE_AI_GATEWAY_TOKEN` if the gateway has Authenticated Gateway enabled), `ANTHROPIC_API_KEY` (shared by Cloudflare's passthrough and the direct baseline). Missing credentials cause that gateway to be reported as `SKIPPED` rather than failing the run.
 
 ## Output
 

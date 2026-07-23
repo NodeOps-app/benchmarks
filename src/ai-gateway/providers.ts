@@ -52,13 +52,13 @@ export const providers: AIGatewayProviderConfig[] = [
     // deployment as the other participants, addressed in this gateway's own
     // catalog naming convention.
     name: 'llmgateway',
-    requiredEnvVars: ['LLMGATEWAY_API_KEY'],
+    requiredEnvVars: ['LLM_GATEWAY_API_KEY'],
     wireFormat: 'openai',
     model: 'anthropic/claude-haiku-4-5',
     host: 'api.llmgateway.io',
     path: '/v1/chat/completions',
     buildHeaders: () => ({
-      Authorization: `Bearer ${process.env.LLMGATEWAY_API_KEY}`,
+      Authorization: `Bearer ${process.env.LLM_GATEWAY_API_KEY}`,
     }),
   },
   {
