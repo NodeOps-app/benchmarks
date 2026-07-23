@@ -41,7 +41,7 @@ jobs:
           - kernel
           - notte
           - steel
-          # - tilion
+          - tilion
           # - anchorbrowser
     steps:
       - uses: actions/checkout@v4
