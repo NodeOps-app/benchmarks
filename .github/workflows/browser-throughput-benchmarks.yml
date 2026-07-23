@@ -119,6 +119,8 @@ jobs:
           KERNEL_API_KEY: ${{ secrets.KERNEL_API_KEY }}
           NOTTE_API_KEY: ${{ secrets.NOTTE_API_KEY }}
           STEEL_API_KEY: ${{ secrets.STEEL_API_KEY }}
+          TILION_API_KEY: ${{ secrets.TILION_API_KEY }}
+          TILION_BASE_URL: ${{ secrets.TILION_BASE_URL }}
         run: |
           npm run bench -- \
             --mode browser-throughput \
