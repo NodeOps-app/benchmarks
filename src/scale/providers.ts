@@ -101,8 +101,11 @@ export const providers: BurstProviderConfig[] = [
   },
   {
     name: 'opencomputer',
-    requiredEnvVars: ['OPENCOMPUTER_API_KEY'],
-    createCompute: () => opencomputer({ apiKey: process.env.OPENCOMPUTER_API_KEY! }),
+    requiredEnvVars: ['OPENCOMPUTER_API_KEY', 'OPENCOMPUTER_API_URL'],
+    createCompute: () => opencomputer({
+      apiKey: process.env.OPENCOMPUTER_API_KEY!,
+      apiUrl: process.env.OPENCOMPUTER_API_URL!,
+    }),
     concurrencyTarget: 100_000,
     perRequestTimeoutMs: 120_000,
     sandboxOptions: { timeout: KEEP_ALIVE_MS },

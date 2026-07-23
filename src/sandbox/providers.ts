@@ -145,8 +145,11 @@ export const providers: ProviderConfig[] = [
   },
   {
     name: 'opencomputer',
-    requiredEnvVars: ['OPENCOMPUTER_API_KEY'],
-    createCompute: () => opencomputer({ apiKey: process.env.OPENCOMPUTER_API_KEY! }),
+    requiredEnvVars: ['OPENCOMPUTER_API_KEY', 'OPENCOMPUTER_API_URL'],
+    createCompute: () => opencomputer({
+      apiKey: process.env.OPENCOMPUTER_API_KEY!,
+      apiUrl: process.env.OPENCOMPUTER_API_URL!,
+    }),
     sandboxOptions: { timeout: 600_000 },
   },
   // {
