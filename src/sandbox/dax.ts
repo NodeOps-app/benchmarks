@@ -32,7 +32,7 @@ const DAX_RESOURCE_OPTIONS: Record<string, Record<string, any>> = {
   declaw:       { templateId: 'node-large' },              // node-large template: 8 vCPU / 16 GiB RAM / 8 GiB disk
   superserve:   { templateId: 'node22-8cpu-16gb' },           // 8 vCPU / 16 GiB template built in the pre-step
   createos:     { shape: 's-8vcpu-16gb', ephemeralDiskMb: 61440 }, // 8 vCPU, 16 GiB RAM, 60 GiB disk
-  opencomputer: { cpuCount: 8, memoryMB: 16384, timeout: 600_000 },
+  opencomputer: { cpuCount: 4, memoryMB: 16384, timeout: 600_000 },
 };
 
 function getSandboxOptionsWithResources(providerName: string, baseOptions?: Record<string, any>): Record<string, any> {
