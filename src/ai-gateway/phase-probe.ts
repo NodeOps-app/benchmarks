@@ -38,8 +38,11 @@ function buildRequestBody(config: AIGatewayProviderConfig, prompt: string, maxTo
 /** Cheap regex extraction of the latest known output-token count from the raw SSE buffer so far. */
 function extractOutputTokens(wireFormat: AIGatewayWireFormat, buf: string): number | undefined {
   if (wireFormat === 'openai') {
-    const m = buf.match(/"usage"\s*:\s*\{[^}]*"completion_tokens"\s*:\s*(\d+)/);
-    return m ? Number(m[1]) : undefined;
+    // Some OpenAI-compatible gateways stream cumulative usage on early events
+    // (mirroring Anthropic's message_start) rather than only on the final
+    // chunk, so take the last match — like the anthropic path below.
+    const m = [...buf.matchAll(/"usage"\s*:\s*\{[^}]*"completion_tokens"\s*:\s*(\d+)/g)];
+    return m.length > 0 ? Number(m[m.length - 1][1]) : undefined;
   }
   // Anthropic streams cumulative usage on message_start/message_delta events;
   // the last "output_tokens" seen in the buffer is the most up to date.

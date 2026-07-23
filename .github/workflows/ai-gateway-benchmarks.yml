@@ -17,7 +17,7 @@ on:
         required: false
         default: '100'
       provider:
-        description: 'Gateway to run (leave empty for all four, round-robin)'
+        description: 'Gateway to run (leave empty for all five, round-robin)'
         required: false
         default: ''
         type: choice
@@ -26,6 +26,7 @@ on:
           - openrouter
           - vercel-ai-gateway
           - cloudflare-ai-gateway
+          - llmgateway
           - anthropic-direct
 
 concurrency:
@@ -71,6 +72,7 @@ jobs:
           CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID }}
           CLOUDFLARE_AI_GATEWAY_GATEWAY_ID: ${{ secrets.CLOUDFLARE_AI_GATEWAY_GATEWAY_ID }}
           CLOUDFLARE_AI_GATEWAY_TOKEN: ${{ secrets.CLOUDFLARE_AI_GATEWAY_TOKEN }}
+          LLM_GATEWAY_API_KEY: ${{ secrets.LLM_GATEWAY_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           PROVIDER_FLAG=""
