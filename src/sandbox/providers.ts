@@ -16,6 +16,7 @@ import { lightning } from '@computesdk/lightning';
 import { modal } from '@computesdk/modal';
 import { namespace } from '@computesdk/namespace';
 import { northflank } from '@computesdk/northflank';
+import { opencomputer } from '@computesdk/opencomputer';
 // import { quilt } from '@computesdk/quilt';
 // import { railway } from '@computesdk/railway';
 import { runloop } from '@computesdk/runloop';
@@ -141,6 +142,15 @@ export const providers: ProviderConfig[] = [
       projectId: process.env.NORTHFLANK_PROJECT_ID!,
       runtime: 'node',
     }),
+  },
+  {
+    name: 'opencomputer',
+    requiredEnvVars: ['OPENCOMPUTER_API_KEY', 'OPENCOMPUTER_API_URL'],
+    createCompute: () => opencomputer({
+      apiKey: process.env.OPENCOMPUTER_API_KEY!,
+      apiUrl: process.env.OPENCOMPUTER_API_URL!,
+    }),
+    sandboxOptions: { timeout: 600_000 },
   },
   // {
   //   name: 'quilt',

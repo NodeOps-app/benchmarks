@@ -4,6 +4,7 @@ import { e2b } from '@computesdk/e2b';
 import { isorun } from '@computesdk/isorun';
 import { modal } from '@computesdk/modal';
 import { northflank } from '@computesdk/northflank';
+import { opencomputer } from '@computesdk/opencomputer';
 import { runloop } from '@computesdk/runloop';
 import { tensorlake } from '@computesdk/tensorlake';
 //import { vercel } from '@computesdk/vercel';
@@ -97,6 +98,17 @@ export const providers: BurstProviderConfig[] = [
     }),
     concurrencyTarget: 100_000,
     perRequestTimeoutMs: 120_000,
+  },
+  {
+    name: 'opencomputer',
+    requiredEnvVars: ['OPENCOMPUTER_API_KEY', 'OPENCOMPUTER_API_URL'],
+    createCompute: () => opencomputer({
+      apiKey: process.env.OPENCOMPUTER_API_KEY!,
+      apiUrl: process.env.OPENCOMPUTER_API_URL!,
+    }),
+    concurrencyTarget: 100_000,
+    perRequestTimeoutMs: 120_000,
+    sandboxOptions: { timeout: KEEP_ALIVE_MS },
   },
   // {
   //   name: 'vercel',

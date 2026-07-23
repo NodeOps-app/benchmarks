@@ -1,7 +1,7 @@
 /**
  * Merge per-provider benchmark results into combined result files.
  *
- * Usage: tsx src/merge-results.ts --input <artifacts-dir> [--mode storage|snapshot-fork|browser|browser-throughput]
+ * Usage: tsx src/merge-results.ts --input <artifacts-dir> [--mode storage|snapshot-fork|browser|browser-throughput|ai-gateway]
  *
  * By default, merges sandbox benchmark results: reads latest.json files from
  * the input directory, groups by mode (sequential/staggered/burst), computes
@@ -17,6 +17,10 @@
  *
  * With --mode browser-throughput, merges throughput benchmark results into
  * results/browser-throughput/latest.json.
+ *
+ * With --mode ai-gateway, merges AI gateway benchmark results: deduplicates
+ * by provider, computes AI-gateway-specific composite scores, and writes
+ * combined files to results/ai-gateway/latest.json.
  */
 import fs from 'fs';
 import path from 'path';
@@ -28,12 +32,14 @@ import {
   computeThroughputCompositeScores,
   sortThroughputByCompositeScore,
 } from './browser/throughput-scoring.js';
+import { computeAIGatewayCompositeScores, sortAIGatewayByCompositeScore } from './ai-gateway/scoring.js';
 import { printResultsTable, writeResultsJson } from './sandbox/table.js';
 import type { BenchmarkResult } from './sandbox/types.js';
 import type { StorageBenchmarkResult } from './storage/types.js';
 import type { SnapshotForkBenchmarkResult } from './storage/snapshot-fork-types.js';
 import type { BrowserBenchmarkResult } from './browser/types.js';
 import type { ThroughputBenchmarkResult } from './browser/throughput-types.js';
+import type { AIGatewayBenchmarkResult } from './ai-gateway/types.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -50,7 +56,7 @@ function getArgValue(flag: string): string | undefined {
 const inputDir = getArgValue('--input');
 const mergeMode = getArgValue('--mode');
 if (!inputDir) {
-  console.error('Usage: tsx src/merge-results.ts --input <artifacts-dir> [--mode storage|snapshot-fork|browser|browser-throughput]');
+  console.error('Usage: tsx src/merge-results.ts --input <artifacts-dir> [--mode storage|snapshot-fork|browser|browser-throughput|ai-gateway]');
   process.exit(1);
 }
 
@@ -635,6 +641,99 @@ async function mainBrowserThroughput() {
   console.log(`Copied latest: ${latestPath}`);
 }
 
+/**
+ * Print an AI gateway results table to stdout.
+ */
+function printAIGatewayResultsTable(results: AIGatewayBenchmarkResult[]): void {
+  const sorted = sortAIGatewayByCompositeScore(results);
+
+  console.log(`\n${'='.repeat(110)}`);
+  console.log('  AI GATEWAY BENCHMARK RESULTS');
+  console.log('='.repeat(110));
+  console.log(
+    ['Provider', 'Score', 'Cold E2E', 'Warm TTFT', 'Tok/sec', 'Status']
+      .map((h, i) => h.padEnd([22, 8, 12, 12, 12, 10][i]))
+      .join(' | ')
+  );
+  console.log(
+    [22, 8, 12, 12, 12, 10].map(w => '-'.repeat(w)).join('-+-')
+  );
+
+  for (const r of sorted) {
+    if (r.skipped) {
+      console.log([r.provider.padEnd(22), '--'.padEnd(8), '--'.padEnd(12), '--'.padEnd(12), '--'.padEnd(12), 'SKIPPED'.padEnd(10)].join(' | '));
+      continue;
+    }
+    const ok = r.iterations.filter(i => !i.error).length;
+    const total = r.iterations.length;
+    const score = r.compositeScore !== undefined ? r.compositeScore.toFixed(1) : '--';
+    const coldE2e = `${Math.round(r.summary.coldE2eMs.median)}ms`;
+    const warmTtft = `${Math.round(r.summary.warmTtftMs.median)}ms`;
+    const tokensPerSec = r.summary.outputTokensPerSec.median.toFixed(1);
+    console.log([r.provider.padEnd(22), score.padEnd(8), coldE2e.padEnd(12), warmTtft.padEnd(12), tokensPerSec.padEnd(12), `${ok}/${total} OK`.padEnd(10)].join(' | '));
+  }
+  console.log('='.repeat(110));
+}
+
+/**
+ * Merge AI gateway benchmark results.
+ */
+async function mainAIGateway() {
+  const jsonFiles: string[] = [];
+  function walk(dir: string) {
+    if (!fs.existsSync(dir)) return;
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.name === 'latest.json') jsonFiles.push(full);
+    }
+  }
+  walk(inputDir!);
+
+  if (jsonFiles.length === 0) {
+    console.error(`No latest.json files found in ${inputDir}`);
+    process.exit(1);
+  }
+
+  console.log(`Found ${jsonFiles.length} result files`);
+
+  // Collect all results, deduplicating by provider
+  const seen = new Map<string, { result: AIGatewayBenchmarkResult; fromSingleProvider: boolean }>();
+
+  for (const file of jsonFiles) {
+    const raw = JSON.parse(fs.readFileSync(file, 'utf-8')) as { results: AIGatewayBenchmarkResult[] };
+    const fromSingleProvider = raw.results.length === 1;
+    for (const result of raw.results) {
+      const existing = seen.get(result.provider);
+      if (!existing || (fromSingleProvider && !existing.fromSingleProvider)) {
+        seen.set(result.provider, { result, fromSingleProvider });
+      }
+    }
+  }
+
+  const deduped = Array.from(seen.values()).map(e => e.result);
+  console.log(`\nMerging ${deduped.length} provider results for mode: ai-gateway`);
+
+  // Compute composite scores
+  computeAIGatewayCompositeScores(deduped);
+
+  // Print table
+  printAIGatewayResultsTable(deduped);
+
+  // Write combined results
+  const { writeAIGatewayResultsJson } = await import('./ai-gateway/benchmark.js');
+  const timestamp = new Date().toISOString().slice(0, 10);
+  const resultsDir = path.resolve(ROOT, 'results/ai-gateway');
+  fs.mkdirSync(resultsDir, { recursive: true });
+
+  const outPath = path.join(resultsDir, `${timestamp}.json`);
+  await writeAIGatewayResultsJson(deduped, outPath);
+
+  const latestPath = path.join(resultsDir, 'latest.json');
+  fs.copyFileSync(outPath, latestPath);
+  console.log(`Copied latest: ${latestPath}`);
+}
+
 const runner = mergeMode === 'storage'
   ? mainStorage
   : mergeMode === 'snapshot-fork'
@@ -643,6 +742,8 @@ const runner = mergeMode === 'storage'
   ? mainBrowser
   : mergeMode === 'browser-throughput'
   ? mainBrowserThroughput
+  : mergeMode === 'ai-gateway'
+  ? mainAIGateway
   : main;
 runner().catch(err => {
   console.error('Merge failed:', err);
