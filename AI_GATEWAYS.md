@@ -1,6 +1,6 @@
 # AI Gateway Benchmark
 
-This document describes the **AI gateway benchmark** — a phase-by-phase latency, throughput, and reliability comparison of OpenRouter, Vercel AI Gateway, Cloudflare AI Gateway, and LLM Gateway, measured against a direct-to-Anthropic baseline.
+This document describes the **AI gateway benchmark** — a phase-by-phase latency, throughput, and reliability comparison of OpenRouter, Vercel AI Gateway, Cloudflare AI Gateway, LLM Gateway, and Pydantic AI Gateway, measured against a direct-to-Anthropic baseline.
 
 > **Where this runs**: scheduled and dispatched runs execute in GitHub Actions on [Namespace](https://namespace.so) runners (`namespace-profile-default`), physically placed in **Northern Virginia, US**. This is a single fixed vantage point, not a global or multi-region measurement — every number in this benchmark reflects network conditions from that one location. Confirmed two ways: Namespace's own runner-instance panel reports "Placement: Northern Virginia, US" for this profile, and independently, `cf-ray` receipts captured in real runs include `IAD` — the airport code Cloudflare uses for its Ashburn/Northern Virginia edge datacenter, exactly consistent with a client physically nearby. See [Vantage-point dependent](#limitations) in Limitations for what this does and doesn't mean for the results.
 
@@ -44,7 +44,7 @@ Only `ttfbMs` and `ttftMs` apply — there is no `dnsMs`/`tcpMs`/`tlsMs`/`coldE2
 
 ## Request configuration (identical across every gateway)
 
-- **Model**: Claude Haiku 4.5 for all five participants — `anthropic/claude-haiku-4.5` via OpenRouter's and Vercel AI Gateway's catalog alias, `anthropic/claude-haiku-4-5` via LLM Gateway's provider-pinned catalog naming, `claude-haiku-4-5-20251001` via Cloudflare's and Anthropic's own native model ID. Same underlying model, addressed the way each API expects it to be addressed.
+- **Model**: Claude Haiku 4.5 for all six participants — `anthropic/claude-haiku-4.5` via OpenRouter's and Vercel AI Gateway's catalog alias, `anthropic/claude-haiku-4-5` via LLM Gateway's provider-pinned catalog naming, `claude-haiku-4-5-20251001` via Cloudflare's, Anthropic's own, and Pydantic AI Gateway's native model ID (Pydantic proxies Anthropic's native API as-is, no gateway-specific model prefix). Same underlying model, addressed the way each API expects it to be addressed.
 - **Prompt**: `"Write a two-sentence description of how distributed systems handle partial failures."` — identical for every request, cold or warm, every gateway.
 - **`max_tokens`**: 200. **`temperature`**: 0. **`stream`**: true (required for TTFT; also used for token-count extraction via `stream_options.include_usage` on the OpenAI-compatible path).
 - **Timeout**: 45 seconds per request.
@@ -52,7 +52,7 @@ Only `ttfbMs` and `ttftMs` apply — there is no `dnsMs`/`tcpMs`/`tlsMs`/`coldE2
 Two wire formats are in play, handled explicitly per gateway (`AIGatewayProviderConfig.wireFormat` in `src/ai-gateway/types.ts`):
 
 - **`openai`** (OpenRouter, Vercel AI Gateway, LLM Gateway) — OpenAI-compatible `/chat/completions` shape, `Authorization: Bearer <key>`.
-- **`anthropic`** (Cloudflare AI Gateway, Anthropic direct) — Anthropic's native `/v1/messages` shape, `x-api-key`/`anthropic-version` headers.
+- **`anthropic`** (Cloudflare AI Gateway, Anthropic direct, Pydantic AI Gateway) — Anthropic's native `/v1/messages` shape. Auth header varies within this group: Cloudflare and Anthropic direct use `x-api-key` + `anthropic-version`; Pydantic AI Gateway uses `Authorization: Bearer <key>` + `anthropic-version` instead — confirmed directly against a real request (its own auth failures return a same-shaped 401 regardless of which of the two header styles is wrong, so this took a few rounds of live testing to pin down precisely).
 
 TTFT detection is format-agnostic by design: a single regex (`"(?:content|text)"\s*:\s*"[^"]`) matches OpenAI's `delta.content` and Anthropic's `delta.text` fields alike, so the first-token timestamp doesn't depend on fully parsing every SSE event on the hot path. Token counts are extracted the same lightweight way (regex over the raw buffer, not a full SSE/JSON parser) — see Limitations.
 
@@ -60,7 +60,7 @@ Knowing when the stream has fully ended (needed for `ttfbMs`/`totalMs` and to sa
 
 ### Every gateway is hit directly — no gateway is proxied through another
 
-This is the single most important fairness property of this benchmark, worth stating plainly: **Cloudflare AI Gateway is called via its own direct-to-Anthropic passthrough route** (`/v1/{account}/{gateway}/anthropic/v1/messages`), not routed through OpenRouter or any other intermediary. OpenRouter, Vercel AI Gateway, and LLM Gateway are each called via their own native routing to the same model — LLM Gateway's model id is provider-pinned (`anthropic/claude-haiku-4-5`) so its requests route to Anthropic itself rather than to a different host of the same model. `anthropic-direct` calls Anthropic's API with no gateway at all, as the no-gateway control — it isolates how much latency each gateway adds on top of the underlying provider.
+This is the single most important fairness property of this benchmark, worth stating plainly: **Cloudflare AI Gateway is called via its own direct-to-Anthropic passthrough route** (`/v1/{account}/{gateway}/anthropic/v1/messages`), not routed through OpenRouter or any other intermediary. OpenRouter, Vercel AI Gateway, and LLM Gateway are each called via their own native routing to the same model — LLM Gateway's model id is provider-pinned (`anthropic/claude-haiku-4-5`) so its requests route to Anthropic itself rather than to a different host of the same model; this was confirmed directly against a real request, whose response `metadata` block explicitly reports `used_provider: "anthropic"`, `used_model: "claude-haiku-4-5"`. **Pydantic AI Gateway proxies Anthropic's native API directly** (`/proxy/anthropic/v1/messages`, native model ID `claude-haiku-4-5-20251001`, no gateway-specific routing prefix) — confirmed with a real request returning a genuine Anthropic response (`"model":"claude-haiku-4-5-20251001"`, real `usage`/`cost_estimate` fields from Pydantic's own accounting). `anthropic-direct` calls Anthropic's API with no gateway at all, as the no-gateway control — it isolates how much latency each gateway adds on top of the underlying provider.
 
 A gateway that's itself proxied through a second gateway would have that second hop's latency baked into its numbers, misattributed to the outer gateway. That's not happening here — every participant's number reflects that gateway's own overhead only.
 
@@ -71,8 +71,8 @@ A gateway that's itself proxied through a second gateway would have that second 
 Iterations run **round-robin across every active gateway**, not sequentially per gateway (`runAIGatewayBenchmarks` in `src/ai-gateway/benchmark.ts`):
 
 ```
-round 1: openrouter → vercel-ai-gateway → cloudflare-ai-gateway → llmgateway → anthropic-direct
-round 2: openrouter → vercel-ai-gateway → cloudflare-ai-gateway → llmgateway → anthropic-direct
+round 1: openrouter → vercel-ai-gateway → cloudflare-ai-gateway → llmgateway → pydantic-ai-gateway → anthropic-direct
+round 2: openrouter → vercel-ai-gateway → cloudflare-ai-gateway → llmgateway → pydantic-ai-gateway → anthropic-direct
 ...
 ```
 
@@ -107,7 +107,7 @@ Cold E2E and warm TTFT are weighted equally (30% median + 15% p95 each) because 
 ## Running it
 
 ```bash
-# All five gateways, default 10 cold + 10 warm iterations each
+# All six gateways, default 10 cold + 10 warm iterations each
 npm run bench:ai-gateway
 
 # One gateway
@@ -115,6 +115,7 @@ npm run bench:ai-gateway:openrouter
 npm run bench:ai-gateway:vercel
 npm run bench:ai-gateway:cloudflare
 npm run bench:ai-gateway:llmgateway
+npm run bench:ai-gateway:pydantic
 npm run bench:ai-gateway:anthropic
 
 # Custom iteration count (applies to both cold and warm)
@@ -124,7 +125,7 @@ npm run bench:ai-gateway -- --iterations 20
 npx tsx src/run.ts --mode ai-gateway --ai-gateway-iterations-cold 20 --ai-gateway-iterations-warm 0
 ```
 
-Required environment variables (`env.example`): `OPENROUTER_API_KEY`, `VERCEL_AI_GATEWAY_API_KEY`, `LLM_GATEWAY_API_KEY`, `CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID` + `CLOUDFLARE_AI_GATEWAY_GATEWAY_ID` (+ optional `CLOUDFLARE_AI_GATEWAY_TOKEN` if the gateway has Authenticated Gateway enabled), `ANTHROPIC_API_KEY` (shared by Cloudflare's passthrough and the direct baseline). Missing credentials cause that gateway to be reported as `SKIPPED` rather than failing the run.
+Required environment variables (`env.example`): `OPENROUTER_API_KEY`, `VERCEL_AI_GATEWAY_API_KEY`, `LLM_GATEWAY_API_KEY`, `PYDANTIC_AI_GATEWAY_API_KEY`, `CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID` + `CLOUDFLARE_AI_GATEWAY_GATEWAY_ID` (+ optional `CLOUDFLARE_AI_GATEWAY_TOKEN` if the gateway has Authenticated Gateway enabled), `ANTHROPIC_API_KEY` (shared by Cloudflare's passthrough and the direct baseline). Missing credentials cause that gateway to be reported as `SKIPPED` rather than failing the run.
 
 ## Output
 
