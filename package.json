@@ -88,7 +88,7 @@
     "@azure/storage-blob": "^12.33.0",
     "@computesdk/anchorbrowser": "^0.2.4",
     "@computesdk/archil": "^0.4.7",
-    "@computesdk/beam": "^0.2.1",
+    "@computesdk/beam": "^0.3.0",
     "@computesdk/bench": "^0.1.8",
     "@computesdk/blaxel": "^1.6.18",
     "@computesdk/browserbase": "^0.3.8",
