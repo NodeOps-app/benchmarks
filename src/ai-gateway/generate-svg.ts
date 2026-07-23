@@ -19,6 +19,7 @@ function formatProviderName(s: string): string {
   if (s === 'openrouter') return 'OpenRouter';
   if (s === 'vercel-ai-gateway') return 'Vercel AI Gateway';
   if (s === 'cloudflare-ai-gateway') return 'Cloudflare AI Gateway';
+  if (s === 'llmgateway') return 'LLM Gateway';
   if (s === 'anthropic-direct') return 'Anthropic (direct)';
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
