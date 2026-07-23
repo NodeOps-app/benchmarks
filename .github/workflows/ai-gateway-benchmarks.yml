@@ -15,7 +15,7 @@ on:
       iterations:
         description: 'Cold + warm iterations per gateway'
         required: false
-        default: '100'
+        default: '20'
       provider:
         description: 'Gateway to run (leave empty for all five, round-robin)'
         required: false
