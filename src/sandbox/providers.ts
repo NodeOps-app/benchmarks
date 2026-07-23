@@ -16,7 +16,7 @@ import { lightning } from '@computesdk/lightning';
 import { modal } from '@computesdk/modal';
 import { namespace } from '@computesdk/namespace';
 import { northflank } from '@computesdk/northflank';
-// import { opencomputer } from '@computesdk/opencomputer';
+import { opencomputer } from '@computesdk/opencomputer';
 // import { quilt } from '@computesdk/quilt';
 // import { railway } from '@computesdk/railway';
 import { runloop } from '@computesdk/runloop';
@@ -143,12 +143,12 @@ export const providers: ProviderConfig[] = [
       runtime: 'node',
     }),
   },
-  // {
-  //   name: 'opencomputer',
-  //   requiredEnvVars: ['OPENCOMPUTER_API_KEY'],
-  //   createCompute: () => opencomputer({ apiKey: process.env.OPENCOMPUTER_API_KEY! }),
-  //   sandboxOptions: { timeout: 600_000 },
-  // },
+  {
+    name: 'opencomputer',
+    requiredEnvVars: ['OPENCOMPUTER_API_KEY'],
+    createCompute: () => opencomputer({ apiKey: process.env.OPENCOMPUTER_API_KEY! }),
+    sandboxOptions: { timeout: 600_000 },
+  },
   // {
   //   name: 'quilt',
   //   requiredEnvVars: ['QUILT_API_KEY', 'QUILT_BASE_URL'],
