@@ -58,18 +58,11 @@ jobs:
           fi
       - name: Clear stale results from checkout
         run: rm -rf results/browser/
-      - name: Run browser benchmark
+      - name: Load ${{ matrix.provider }} secrets from Namespace vault
         env:
-          BROWSERBASE_API_KEY: ${{ secrets.BROWSERBASE_API_KEY }}
-          BROWSERBASE_PROJECT_ID: ${{ secrets.BROWSERBASE_PROJECT_ID }}
-          BROWSER_USE_API_KEY: ${{ secrets.BROWSER_USE_API_KEY }}
-          HYPERBROWSER_API_KEY: ${{ secrets.HYPERBROWSER_API_KEY }}
-          KERNEL_API_KEY: ${{ secrets.KERNEL_API_KEY }}
-          NOTTE_API_KEY: ${{ secrets.NOTTE_API_KEY }}
-          STEEL_API_KEY: ${{ secrets.STEEL_API_KEY }}
-          TILION_API_KEY: ${{ secrets.TILION_API_KEY }}
-          TILION_BASE_URL: ${{ secrets.TILION_BASE_URL }}
-          # ANCHORBROWSER_API_KEY: ${{ secrets.ANCHORBROWSER_API_KEY }}
+          NSC_VAULT_TOKEN: ${{ secrets.NSC_VAULT_TOKEN }}
+        run: node scripts/load-ns-secrets.mjs --mode browser --provider ${{ matrix.provider }}
+      - name: Run browser benchmark
         run: |
           npm run bench -- \
             --mode browser \
@@ -114,12 +107,15 @@ jobs:
           pattern: browser-results-*
       - name: Merge results
         run: npx tsx src/merge-results.ts --input artifacts --mode browser
-      - name: Ingest results to platform
+      - name: Load ingest secrets from Namespace vault
         if: github.event_name != 'push'
         continue-on-error: true
         env:
-          INGEST_URL: ${{ secrets.INGEST_URL }}
-          INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
+          NSC_VAULT_TOKEN: ${{ secrets.NSC_VAULT_TOKEN }}
+        run: node scripts/load-ns-secrets.mjs INGEST_URL INGEST_SECRET
+      - name: Ingest results to platform
+        if: github.event_name != 'push'
+        continue-on-error: true
         run: npx tsx src/ingest.ts --type browser
       - run: npm run generate-browser-svg
       - name: Upload SVG as artifact

@@ -109,18 +109,13 @@ jobs:
           fi
       - name: Clear stale results from checkout
         run: rm -rf results/browser-throughput/
+      - name: Load ${{ matrix.provider }} secrets from Namespace vault
+        env:
+          NSC_VAULT_TOKEN: ${{ secrets.NSC_VAULT_TOKEN }}
+        run: node scripts/load-ns-secrets.mjs --mode throughput --provider ${{ matrix.provider }}
       - name: Run browser throughput benchmark
         env:
           THROUGHPUT_URLS: ${{ needs.setup.outputs.urls }}
-          BROWSERBASE_API_KEY: ${{ secrets.BROWSERBASE_API_KEY }}
-          BROWSERBASE_PROJECT_ID: ${{ secrets.BROWSERBASE_PROJECT_ID }}
-          BROWSER_USE_API_KEY: ${{ secrets.BROWSER_USE_API_KEY }}
-          HYPERBROWSER_API_KEY: ${{ secrets.HYPERBROWSER_API_KEY }}
-          KERNEL_API_KEY: ${{ secrets.KERNEL_API_KEY }}
-          NOTTE_API_KEY: ${{ secrets.NOTTE_API_KEY }}
-          STEEL_API_KEY: ${{ secrets.STEEL_API_KEY }}
-          TILION_API_KEY: ${{ secrets.TILION_API_KEY }}
-          TILION_BASE_URL: ${{ secrets.TILION_BASE_URL }}
         run: |
           npm run bench -- \
             --mode browser-throughput \

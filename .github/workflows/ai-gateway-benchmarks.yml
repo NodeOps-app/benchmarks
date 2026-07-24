@@ -64,16 +64,13 @@ jobs:
           else
             npm ci
           fi
-      - name: Run AI gateway benchmark
+      - name: Load AI gateway secrets from Namespace vault
         env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          VERCEL_AI_GATEWAY_API_KEY: ${{ secrets.VERCEL_AI_GATEWAY_API_KEY }}
-          CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID }}
-          CLOUDFLARE_AI_GATEWAY_GATEWAY_ID: ${{ secrets.CLOUDFLARE_AI_GATEWAY_GATEWAY_ID }}
-          CLOUDFLARE_AI_GATEWAY_TOKEN: ${{ secrets.CLOUDFLARE_AI_GATEWAY_TOKEN }}
-          LLM_GATEWAY_API_KEY: ${{ secrets.LLM_GATEWAY_API_KEY }}
-          PYDANTIC_AI_GATEWAY_API_KEY: ${{ secrets.PYDANTIC_AI_GATEWAY_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          NSC_VAULT_TOKEN: ${{ secrets.NSC_VAULT_TOKEN }}
+        # Single job (no matrix), so loading every AI-gateway secret per run is
+        # fine and avoids resolving per-provider scoping for round-robin asks.
+        run: node scripts/load-ns-secrets.mjs
+      - name: Run AI gateway benchmark
         run: |
           PROVIDER_FLAG=""
           if [ -n "${{ github.event.inputs.provider }}" ]; then

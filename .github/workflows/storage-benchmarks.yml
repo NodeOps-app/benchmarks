@@ -72,28 +72,11 @@ jobs:
           fi
       - name: Clear stale results from checkout
         run: rm -rf results/storage/
-      - name: Run storage benchmark
+      - name: Load ${{ matrix.provider }} secrets from Namespace vault
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          S3_BUCKET: ${{ secrets.S3_BUCKET }}
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-          R2_BUCKET: ${{ secrets.R2_BUCKET }}
-          TIGRIS_STORAGE_ACCESS_KEY_ID: ${{ secrets.TIGRIS_STORAGE_ACCESS_KEY_ID }}
-          TIGRIS_STORAGE_SECRET_ACCESS_KEY: ${{ secrets.TIGRIS_STORAGE_SECRET_ACCESS_KEY }}
-          TIGRIS_STORAGE_BUCKET: ${{ secrets.TIGRIS_STORAGE_BUCKET }}
-          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
-          VERCEL_BLOB_BUCKET: ${{ secrets.VERCEL_BLOB_BUCKET }}
-          GCS_PROJECT_ID: ${{ secrets.GCS_PROJECT_ID }}
-          GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
-          GCS_CLIENT_EMAIL: ${{ secrets.GCS_CLIENT_EMAIL }}
-          GCS_PRIVATE_KEY: ${{ secrets.GCS_PRIVATE_KEY }}
-          AZURE_ACCOUNT_NAME: ${{ secrets.AZURE_ACCOUNT_NAME }}
-          AZURE_ACCOUNT_KEY: ${{ secrets.AZURE_ACCOUNT_KEY }}
-          AZURE_CONTAINER: ${{ secrets.AZURE_CONTAINER }}
+          NSC_VAULT_TOKEN: ${{ secrets.NSC_VAULT_TOKEN }}
+        run: node scripts/load-ns-secrets.mjs --mode storage --provider ${{ matrix.provider }}
+      - name: Run storage benchmark
         run: |
           FILE_SIZE="${{ matrix.file_size }}"
           npm run bench -- \
@@ -141,12 +124,15 @@ jobs:
           pattern: storage-results-*
       - name: Merge results
         run: npx tsx src/merge-results.ts --input artifacts --mode storage
-      - name: Ingest results to platform
+      - name: Load ingest secrets from Namespace vault
         if: github.event_name != 'push'
         continue-on-error: true
         env:
-          INGEST_URL: ${{ secrets.INGEST_URL }}
-          INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
+          NSC_VAULT_TOKEN: ${{ secrets.NSC_VAULT_TOKEN }}
+        run: node scripts/load-ns-secrets.mjs INGEST_URL INGEST_SECRET
+      - name: Ingest results to platform
+        if: github.event_name != 'push'
+        continue-on-error: true
         run: npx tsx src/ingest.ts --type storage
       - run: npm run generate-storage-svg
       - name: Upload SVGs as artifacts

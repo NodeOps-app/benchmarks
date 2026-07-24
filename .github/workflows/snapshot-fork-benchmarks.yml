@@ -73,41 +73,11 @@ jobs:
           fi
       - name: Clear stale results from checkout
         run: rm -rf results/snapshot-fork/
-      - name: Run snapshot/fork test
+      - name: Load ${{ matrix.provider }} secrets from Namespace vault
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          S3_BUCKET: ${{ secrets.S3_BUCKET }}
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-          R2_BUCKET: ${{ secrets.R2_BUCKET }}
-          TIGRIS_STORAGE_ACCESS_KEY_ID: ${{ secrets.TIGRIS_STORAGE_ACCESS_KEY_ID }}
-          TIGRIS_STORAGE_SECRET_ACCESS_KEY: ${{ secrets.TIGRIS_STORAGE_SECRET_ACCESS_KEY }}
-          TIGRIS_STORAGE_BUCKET: ${{ secrets.TIGRIS_STORAGE_BUCKET }}
-          # Snapshot-fork emulates snapshots/forks as sibling buckets for S3/R2,
-          # so it needs credentials with bucket create/delete permission.
-          S3_SNAPSHOT_ACCESS_KEY_ID: ${{ secrets.S3_SNAPSHOT_ACCESS_KEY_ID }}
-          S3_SNAPSHOT_SECRET_ACCESS_KEY: ${{ secrets.S3_SNAPSHOT_SECRET_ACCESS_KEY }}
-          S3_SNAPSHOT_BUCKET: ${{ secrets.S3_SNAPSHOT_BUCKET }}
-          R2_SNAPSHOT_ACCESS_KEY_ID: ${{ secrets.R2_SNAPSHOT_ACCESS_KEY_ID }}
-          R2_SNAPSHOT_SECRET_ACCESS_KEY: ${{ secrets.R2_SNAPSHOT_SECRET_ACCESS_KEY }}
-          R2_SNAPSHOT_BUCKET: ${{ secrets.R2_SNAPSHOT_BUCKET }}
-          # Snapshot-fork uses a dedicated Standard-tier, snapshot-enabled Tigris bucket.
-          TIGRIS_SNAPSHOT_ACCESS_KEY: ${{ secrets.TIGRIS_SNAPSHOT_ACCESS_KEY }}
-          TIGRIS_SNAPSHOT_SECRET_KEY: ${{ secrets.TIGRIS_SNAPSHOT_SECRET_KEY }}
-          TIGRIS_SNAPSHOT_STORAGE_BUCKET: ${{ secrets.TIGRIS_SNAPSHOT_STORAGE_BUCKET }}
-          # Azure snapshot-fork emulates snapshots/forks as sibling containers,
-          # so it needs an account key (account-level container create/delete)
-          # and a dedicated snapshot container.
-          AZURE_SNAPSHOT_ACCOUNT_NAME: ${{ secrets.AZURE_SNAPSHOT_ACCOUNT_NAME }}
-          AZURE_SNAPSHOT_ACCOUNT_KEY: ${{ secrets.AZURE_SNAPSHOT_ACCOUNT_KEY }}
-          AZURE_SNAPSHOT_CONTAINER: ${{ secrets.AZURE_SNAPSHOT_CONTAINER }}
-          # vercel-blob snapshot-fork is disabled pending an adapter fix (see
-          # the matrix above and providers.ts). Re-add these when re-enabling.
-          # VERCEL_SNAPSHOT_BLOB_READ_WRITE_TOKEN: ${{ secrets.VERCEL_SNAPSHOT_BLOB_READ_WRITE_TOKEN }}
-          # VERCEL_SNAPSHOT_BLOB_BUCKET: ${{ secrets.VERCEL_SNAPSHOT_BLOB_BUCKET }}
+          NSC_VAULT_TOKEN: ${{ secrets.NSC_VAULT_TOKEN }}
+        run: node scripts/load-ns-secrets.mjs --mode snapshot-fork --provider ${{ matrix.provider }}
+      - name: Run snapshot/fork test
         run: |
           npm run bench -- \
             --mode snapshot-fork \
