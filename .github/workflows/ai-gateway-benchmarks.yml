@@ -64,8 +64,6 @@ jobs:
           else
             npm ci
           fi
-      - name: Clear stale results from checkout
-        run: rm -rf results/ai-gateway/
       - name: Run AI gateway benchmark
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
