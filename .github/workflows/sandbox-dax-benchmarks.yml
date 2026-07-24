@@ -121,6 +121,7 @@ jobs:
           HOPX_API_KEY: ${{ secrets.HOPX_API_KEY }}
           ISORUN_API_KEY: ${{ secrets.ISORUN_API_KEY }}
           LIGHTNING_API_KEY: ${{ secrets.LIGHTNING_API_KEY }}
+          LIGHTNING_INSTANCE_TYPE: cpu-8 # 8 vCPU / 16 GiB, matching the standardized dax profile
           MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
           MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
           NORTHFLANK_TOKEN: ${{ secrets.NORTHFLANK_TOKEN }}
