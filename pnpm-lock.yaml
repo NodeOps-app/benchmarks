@@ -176,6 +176,9 @@ importers:
       playwright-core:
         specifier: ^1.61.1
         version: 1.61.1
+      tensorlake:
+        specifier: 0.5.89
+        version: 0.5.89(bufferutil@4.1.0)(utf-8-validate@6.0.6)
     devDependencies:
       '@types/node':
         specifier: ^26.0.1
@@ -4622,6 +4625,11 @@ packages:
 
   tensorlake@0.5.33:
     resolution: {integrity: sha512-9TX/hKkEL7w6tbZy/yKAJ522Fps9kMkGcoCKibb4XT7OANmwdS3A5GLLsq4ufkVeSxQjaswnmVUoghzFzF1XtQ==}
+    engines: {node: '>=22.0.0'}
+    hasBin: true
+
+  tensorlake@0.5.89:
+    resolution: {integrity: sha512-ibLb35jxG0B77Rpmu6trjYYJ+qEBU5YhtQvzCYrTtkA3d8tCJIOYkKTfwULTyz6sgNO7lj5JPFA+vHnSHZvszw==}
     engines: {node: '>=22.0.0'}
     hasBin: true
 
@@ -10218,6 +10226,14 @@ snapshots:
       - react-native-b4a
 
   tensorlake@0.5.33(bufferutil@4.1.0)(utf-8-validate@6.0.6):
+    dependencies:
+      undici: 8.3.0
+      ws: 8.21.1(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
+  tensorlake@0.5.89(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     dependencies:
       undici: 8.3.0
       ws: 8.21.1(bufferutil@4.1.0)(utf-8-validate@6.0.6)

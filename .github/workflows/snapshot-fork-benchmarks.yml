@@ -54,6 +54,7 @@ jobs:
           - cloudflare-r2
           - tigris
           - azure-blob
+          - tensorlake
           # vercel-blob is disabled pending an adapter fix: its manifest-based
           # snapshot/fork emulation is unreliable on Vercel Blob's eventually-
           # consistent overwrites (stale reads + lost deletes). See providers.ts.
@@ -105,6 +106,13 @@ jobs:
           AZURE_SNAPSHOT_ACCOUNT_NAME: ${{ secrets.AZURE_SNAPSHOT_ACCOUNT_NAME }}
           AZURE_SNAPSHOT_ACCOUNT_KEY: ${{ secrets.AZURE_SNAPSHOT_ACCOUNT_KEY }}
           AZURE_SNAPSHOT_CONTAINER: ${{ secrets.AZURE_SNAPSHOT_CONTAINER }}
+          # Tensorlake snapshots and forks are native metadata operations and
+          # use the same filesystem and project-scoped credentials as I/O.
+          TENSORLAKE_API_KEY: ${{ secrets.TENSORLAKE_API_KEY }}
+          TENSORLAKE_API_URL: ${{ secrets.TENSORLAKE_API_URL }}
+          TENSORLAKE_ORGANIZATION_ID: ${{ secrets.TENSORLAKE_ORGANIZATION_ID }}
+          TENSORLAKE_PROJECT_ID: ${{ secrets.TENSORLAKE_PROJECT_ID }}
+          TENSORLAKE_FILESYSTEM: ${{ secrets.TENSORLAKE_FILESYSTEM }}
           # vercel-blob snapshot-fork is disabled pending an adapter fix (see
           # the matrix above and providers.ts). Re-add these when re-enabling.
           # VERCEL_SNAPSHOT_BLOB_READ_WRITE_TOKEN: ${{ secrets.VERCEL_SNAPSHOT_BLOB_READ_WRITE_TOKEN }}

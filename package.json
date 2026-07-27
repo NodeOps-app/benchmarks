@@ -46,12 +46,14 @@
     "bench:storage:s3": "tsx benchmarks/src/run.ts --mode storage --provider aws-s3",
     "bench:storage:r2": "tsx benchmarks/src/run.ts --mode storage --provider cloudflare-r2",
     "bench:storage:tigris": "tsx benchmarks/src/run.ts --mode storage --provider tigris",
+    "bench:storage:tensorlake": "tsx benchmarks/src/run.ts --mode storage --provider tensorlake",
     "bench:storage:1mb": "tsx benchmarks/src/run.ts --mode storage --file-size 1MB",
     "bench:storage:4mb": "tsx benchmarks/src/run.ts --mode storage --file-size 4MB",
     "bench:storage:10mb": "tsx benchmarks/src/run.ts --mode storage --file-size 10MB",
     "bench:storage:16mb": "tsx benchmarks/src/run.ts --mode storage --file-size 16MB",
     "bench:snapshot-fork": "tsx benchmarks/src/run.ts --mode snapshot-fork",
     "bench:snapshot-fork:tigris": "tsx benchmarks/src/run.ts --mode snapshot-fork --provider tigris",
+    "bench:snapshot-fork:tensorlake": "tsx benchmarks/src/run.ts --mode snapshot-fork --provider tensorlake",
     "bench:snapshot-fork:s3": "tsx benchmarks/src/run.ts --mode snapshot-fork --provider aws-s3",
     "bench:snapshot-fork:wide": "tsx benchmarks/src/run.ts --mode snapshot-fork --dataset wide",
     "bench:snapshot-fork:deep": "tsx benchmarks/src/run.ts --mode snapshot-fork --dataset deep",
@@ -142,7 +144,8 @@
     "e2b": "^2.35.0",
     "p-limit": "^7.3.0",
     "pg": "^8.22.0",
-    "playwright-core": "^1.61.1"
+    "playwright-core": "^1.61.1",
+    "tensorlake": "0.5.89"
   },
   "devDependencies": {
     "@types/node": "^26.0.1",

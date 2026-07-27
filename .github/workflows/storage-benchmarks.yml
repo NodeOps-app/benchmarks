@@ -56,6 +56,7 @@ jobs:
           - vercel-blob
           - gcs
           - azure-blob
+          - tensorlake
         file_size: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.file_size != '' && fromJson(format('["{0}"]', github.event.inputs.file_size))) || (github.event_name == 'push' && fromJson('["1MB"]')) || fromJson('["1MB","4MB","10MB","16MB"]') }}
     steps:
       - uses: actions/checkout@v4
@@ -95,6 +96,11 @@ jobs:
           AZURE_ACCOUNT_NAME: ${{ secrets.AZURE_ACCOUNT_NAME }}
           AZURE_ACCOUNT_KEY: ${{ secrets.AZURE_ACCOUNT_KEY }}
           AZURE_CONTAINER: ${{ secrets.AZURE_CONTAINER }}
+          TENSORLAKE_API_KEY: ${{ secrets.TENSORLAKE_API_KEY }}
+          TENSORLAKE_API_URL: ${{ secrets.TENSORLAKE_API_URL }}
+          TENSORLAKE_ORGANIZATION_ID: ${{ secrets.TENSORLAKE_ORGANIZATION_ID }}
+          TENSORLAKE_PROJECT_ID: ${{ secrets.TENSORLAKE_PROJECT_ID }}
+          TENSORLAKE_FILESYSTEM: ${{ secrets.TENSORLAKE_FILESYSTEM }}
         run: |
           FILE_SIZE="${{ matrix.file_size }}"
           pnpm run bench -- \
