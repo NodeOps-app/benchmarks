@@ -3,9 +3,9 @@ name: AI Gateway Benchmark
 on:
   pull_request:
     paths:
-      - 'src/ai-gateway/**'
-      - 'src/run.ts'
-      - 'src/merge-results.ts'
+      - 'benchmarks/ai-gateway/**'
+      - 'benchmarks/src/run.ts'
+      - 'benchmarks/src/merge-results.ts'
       - 'package.json'
       - '.github/workflows/ai-gateway-benchmarks.yml'
   schedule:
@@ -53,16 +53,17 @@ jobs:
         with:
           # Full history so the rebase-on-push retry below has a merge base.
           fetch-depth: 0
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: 'npm'
+          cache: 'pnpm'
       - name: Install dependencies
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            npm update
+            pnpm update
           else
-            npm ci
+            pnpm install --frozen-lockfile
           fi
       - name: Load AI gateway secrets from Namespace vault
         # Single job (no matrix); the round-robin methodology (see AI_GATEWAYS.md)
@@ -70,7 +71,7 @@ jobs:
         # ai-gateway providers' vars — not every mode's vars.
         run: |
           nsc version ensure --at_least 0.0.550
-          node scripts/write-vault-envdef.mjs --mode ai-gateway > /tmp/vault.envdef
+          node benchmarks/scripts/write-vault-envdef.mjs --mode ai-gateway > /tmp/vault.envdef
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
       - name: Run AI gateway benchmark
         run: |
@@ -78,9 +79,9 @@ jobs:
           if [ -n "${{ github.event.inputs.provider }}" ]; then
             PROVIDER_FLAG="--provider ${{ github.event.inputs.provider }}"
           fi
-          npm run bench:ai-gateway -- $PROVIDER_FLAG \
+          pnpm run bench:ai-gateway -- $PROVIDER_FLAG \
             --iterations ${{ (github.event_name == 'pull_request' && '2') || github.event.inputs.iterations || '10' }}
-      - run: npm run generate-ai-gateway-svg
+      - run: pnpm run generate-ai-gateway-svg
       - name: Upload results and SVG as artifacts
         if: always()
         uses: actions/upload-artifact@v4

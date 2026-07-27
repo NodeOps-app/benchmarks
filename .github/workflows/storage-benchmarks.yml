@@ -4,10 +4,10 @@ on:
   push:
     branches: [master]
     paths:
-      - 'src/storage/**'
-      - 'src/util/**'
-      - 'src/run.ts'
-      - 'src/merge-results.ts'
+      - 'benchmarks/storage/**'
+      - 'benchmarks/src/util/**'
+      - 'benchmarks/src/run.ts'
+      - 'benchmarks/src/merge-results.ts'
       - 'package.json'
   schedule:
     - cron: '0 6 * * 5' # Weekly on Friday at 6am UTC
@@ -59,28 +59,29 @@ jobs:
         file_size: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.file_size != '' && fromJson(format('["{0}"]', github.event.inputs.file_size))) || (github.event_name == 'push' && fromJson('["1MB"]')) || fromJson('["1MB","4MB","10MB","16MB"]') }}
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: 'npm'
+          cache: 'pnpm'
       - name: Install dependencies
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            npm update
+            pnpm update
           else
-            npm ci
+            pnpm install --frozen-lockfile
           fi
       - name: Clear stale results from checkout
         run: rm -rf results/storage/
       - name: Load ${{ matrix.provider }} secrets from Namespace vault
         run: |
           nsc version ensure --at_least 0.0.550
-          node scripts/write-vault-envdef.mjs --mode storage --provider ${{ matrix.provider }} > /tmp/vault.envdef
+          node benchmarks/scripts/write-vault-envdef.mjs --mode storage --provider ${{ matrix.provider }} > /tmp/vault.envdef
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
       - name: Run storage benchmark
         run: |
           FILE_SIZE="${{ matrix.file_size }}"
-          npm run bench -- \
+          pnpm run bench -- \
             --mode storage \
             --provider ${{ matrix.provider }} \
             --file-size $FILE_SIZE \
@@ -107,16 +108,17 @@ jobs:
           # A shallow (depth-1) clone can make `git rebase origin/<branch>`
           # fail when the remote has advanced past the shallow boundary.
           fetch-depth: 0
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: 'npm'
+          cache: 'pnpm'
       - name: Install dependencies
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            npm update
+            pnpm update
           else
-            npm ci
+            pnpm install --frozen-lockfile
           fi
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -124,19 +126,19 @@ jobs:
           path: artifacts/
           pattern: storage-results-*
       - name: Merge results
-        run: npx tsx src/merge-results.ts --input artifacts --mode storage
+        run: npx tsx benchmarks/src/merge-results.ts --input artifacts --mode storage
       - name: Load ingest secrets from Namespace vault
         if: github.event_name != 'push'
         continue-on-error: true
         run: |
           nsc version ensure --at_least 0.0.550
-          node scripts/write-vault-envdef.mjs INGEST_URL INGEST_SECRET > /tmp/vault.envdef
+          node benchmarks/scripts/write-vault-envdef.mjs INGEST_URL INGEST_SECRET > /tmp/vault.envdef
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
       - name: Ingest results to platform
         if: github.event_name != 'push'
         continue-on-error: true
-        run: npx tsx src/ingest.ts --type storage
-      - run: npm run generate-storage-svg
+        run: npx tsx benchmarks/src/ingest.ts --type storage
+      - run: pnpm run generate-storage-svg
       - name: Upload SVGs as artifacts
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v4

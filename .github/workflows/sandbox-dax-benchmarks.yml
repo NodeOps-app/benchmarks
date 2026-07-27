@@ -4,11 +4,11 @@ on:
   push:
     branches: [master]
     paths:
-      - 'src/sandbox/dax.ts'
-      - 'src/sandbox/providers.ts'
-      - 'src/run.ts'
-      - 'src/merge-results.ts'
-      - 'scripts/dax-benchmark.sh'
+      - 'benchmarks/sandbox/dax.ts'
+      - 'benchmarks/sandbox/providers.ts'
+      - 'benchmarks/src/run.ts'
+      - 'benchmarks/src/merge-results.ts'
+      - 'benchmarks/scripts/dax-benchmark.sh'
       - 'package.json'
       - '.github/workflows/sandbox-dax-benchmarks.yml'
   schedule:
@@ -71,56 +71,57 @@ jobs:
           - vercel
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: 'npm'
+          cache: 'pnpm'
       - name: Install dependencies
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            npm update
+            pnpm update
           else
-            npm ci
+            pnpm install --frozen-lockfile
           fi
       - name: Load E2B secrets from Namespace vault
         if: matrix.provider == 'e2b'
         run: |
           nsc version ensure --at_least 0.0.550
-          node scripts/write-vault-envdef.mjs --mode sandbox --provider e2b > /tmp/vault.envdef
+          node benchmarks/scripts/write-vault-envdef.mjs --mode sandbox --provider e2b > /tmp/vault.envdef
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
       - name: Build E2B template with 8 vCPU / 16 GiB
         if: matrix.provider == 'e2b'
-        run: npx tsx scripts/build-e2b-template.ts
+        run: npx tsx benchmarks/scripts/build-e2b-template.ts
       - name: Load Superserve secrets from Namespace vault
         if: matrix.provider == 'superserve'
         run: |
           nsc version ensure --at_least 0.0.550
-          node scripts/write-vault-envdef.mjs --mode sandbox --provider superserve > /tmp/vault.envdef
+          node benchmarks/scripts/write-vault-envdef.mjs --mode sandbox --provider superserve > /tmp/vault.envdef
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
       - name: Build Superserve template with 8 vCPU / 16 GiB
         if: matrix.provider == 'superserve'
-        run: npx tsx scripts/build-superserve-template.ts
+        run: npx tsx benchmarks/scripts/build-superserve-template.ts
       - name: Load Northflank secrets from Namespace vault
         if: matrix.provider == 'northflank'
         run: |
           nsc version ensure --at_least 0.0.550
-          node scripts/write-vault-envdef.mjs --mode sandbox --provider northflank > /tmp/vault.envdef
+          node benchmarks/scripts/write-vault-envdef.mjs --mode sandbox --provider northflank > /tmp/vault.envdef
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
       - name: Find Northflank plan for 8 vCPU / 16 GiB
         if: matrix.provider == 'northflank'
-        run: npx tsx scripts/find-northflank-plan.ts
+        run: npx tsx benchmarks/scripts/find-northflank-plan.ts
       - name: Clear stale results from checkout
         run: rm -rf results/
       - name: Load ${{ matrix.provider }} secrets from Namespace vault
         run: |
           nsc version ensure --at_least 0.0.550
-          node scripts/write-vault-envdef.mjs --mode sandbox --provider ${{ matrix.provider }} > /tmp/vault.envdef
+          node benchmarks/scripts/write-vault-envdef.mjs --mode sandbox --provider ${{ matrix.provider }} > /tmp/vault.envdef
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
       - name: Run dax benchmark
         env:
           LIGHTNING_INSTANCE_TYPE: cpu-8 # 8 vCPU / 16 GiB, matching the standardized dax profile
         run: |
-          npm run bench -- \
+          pnpm run bench -- \
             --provider ${{ matrix.provider }} \
             --mode sandbox-dax \
             --iterations ${{ github.event.inputs.iterations || '1' }}
@@ -142,16 +143,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: 'npm'
+          cache: 'pnpm'
       - name: Install dependencies
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            npm update
+            pnpm update
           else
-            npm ci
+            pnpm install --frozen-lockfile
           fi
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -159,18 +161,18 @@ jobs:
           path: artifacts/
           pattern: results-*
       - name: Merge results
-        run: npx tsx src/merge-results.ts --input artifacts
+        run: npx tsx benchmarks/src/merge-results.ts --input artifacts
       - name: Load ingest secrets from Namespace vault
         if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         continue-on-error: true
         run: |
           nsc version ensure --at_least 0.0.550
-          node scripts/write-vault-envdef.mjs INGEST_URL INGEST_SECRET > /tmp/vault.envdef
+          node benchmarks/scripts/write-vault-envdef.mjs INGEST_URL INGEST_SECRET > /tmp/vault.envdef
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
       - name: Ingest results to platform
         if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         continue-on-error: true
-        run: npx tsx src/ingest.ts --type sandbox
+        run: npx tsx benchmarks/src/ingest.ts --type sandbox
       - name: Post results to merged PR
         if: github.event_name == 'push'
         continue-on-error: true
