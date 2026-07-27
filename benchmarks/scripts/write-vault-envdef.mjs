@@ -27,7 +27,7 @@
 // Consumed by:
 //   eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
 import { execSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, unlinkSync } from 'node:fs';
 
 const PLACEHOLDER = 'sec_dummy';
 
@@ -92,6 +92,72 @@ if (emitMasks || maskFrom) {
   process.exit(0);
 }
 
+// 1b. --resolve-from <envdef-path>: bridge vault secrets across GH Actions
+//     steps. `eval "$(nsc vault export …)"` only sets env vars in the
+//     current step's process; subsequent steps spawn a fresh shell without
+//     those vars. The pattern here is to read the previously-written envdef
+//     (which already names our secrets), run nsc vault export, eval the
+//     bash output, then dump each resolved KEY=value line on stdout so the
+//     workflow can `>> "$GITHUB_ENV"` to propagate them.
+//
+//     Output uses bash `%q` for each value so multi-line secrets (e.g.
+//     PEM keys) survive GITHUB_ENV round-tripping as $'…' literals, which
+//     GH Actions re-sources the same way bash does.
+const resolveFrom = flagValue('--resolve-from');
+if (resolveFrom) {
+  const resolvedNames = readFileSync(resolveFrom, 'utf8')
+    .split('\n')
+    .map((l) => l.trim().split('=')[0])
+    .filter(Boolean);
+  if (!resolvedNames.length) {
+    console.error(`--resolve-from: envdef ${resolveFrom} is empty`);
+    process.exit(2);
+  }
+  let nscOut;
+  try {
+    nscOut = execSync(`nsc vault export --envdef "${resolveFrom}" --shell=bash`, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  } catch (e) {
+    console.error(`--resolve-from: nsc vault export failed: ${e.stderr?.toString().trim() || e.message || e}`);
+    process.exit(2);
+  }
+  // Write the resolver script to a file so the outer sh doesn't have to
+  // re-interpret any of its contents (we'd otherwise have to carefully
+  // dodge `$` escaping). Use `printenv` (a real binary, not bash's
+  // `${!name}` indirection) so we never trigger "Bad substitution" on
+  // shells that don't support it.
+  const scriptPath = `/tmp/nsc-resolve-${process.pid}.sh`;
+  const scriptBody = [
+    'set +e',
+    `eval ${JSON.stringify(nscOut)}`,
+    `for v in "$@"; do`,
+    // Printenv drops `--` (treats it as end-of-options) and prints *all*
+    // variables — skip anything that doesn't look like an env-var name.
+    `  case "$v" in`,
+    `    ""|--|-*) continue ;;`,
+    `  esac`,
+    `  val="$(printenv -- "$v" 2>/dev/null || true)"`,
+    `  if [ -n "$val" ]; then`,
+    `    printf '%s=%q\\n' "$v" "$val"`,
+    `  fi`,
+    `done`,
+  ].join('\n');
+  writeFileSync(scriptPath, scriptBody, { mode: 0o600 });
+  // Pass each name as a quoted positional arg so the file script can read
+  // them via "$@" without any further shell interpretation.
+  const quotedNames = resolvedNames.map((n) => `'${String(n).replace(/'/g, `'\\''`)}'`).join(' ');
+  let resolvedOut;
+  try {
+    resolvedOut = execSync(`/bin/bash '${scriptPath}' ${quotedNames}`, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  } catch (e) {
+    console.error(`--resolve-from: bash eval failed: ${e.stderr?.toString().trim() || e.message || e}`);
+    process.exit(2);
+  } finally {
+    try { unlinkSync(scriptPath); } catch {}
+  }
+  process.stdout.write(resolvedOut);
+  process.exit(0);
+}
+
 // 2. Resolve which KEYs we want for the envdef write path. Errors if the
 //    caller passed neither a selector nor a --mask-from shortcut above.
 function inlineResolveNames() {
@@ -129,6 +195,8 @@ if (names.length === 0) {
   console.error('  --placeholder        emit KEY=sec_dummy (skip vault lookup; dev/test only)');
   console.error('  --emit-masks         print ::add-mask::VALUE for each name in env (CI redaction)');
   console.error('  --mask-from <path>   read names from an existing envdef file and emit ::add-mask:: (CI redaction)');
+  console.error('  --resolve-from <path> resolve the envdef (call nsc vault export) and emit KEY=value');
+  console.error('                       for each name, so callers can >> "$GITHUB_ENV" to bridge across GH steps');
   process.exit(2);
 }
 
