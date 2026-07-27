@@ -29,7 +29,7 @@ permissions:
 jobs:
   setup:
     name: Resolve target pages
-    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:describe
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
     outputs:
       urls: ${{ steps.pick.outputs.urls }}
     steps:
@@ -80,7 +80,7 @@ jobs:
 
   bench:
     name: Bench ${{ matrix.provider }}
-    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:describe
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
     needs: setup
     timeout-minutes: 60
     strategy:
@@ -138,7 +138,7 @@ jobs:
 
   collect:
     name: Collect Results
-    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:describe
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
     needs: bench
     if: always()
     steps:
