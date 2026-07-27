@@ -5,8 +5,8 @@ import { tigris } from '@storagesdk/adapters/tigris';
 import { vercel } from '@storagesdk/adapters/vercel';
 import { gcs } from '@storagesdk/adapters/gcs';
 import { azure } from '@storagesdk/adapters/azure';
+import { tensorlake } from '@storagesdk/adapters/tensorlake';
 import type { StorageProviderConfig } from './types.js';
-import { tensorlakeBenchmarkAdapter } from './tensorlake.js';
 
 /**
  * Storage provider benchmark configurations.
@@ -198,7 +198,7 @@ export const storageProviders: StorageProviderConfig[] = [
     ],
     bucket: process.env.TENSORLAKE_FILESYSTEM!,
     createStorage: () => new Storage({
-      adapter: tensorlakeBenchmarkAdapter({
+      adapter: tensorlake({
         apiKey: process.env.TENSORLAKE_API_KEY!,
         organizationId: process.env.TENSORLAKE_ORGANIZATION_ID!,
         projectId: process.env.TENSORLAKE_PROJECT_ID!,
