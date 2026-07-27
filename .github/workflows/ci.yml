@@ -32,11 +32,16 @@ jobs:
 
       - name: Build packages
         # The root typecheck consumes the built dist output, so build
-        # @benchsdk/client before running typecheck.
-        run: pnpm --filter @benchsdk/client run build
+        # @benchsdk/client and create-bench before running typecheck.
+        run: |
+          pnpm --filter @benchsdk/client run build
+          pnpm --filter create-bench run build
 
       - name: Typecheck
         run: pnpm typecheck
 
       - name: Test
         run: pnpm --filter @benchsdk/client run test
+
+      - name: Test create-bench
+        run: pnpm --filter create-bench run test
