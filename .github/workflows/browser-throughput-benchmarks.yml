@@ -29,7 +29,7 @@ permissions:
 jobs:
   setup:
     name: Resolve target pages
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:describe
     outputs:
       urls: ${{ steps.pick.outputs.urls }}
     steps:
@@ -80,7 +80,7 @@ jobs:
 
   bench:
     name: Bench ${{ matrix.provider }}
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:describe
     needs: setup
     timeout-minutes: 60
     strategy:
@@ -110,9 +110,10 @@ jobs:
       - name: Clear stale results from checkout
         run: rm -rf results/browser-throughput/
       - name: Load ${{ matrix.provider }} secrets from Namespace vault
-        env:
-          NSC_VAULT_TOKEN: ${{ secrets.NSC_VAULT_TOKEN }}
-        run: node scripts/load-ns-secrets.mjs --mode throughput --provider ${{ matrix.provider }}
+        run: |
+          nsc version ensure --at_least 0.0.550
+          node scripts/write-vault-envdef.mjs --mode throughput --provider ${{ matrix.provider }} > /tmp/vault.envdef
+          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
       - name: Run browser throughput benchmark
         env:
           THROUGHPUT_URLS: ${{ needs.setup.outputs.urls }}
@@ -132,7 +133,7 @@ jobs:
 
   collect:
     name: Collect Results
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:describe
     needs: bench
     if: always()
     steps:

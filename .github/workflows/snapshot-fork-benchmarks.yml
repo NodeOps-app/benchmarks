@@ -44,7 +44,7 @@ jobs:
     # single iteration; the weekly schedule runs 100 for trend data and commits
     # the combined results. Fork PRs without secrets skip gracefully
     # (missing-creds path) rather than failing.
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:describe
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -74,9 +74,10 @@ jobs:
       - name: Clear stale results from checkout
         run: rm -rf results/snapshot-fork/
       - name: Load ${{ matrix.provider }} secrets from Namespace vault
-        env:
-          NSC_VAULT_TOKEN: ${{ secrets.NSC_VAULT_TOKEN }}
-        run: node scripts/load-ns-secrets.mjs --mode snapshot-fork --provider ${{ matrix.provider }}
+        run: |
+          nsc version ensure --at_least 0.0.550
+          node scripts/write-vault-envdef.mjs --mode snapshot-fork --provider ${{ matrix.provider }} > /tmp/vault.envdef
+          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
       - name: Run snapshot/fork test
         run: |
           npm run bench -- \
@@ -95,7 +96,7 @@ jobs:
 
   collect:
     name: Collect Results
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:describe
     needs: [snapshot-fork]
     if: always()
     steps:

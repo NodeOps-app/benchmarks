@@ -41,7 +41,7 @@ permissions:
 jobs:
   bench:
     name: AI Gateway Benchmark
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:describe
     # Deliberately a single job, not a matrix-per-provider like the other
     # benchmark workflows: the round-robin methodology (see AI_GATEWAYS.md)
     # requires every gateway to run interleaved within the same process.
@@ -65,11 +65,14 @@ jobs:
             npm ci
           fi
       - name: Load AI gateway secrets from Namespace vault
-        env:
-          NSC_VAULT_TOKEN: ${{ secrets.NSC_VAULT_TOKEN }}
         # Single job (no matrix), so loading every AI-gateway secret per run is
         # fine and avoids resolving per-provider scoping for round-robin asks.
-        run: node scripts/load-ns-secrets.mjs
+        run: |
+          nsc version ensure --at_least 0.0.550
+          # No --mode/--provider: enumerate the union of every manifest mode so
+          # the round-robin run sees every gateway's creds.
+          node scripts/write-vault-envdef.mjs > /tmp/vault.envdef
+          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
       - name: Run AI gateway benchmark
         run: |
           PROVIDER_FLAG=""

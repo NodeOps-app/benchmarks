@@ -3,8 +3,9 @@
  * each provider benchmark needs, read straight from the `requiredEnvVars` field
  * on every provider config (the single source of truth in src\/**\/providers.ts).
  *
- * The resolver (load-ns-secrets.mjs) uses this to reveal ONLY a job's own
- * secrets from the vault instead of every secret in every job.
+ * The vault envdef writer (write-vault-envdef.mjs) reads this to enumerate
+ * ONLY a job's own secrets per run, passing them to `nsc vault export` instead
+ * of revealing every secret in every job.
  *
  * Regenerate whenever providers change:  npx tsx scripts/gen-provider-vars.ts
  */

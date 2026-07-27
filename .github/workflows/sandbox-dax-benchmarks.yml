@@ -40,7 +40,7 @@ permissions:
 jobs:
   dax:
     name: Dax ${{ matrix.provider }}
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:describe
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -84,34 +84,38 @@ jobs:
           fi
       - name: Load E2B secrets from Namespace vault
         if: matrix.provider == 'e2b'
-        env:
-          NSC_VAULT_TOKEN: ${{ secrets.NSC_VAULT_TOKEN }}
-        run: node scripts/load-ns-secrets.mjs --mode sandbox --provider e2b
+        run: |
+          nsc version ensure --at_least 0.0.550
+          node scripts/write-vault-envdef.mjs --mode sandbox --provider e2b > /tmp/vault.envdef
+          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
       - name: Build E2B template with 8 vCPU / 16 GiB
         if: matrix.provider == 'e2b'
         run: npx tsx scripts/build-e2b-template.ts
       - name: Load Superserve secrets from Namespace vault
         if: matrix.provider == 'superserve'
-        env:
-          NSC_VAULT_TOKEN: ${{ secrets.NSC_VAULT_TOKEN }}
-        run: node scripts/load-ns-secrets.mjs --mode sandbox --provider superserve
+        run: |
+          nsc version ensure --at_least 0.0.550
+          node scripts/write-vault-envdef.mjs --mode sandbox --provider superserve > /tmp/vault.envdef
+          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
       - name: Build Superserve template with 8 vCPU / 16 GiB
         if: matrix.provider == 'superserve'
         run: npx tsx scripts/build-superserve-template.ts
       - name: Load Northflank secrets from Namespace vault
         if: matrix.provider == 'northflank'
-        env:
-          NSC_VAULT_TOKEN: ${{ secrets.NSC_VAULT_TOKEN }}
-        run: node scripts/load-ns-secrets.mjs --mode sandbox --provider northflank
+        run: |
+          nsc version ensure --at_least 0.0.550
+          node scripts/write-vault-envdef.mjs --mode sandbox --provider northflank > /tmp/vault.envdef
+          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
       - name: Find Northflank plan for 8 vCPU / 16 GiB
         if: matrix.provider == 'northflank'
         run: npx tsx scripts/find-northflank-plan.ts
       - name: Clear stale results from checkout
         run: rm -rf results/
       - name: Load ${{ matrix.provider }} secrets from Namespace vault
-        env:
-          NSC_VAULT_TOKEN: ${{ secrets.NSC_VAULT_TOKEN }}
-        run: node scripts/load-ns-secrets.mjs --mode sandbox --provider ${{ matrix.provider }}
+        run: |
+          nsc version ensure --at_least 0.0.550
+          node scripts/write-vault-envdef.mjs --mode sandbox --provider ${{ matrix.provider }} > /tmp/vault.envdef
+          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
       - name: Run dax benchmark
         env:
           LIGHTNING_INSTANCE_TYPE: cpu-8 # 8 vCPU / 16 GiB, matching the standardized dax profile
@@ -131,7 +135,7 @@ jobs:
 
   collect:
     name: Collect Dax Results
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:describe
     needs: dax
     if: always()
     steps:
@@ -159,9 +163,10 @@ jobs:
       - name: Load ingest secrets from Namespace vault
         if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         continue-on-error: true
-        env:
-          NSC_VAULT_TOKEN: ${{ secrets.NSC_VAULT_TOKEN }}
-        run: node scripts/load-ns-secrets.mjs INGEST_URL INGEST_SECRET
+        run: |
+          nsc version ensure --at_least 0.0.550
+          node scripts/write-vault-envdef.mjs INGEST_URL INGEST_SECRET > /tmp/vault.envdef
+          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
       - name: Ingest results to platform
         if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         continue-on-error: true

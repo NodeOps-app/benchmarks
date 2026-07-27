@@ -44,7 +44,7 @@ permissions:
 jobs:
   bench:
     name: Bench ${{ matrix.provider }} ${{ matrix.file_size }}
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:describe
     timeout-minutes: 90
     strategy:
       fail-fast: false
@@ -73,9 +73,10 @@ jobs:
       - name: Clear stale results from checkout
         run: rm -rf results/storage/
       - name: Load ${{ matrix.provider }} secrets from Namespace vault
-        env:
-          NSC_VAULT_TOKEN: ${{ secrets.NSC_VAULT_TOKEN }}
-        run: node scripts/load-ns-secrets.mjs --mode storage --provider ${{ matrix.provider }}
+        run: |
+          nsc version ensure --at_least 0.0.550
+          node scripts/write-vault-envdef.mjs --mode storage --provider ${{ matrix.provider }} > /tmp/vault.envdef
+          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
       - name: Run storage benchmark
         run: |
           FILE_SIZE="${{ matrix.file_size }}"
@@ -96,7 +97,7 @@ jobs:
 
   collect:
     name: Collect Results
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:describe
     needs: [bench]
     if: always()
     steps:
@@ -127,9 +128,10 @@ jobs:
       - name: Load ingest secrets from Namespace vault
         if: github.event_name != 'push'
         continue-on-error: true
-        env:
-          NSC_VAULT_TOKEN: ${{ secrets.NSC_VAULT_TOKEN }}
-        run: node scripts/load-ns-secrets.mjs INGEST_URL INGEST_SECRET
+        run: |
+          nsc version ensure --at_least 0.0.550
+          node scripts/write-vault-envdef.mjs INGEST_URL INGEST_SECRET > /tmp/vault.envdef
+          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
       - name: Ingest results to platform
         if: github.event_name != 'push'
         continue-on-error: true
