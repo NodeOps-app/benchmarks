@@ -137,6 +137,11 @@ if (resolveFrom) {
     `  esac`,
     `  val="$(printenv -- "$v" 2>/dev/null || true)"`,
     `  if [ -n "$val" ]; then`,
+    // Bare `KEY=val` form, not `export KEY=val`, because the workflow also
+    // appends these lines to $GITHUB_ENV — the GH Actions runner parses
+    // GITHUB_ENV using bare `KEY=value` format (no export prefix). The
+    // workflow wraps the eval with `set -a` so every assignment becomes
+    // exported to subsequent child processes (so node mask-from finds it).
     `    printf '%s=%q\\n' "$v" "$val"`,
     `  fi`,
     `done`,

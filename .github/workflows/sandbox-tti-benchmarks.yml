@@ -114,7 +114,12 @@ jobs:
           # subsequent steps like the bench run).
           node benchmarks/scripts/write-vault-envdef.mjs --resolve-from /tmp/vault.envdef > /tmp/vault.resolved
           cat /tmp/vault.resolved >> "$GITHUB_ENV"
+          # set -a makes every assignment in the eval below auto-exported,
+          # so child processes spawned next (like `node … --mask-from …`
+          # below) actually inherit the resolved values via process.env.
+          set -a
           eval "$(cat /tmp/vault.resolved)"
+          set +a
           # Re-add ::add-mask:: for every loaded var so an accidental echo
           # in a downstream step is redacted in CI logs (load-ns-secrets.mjs
           # did this; nsc does not).
@@ -183,7 +188,12 @@ jobs:
           # subsequent steps like the bench run).
           node benchmarks/scripts/write-vault-envdef.mjs --resolve-from /tmp/vault.envdef > /tmp/vault.resolved
           cat /tmp/vault.resolved >> "$GITHUB_ENV"
+          # set -a makes every assignment in the eval below auto-exported,
+          # so child processes spawned next (like `node … --mask-from …`
+          # below) actually inherit the resolved values via process.env.
+          set -a
           eval "$(cat /tmp/vault.resolved)"
+          set +a
           # Re-add ::add-mask:: for every loaded var so an accidental echo
           # in a downstream step is redacted in CI logs (load-ns-secrets.mjs
           # did this; nsc does not).
