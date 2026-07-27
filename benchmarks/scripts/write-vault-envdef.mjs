@@ -146,10 +146,28 @@ try {
   process.exit(2);
 }
 
+// Build the env-var name -> object_id map. Mirrors the lookup load-ns-secrets.mjs
+// used against the Connect JSON API: prefer the `name=` label, fall through to
+// `description` when it looks like an env-var name. Production vault entries
+// store the env-var name in description only (no `name=` label), so without
+// the fallback most envdef writes would be empty.
+const ENV_NAME = /^[A-Z][A-Z0-9_]*$/;
+const labelOf = (obj, key) => (obj.labels || []).find((l) => l.name === key)?.value;
+
 const idByName = {};
+const anonCount = { byLabel: 0, byDesc: 0, neither: 0 };
 for (const obj of vault) {
-  const lbl = (obj.labels || []).find((l) => l.name === 'name');
-  if (lbl && obj.object_id) idByName[lbl.value] = obj.object_id;
+  const id = obj.object_id;
+  if (!id) continue;
+  const nameLabel = labelOf(obj, 'name');
+  const desc = (obj.description || '').trim();
+  const name = nameLabel || (ENV_NAME.test(desc) ? desc : undefined);
+  if (!name) { anonCount.neither++; continue; }
+  if (!idByName[name]) {
+    idByName[name] = id;
+    if (nameLabel) anonCount.byLabel++;
+    else anonCount.byDesc++;
+  }
 }
 
 const out = [];
@@ -162,8 +180,26 @@ for (const n of names) {
 
 if (missing.length) {
   // Mirror load-ns-secrets.mjs: warning, not failure. The bench itself will
-  // surface a truly-missing cred explicitly.
+  // surface a truly-missing cred explicitly. Always emit a small summary of
+  // how vault entries were indexed so production drift (e.g. labels removed)
+  // shows up in CI logs without crashing this step.
   console.error(`WARNING: vault missing keys for names: ${missing.join(', ')}`);
+  console.error(`  indexed=${vault.length} via-label=${anonCount.byLabel} via-description=${anonCount.byDesc} unindexed=${anonCount.neither}`);
+  const sample = missing.slice(0, 2).map((n) => {
+    const entries = vault.filter((o) => {
+      const ll = labelOf(o, 'name');
+      const dd = (o.description || '').trim();
+      return ll === n || dd === n;
+    });
+    if (entries.length === 0) return `    ${n}: (no entry with name=${n} or description=${n} found in vault)`;
+    const sampleStr = entries.slice(0, 1).map((o) => {
+      const ll = labelOf(o, 'name');
+      const dd = (o.description || '').trim();
+      return `${o.object_id} name-lbl=${JSON.stringify(ll)} description=${JSON.stringify(dd.slice(0, 64))}`;
+    }).join('\n    ');
+    return `    ${n}:\n    ${sampleStr}`;
+  }).join('\n');
+  console.error(sample);
 }
 
 process.stdout.write(out.join('\n') + (out.length ? '\n' : ''));
