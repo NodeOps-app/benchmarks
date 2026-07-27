@@ -23,6 +23,9 @@ importers:
       '@azure/storage-blob':
         specifier: ^12.33.0
         version: 12.33.0
+      '@benchsdk/client':
+        specifier: workspace:*
+        version: link:packages/benchsdk
       '@codesandbox/sdk':
         specifier: ^2.4.2
         version: 2.4.2(@hey-api/openapi-ts@0.99.0(magicast@0.3.5)(typescript@6.0.3))(@xterm/xterm@5.5.0)(ink@7.1.1(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))
@@ -155,9 +158,6 @@ importers:
       '@vercel/blob':
         specifier: ^2.5.0
         version: 2.6.1
-      benchsdk:
-        specifier: workspace:*
-        version: link:packages/benchsdk
       computesdk:
         specifier: ^4.1.4
         version: 4.1.4

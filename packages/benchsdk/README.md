@@ -1,4 +1,4 @@
-# benchsdk
+# @benchsdk/client
 
 Client and worker helpers for the ComputeSDK benchmark orchestrator.
 
@@ -7,13 +7,13 @@ This package talks to the platform-owned benchmark/run/participant/worker API. I
 ## Installation
 
 ```bash
-npm install benchsdk
+npm install @benchsdk/client
 ```
 
 ## Define A Worker
 
 ```ts
-import { defineStep, defineTask, defineWorker } from 'benchsdk';
+import { defineStep, defineTask, defineWorker } from '@benchsdk/client';
 import { compute } from 'computesdk';
 
 const worker = defineWorker({
@@ -55,7 +55,7 @@ Task results are flushed to the platform in batches of 1,000 records by default.
 ## Reuse A Bench Definition
 
 ```ts
-import { defineBench, defineStep, defineTask } from 'benchsdk';
+import { defineBench, defineStep, defineTask } from '@benchsdk/client';
 
 const lifecycleTask = defineTask('sandbox.lifecycle', [
   defineStep('create', async ({ state }) => {
@@ -84,7 +84,7 @@ await worker.run();
 ## Create A Platform Run
 
 ```ts
-import { createBenchmarkClient } from 'benchsdk';
+import { createBenchmarkClient } from '@benchsdk/client';
 
 const client = createBenchmarkClient({
   apiKey: process.env.COMPUTESDK_ADMIN_API_KEY,

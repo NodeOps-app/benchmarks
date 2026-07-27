@@ -31,12 +31,12 @@ jobs:
         run: pnpm install --ignore-scripts
 
       - name: Build packages
-        # The root typecheck consumes the built dist output, so build benchsdk
-        # before running typecheck.
-        run: pnpm --filter benchsdk run build
+        # The root typecheck consumes the built dist output, so build
+        # @benchsdk/client before running typecheck.
+        run: pnpm --filter @benchsdk/client run build
 
       - name: Typecheck
         run: pnpm typecheck
 
       - name: Test
-        run: pnpm --filter benchsdk run test
+        run: pnpm --filter @benchsdk/client run test
