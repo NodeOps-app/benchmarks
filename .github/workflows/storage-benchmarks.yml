@@ -78,6 +78,10 @@ jobs:
           nsc version ensure --at_least 0.0.550
           node benchmarks/scripts/write-vault-envdef.mjs --mode storage --provider ${{ matrix.provider }} > /tmp/vault.envdef
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+          # Re-add ::add-mask:: for every loaded var so an accidental echo
+          # in a downstream step is redacted in CI logs (load-ns-secrets.mjs
+          # did this; nsc does not).
+          node benchmarks/scripts/write-vault-envdef.mjs --mask-from /tmp/vault.envdef
       - name: Run storage benchmark
         run: |
           FILE_SIZE="${{ matrix.file_size }}"
@@ -134,6 +138,10 @@ jobs:
           nsc version ensure --at_least 0.0.550
           node benchmarks/scripts/write-vault-envdef.mjs INGEST_URL INGEST_SECRET > /tmp/vault.envdef
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+          # Re-add ::add-mask:: for every loaded var so an accidental echo
+          # in a downstream step is redacted in CI logs (load-ns-secrets.mjs
+          # did this; nsc does not).
+          node benchmarks/scripts/write-vault-envdef.mjs --mask-from /tmp/vault.envdef
       - name: Ingest results to platform
         if: github.event_name != 'push'
         continue-on-error: true

@@ -89,6 +89,10 @@ jobs:
           nsc version ensure --at_least 0.0.550
           node benchmarks/scripts/write-vault-envdef.mjs --mode sandbox --provider e2b > /tmp/vault.envdef
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+          # Re-add ::add-mask:: for every loaded var so an accidental echo
+          # in a downstream step is redacted in CI logs (load-ns-secrets.mjs
+          # did this; nsc does not).
+          node benchmarks/scripts/write-vault-envdef.mjs --mask-from /tmp/vault.envdef
       - name: Build E2B template with 8 vCPU / 16 GiB
         if: matrix.provider == 'e2b'
         run: npx tsx benchmarks/scripts/build-e2b-template.ts
@@ -98,6 +102,10 @@ jobs:
           nsc version ensure --at_least 0.0.550
           node benchmarks/scripts/write-vault-envdef.mjs --mode sandbox --provider superserve > /tmp/vault.envdef
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+          # Re-add ::add-mask:: for every loaded var so an accidental echo
+          # in a downstream step is redacted in CI logs (load-ns-secrets.mjs
+          # did this; nsc does not).
+          node benchmarks/scripts/write-vault-envdef.mjs --mask-from /tmp/vault.envdef
       - name: Build Superserve template with 8 vCPU / 16 GiB
         if: matrix.provider == 'superserve'
         run: npx tsx benchmarks/scripts/build-superserve-template.ts
@@ -107,6 +115,10 @@ jobs:
           nsc version ensure --at_least 0.0.550
           node benchmarks/scripts/write-vault-envdef.mjs --mode sandbox --provider northflank > /tmp/vault.envdef
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+          # Re-add ::add-mask:: for every loaded var so an accidental echo
+          # in a downstream step is redacted in CI logs (load-ns-secrets.mjs
+          # did this; nsc does not).
+          node benchmarks/scripts/write-vault-envdef.mjs --mask-from /tmp/vault.envdef
       - name: Find Northflank plan for 8 vCPU / 16 GiB
         if: matrix.provider == 'northflank'
         run: npx tsx benchmarks/scripts/find-northflank-plan.ts
@@ -117,6 +129,10 @@ jobs:
           nsc version ensure --at_least 0.0.550
           node benchmarks/scripts/write-vault-envdef.mjs --mode sandbox --provider ${{ matrix.provider }} > /tmp/vault.envdef
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+          # Re-add ::add-mask:: for every loaded var so an accidental echo
+          # in a downstream step is redacted in CI logs (load-ns-secrets.mjs
+          # did this; nsc does not).
+          node benchmarks/scripts/write-vault-envdef.mjs --mask-from /tmp/vault.envdef
       - name: Run dax benchmark
         env:
           LIGHTNING_INSTANCE_TYPE: cpu-8 # 8 vCPU / 16 GiB, matching the standardized dax profile
@@ -169,6 +185,10 @@ jobs:
           nsc version ensure --at_least 0.0.550
           node benchmarks/scripts/write-vault-envdef.mjs INGEST_URL INGEST_SECRET > /tmp/vault.envdef
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+          # Re-add ::add-mask:: for every loaded var so an accidental echo
+          # in a downstream step is redacted in CI logs (load-ns-secrets.mjs
+          # did this; nsc does not).
+          node benchmarks/scripts/write-vault-envdef.mjs --mask-from /tmp/vault.envdef
       - name: Ingest results to platform
         if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         continue-on-error: true
