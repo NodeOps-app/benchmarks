@@ -147,26 +147,68 @@ try {
 }
 
 // Build the env-var name -> object_id map. Mirrors the lookup load-ns-secrets.mjs
-// used against the Connect JSON API: prefer the `name=` label, fall through to
-// `description` when it looks like an env-var name. Production vault entries
-// store the env-var name in description only (no `name=` label), so without
-// the fallback most envdef writes would be empty.
+// used against the Connect JSON API: prefer the `name=` label (or any array-
+// element whose `name`-ish key matches), fall through to a description that
+// matches the env-var name pattern. Production vault entries sometimes store
+// the env-var name on top-level `name`, in `labels` as an array, in `labels`
+// as an object, or in `description` only — so we try them in that order.
 const ENV_NAME = /^[A-Z][A-Z0-9_]*$/;
-const labelOf = (obj, key) => (obj.labels || []).find((l) => l.name === key)?.value;
+
+// Forms supported for "labels":
+//   1. array of { name: "name", value: "OPENROUTER_API_KEY" } objects  (devbox)
+//   2. object/record mapping label-key -> value                        (older devbox)
+//   3. array of "name=value" strings                                  (rare fallback)
+// We return a list of [labelKey, labelValue] pairs so the rest of the code
+// doesn't care about the wire format.
+function readLabels(obj) {
+  if (Array.isArray(obj.labels)) {
+    return obj.labels
+      .map((l) => {
+        if (l == null) return null;
+        if (typeof l === 'string') {
+          const i = l.indexOf('=');
+          return i === -1 ? null : [l.slice(0, i).trim(), l.slice(i + 1).trim()];
+        }
+        if (typeof l === 'object') {
+          const k = l.name ?? l.key ?? l.label ?? null;
+          const v = l.value ?? l.val ?? null;
+          return k && v ? [String(k), String(v)] : null;
+        }
+        return null;
+      })
+      .filter(Boolean);
+  }
+  if (obj.labels && typeof obj.labels === 'object') {
+    return Object.entries(obj.labels)
+      .filter(([, v]) => v != null)
+      .map(([k, v]) => [k, String(v)]);
+  }
+  return [];
+}
+
+function labelOf(obj, key) {
+  for (const [k, v] of readLabels(obj)) {
+    if (k === key) return v;
+  }
+  return undefined;
+}
 
 const idByName = {};
-const anonCount = { byLabel: 0, byDesc: 0, neither: 0 };
+const anonCount = { byLabel: 0, byDesc: 0, byTopName: 0, neither: 0 };
 for (const obj of vault) {
   const id = obj.object_id;
   if (!id) continue;
-  const nameLabel = labelOf(obj, 'name');
+  const nameLabel = labelOf(obj, 'name') ?? labelOf(obj, 'env_var') ?? labelOf(obj, 'key');
   const desc = (obj.description || '').trim();
-  const name = nameLabel || (ENV_NAME.test(desc) ? desc : undefined);
+  const topName = (obj.name || obj.title || obj.secret_name || '').trim();
+  const name = nameLabel || (ENV_NAME.test(desc) ? desc : undefined) || (ENV_NAME.test(topName) ? topName : undefined);
+  const via = nameLabel ? 'label' : (ENV_NAME.test(desc) ? 'description' : (ENV_NAME.test(topName) ? 'topname' : 'none'));
   if (!name) { anonCount.neither++; continue; }
   if (!idByName[name]) {
     idByName[name] = id;
-    if (nameLabel) anonCount.byLabel++;
-    else anonCount.byDesc++;
+    if (via === 'label') anonCount.byLabel++;
+    else if (via === 'description') anonCount.byDesc++;
+    else if (via === 'topname') anonCount.byTopName++;
   }
 }
 
@@ -181,25 +223,18 @@ for (const n of names) {
 if (missing.length) {
   // Mirror load-ns-secrets.mjs: warning, not failure. The bench itself will
   // surface a truly-missing cred explicitly. Always emit a small summary of
-  // how vault entries were indexed so production drift (e.g. labels removed)
-  // shows up in CI logs without crashing this step.
+  // how vault entries were indexed so production drift (e.g. labels removed,
+  // schema changed) shows up in CI logs without crashing this step.
   console.error(`WARNING: vault missing keys for names: ${missing.join(', ')}`);
-  console.error(`  indexed=${vault.length} via-label=${anonCount.byLabel} via-description=${anonCount.byDesc} unindexed=${anonCount.neither}`);
-  const sample = missing.slice(0, 2).map((n) => {
-    const entries = vault.filter((o) => {
-      const ll = labelOf(o, 'name');
-      const dd = (o.description || '').trim();
-      return ll === n || dd === n;
-    });
-    if (entries.length === 0) return `    ${n}: (no entry with name=${n} or description=${n} found in vault)`;
-    const sampleStr = entries.slice(0, 1).map((o) => {
-      const ll = labelOf(o, 'name');
-      const dd = (o.description || '').trim();
-      return `${o.object_id} name-lbl=${JSON.stringify(ll)} description=${JSON.stringify(dd.slice(0, 64))}`;
-    }).join('\n    ');
-    return `    ${n}:\n    ${sampleStr}`;
-  }).join('\n');
-  console.error(sample);
+  console.error(`  indexed=${vault.length} via-label=${anonCount.byLabel} via-description=${anonCount.byDesc} via-topname=${anonCount.byTopName} unindexed=${anonCount.neither}`);
+  // Dump the schema of one entry so we can see whether production's nsc vault
+  // list returns labels/description in a different shape than this script
+  // expects. Long entries are truncated to keep CI logs readable.
+  if (vault[0]) {
+    const sample = vault[0];
+    const labelPairs = readLabels(sample).slice(0, 4).map(([k, v]) => `${k}=${JSON.stringify(v.slice(0, 32))}`).join(' ');
+    console.error(`  sample-keys=${Object.keys(sample).join(',')} labels=${Array.isArray(sample.labels) ? `array(${sample.labels.length})` : (sample.labels && typeof sample.labels === 'object' ? 'map' : 'none')} sample-labels=${labelPairs || '(none)'} sample-description=${JSON.stringify((sample.description || '').slice(0, 64))}`);
+  }
 }
 
 process.stdout.write(out.join('\n') + (out.length ? '\n' : ''));
