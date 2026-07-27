@@ -65,13 +65,12 @@ jobs:
             npm ci
           fi
       - name: Load AI gateway secrets from Namespace vault
-        # Single job (no matrix), so loading every AI-gateway secret per run is
-        # fine and avoids resolving per-provider scoping for round-robin asks.
+        # Single job (no matrix); the round-robin methodology (see AI_GATEWAYS.md)
+        # tests every gateway inside one process, so we load the union of all
+        # ai-gateway providers' vars — not every mode's vars.
         run: |
           nsc version ensure --at_least 0.0.550
-          # No --mode/--provider: enumerate the union of every manifest mode so
-          # the round-robin run sees every gateway's creds.
-          node scripts/write-vault-envdef.mjs > /tmp/vault.envdef
+          node scripts/write-vault-envdef.mjs --mode ai-gateway > /tmp/vault.envdef
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
       - name: Run AI gateway benchmark
         run: |
