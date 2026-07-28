@@ -76,7 +76,7 @@ jobs:
           # when entries don't carry labels), and emit `KEY=<object_id>` for
           # every name this mode needs. Filter via grep so a single envdef
           # only carries the union of AI gateway providers' secrets.
-          KEYS='^(ANTHROPIC_API_KEY|CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID|CLOUDFLARE_AI_GATEWAY_GATEWAY_ID|LLM_GATEWAY_API_KEY|OPENROUTER_API_KEY|PYDANTIC_AI_GATEWAY_API_KEY|VERCEL_AI_GATEWAY_API_KEY)=$'
+          KEYS='^(ANTHROPIC_API_KEY|CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID|CLOUDFLARE_AI_GATEWAY_GATEWAY_ID|LLM_GATEWAY_API_KEY|OPENROUTER_API_KEY|PYDANTIC_AI_GATEWAY_API_KEY|VERCEL_AI_GATEWAY_API_KEY)'
           nsc vault list --output json | jq -r '
             .[]
             | (.labels // []) as $l

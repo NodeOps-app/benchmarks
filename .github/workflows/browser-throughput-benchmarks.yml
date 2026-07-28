@@ -115,7 +115,7 @@ jobs:
           THROUGHPUT_URLS: ${{ needs.setup.outputs.urls }}
         run: |
           nsc version ensure --at_least 0.0.550
-          KEYS='^(BROWSERBASE_API_KEY|BROWSERBASE_PROJECT_ID|BROWSER_USE_API_KEY|HYPERBROWSER_API_KEY|KERNEL_API_KEY|NOTTE_API_KEY|STEEL_API_KEY|TILION_API_KEY|TILION_BASE_URL)=$'
+          KEYS='^(BROWSERBASE_API_KEY|BROWSERBASE_PROJECT_ID|BROWSER_USE_API_KEY|HYPERBROWSER_API_KEY|KERNEL_API_KEY|NOTTE_API_KEY|STEEL_API_KEY|TILION_API_KEY|TILION_BASE_URL)'
           nsc vault list --output json | jq -r '
             .[]
             | (.labels // []) as $l

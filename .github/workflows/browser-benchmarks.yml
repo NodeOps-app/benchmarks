@@ -67,7 +67,7 @@ jobs:
           # required keys (from benchmarks/scripts/provider-vars.json) so
           # an arbitrary provider in the matrix still finds any key it
           # needs without per-provider templating.
-          KEYS='^(BROWSERBASE_API_KEY|BROWSERBASE_PROJECT_ID|BROWSER_USE_API_KEY|HYPERBROWSER_API_KEY|KERNEL_API_KEY|NOTTE_API_KEY|STEEL_API_KEY|TILION_API_KEY|TILION_BASE_URL)=$'
+          KEYS='^(BROWSERBASE_API_KEY|BROWSERBASE_PROJECT_ID|BROWSER_USE_API_KEY|HYPERBROWSER_API_KEY|KERNEL_API_KEY|NOTTE_API_KEY|STEEL_API_KEY|TILION_API_KEY|TILION_BASE_URL)'
           nsc vault list --output json | jq -r '
             .[]
             | (.labels // []) as $l
@@ -134,7 +134,7 @@ jobs:
         continue-on-error: true
         run: |
           nsc version ensure --at_least 0.0.550
-          KEYS='^(INGEST_URL|INGEST_SECRET)=$'
+          KEYS='^(INGEST_URL|INGEST_SECRET)'
           nsc vault list --output json | jq -r '
             .[]
             | (.labels // []) as $l
