@@ -125,7 +125,9 @@ export async function runAIGatewayBenchmarks(
         console.log(`  [${label} ${roundIndex}/${roundTotal}] ${entry.config.name}: FAILED — ${result.error}`);
       } else {
         const e2e = result.coldE2eMs !== undefined ? ` e2e ${result.coldE2eMs.toFixed(0)}ms` : '';
-        console.log(`  [${label} ${roundIndex}/${roundTotal}] ${entry.config.name}: ttfb ${result.ttfbMs.toFixed(0)}ms ttft ${result.ttftMs.toFixed(0)}ms${e2e}`);
+        const isFallback = result.resolvedProvider !== undefined && result.resolvedProvider.toLowerCase() !== 'anthropic';
+        const provider = result.resolvedProvider ? ` [${isFallback ? '⚠ fell back to' : 'via'} ${result.resolvedProvider}]` : '';
+        console.log(`  [${label} ${roundIndex}/${roundTotal}] ${entry.config.name}: ttfb ${result.ttfbMs.toFixed(0)}ms ttft ${result.ttftMs.toFixed(0)}ms${e2e}${provider}`);
       }
     }
   }
@@ -157,6 +159,7 @@ export async function writeAIGatewayResultsJson(results: AIGatewayBenchmarkResul
       ...(i.coldE2eMs !== undefined ? { coldE2eMs: round(i.coldE2eMs) } : {}),
       ...(i.outputTokens !== undefined ? { outputTokens: i.outputTokens } : {}),
       ...(i.outputTokensPerSec !== undefined ? { outputTokensPerSec: round(i.outputTokensPerSec) } : {}),
+      ...(i.resolvedProvider !== undefined ? { resolvedProvider: i.resolvedProvider } : {}),
       ...(i.receipts && Object.keys(i.receipts).length > 0 ? { receipts: i.receipts } : {}),
       ...(i.error ? { error: i.error } : {}),
     })),

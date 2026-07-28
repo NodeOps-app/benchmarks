@@ -10,6 +10,18 @@ import type { AIGatewayProviderConfig } from './types.js';
  */
 export const providers: AIGatewayProviderConfig[] = [
   {
+    // `anthropic/claude-haiku-4.5` is a catalog alias that OpenRouter can
+    // serve from more than one upstream (Anthropic direct, Bedrock, Vertex,
+    // or a reseller), chosen dynamically by OpenRouter's own price/uptime
+    // routing unless pinned. `provider.order: ['anthropic']` sets Anthropic
+    // as first choice but still allows automatic fallback if Anthropic
+    // itself is unavailable (`allow_fallbacks` defaults to true) — rather
+    // than failing the iteration outright. Every response (confirmed live,
+    // both non-streaming and each SSE chunk) carries a top-level
+    // `"provider":"Anthropic"` field, extracted below into
+    // `resolvedProvider` so a fallback iteration is visible/filterable in
+    // the results instead of silently blending into this gateway's numbers.
+    // See https://openrouter.ai/docs/features/provider-routing.
     name: 'openrouter',
     requiredEnvVars: ['OPENROUTER_API_KEY'],
     wireFormat: 'openai',
@@ -19,8 +31,26 @@ export const providers: AIGatewayProviderConfig[] = [
     buildHeaders: () => ({
       Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
     }),
+    extraBody: {
+      provider: { order: ['anthropic'] },
+    },
+    extractResolvedProvider: (buf) => buf.match(/"provider"\s*:\s*"([^"]+)"/)?.[1],
   },
   {
+    // Same ambiguity as OpenRouter above: Vercel AI Gateway "dynamically
+    // chooses providers based on recent uptime and latency" by default for
+    // a catalog alias like `anthropic/claude-haiku-4.5`, which it can also
+    // serve via Bedrock/Vertex/its own "claudeaws" credential. `providerOptions
+    // .gateway.order: ['anthropic']` sets Anthropic as first choice while
+    // still allowing fallback to those other providers if Anthropic itself
+    // fails, on the REST/OpenAI-compatible path (the same field the AI SDK
+    // exposes as `providerOptions.gateway`, just inlined in the raw request
+    // body here since this benchmark doesn't use the SDK). Confirmed live: a
+    // streamed response carries `resolvedProvider` inside
+    // `choices[0].delta.provider_metadata.gateway.routing` on its final
+    // chunk (alongside usage) — extracted below into `resolvedProvider` for
+    // the same visibility-over-silence reason as OpenRouter above. See
+    // https://vercel.com/docs/ai-gateway/models-and-providers/provider-filtering-and-ordering.
     name: 'vercel-ai-gateway',
     requiredEnvVars: ['VERCEL_AI_GATEWAY_API_KEY'],
     wireFormat: 'openai',
@@ -30,6 +60,10 @@ export const providers: AIGatewayProviderConfig[] = [
     buildHeaders: () => ({
       Authorization: `Bearer ${process.env.VERCEL_AI_GATEWAY_API_KEY}`,
     }),
+    extraBody: {
+      providerOptions: { gateway: { order: ['anthropic'] } },
+    },
+    extractResolvedProvider: (buf) => buf.match(/"resolvedProvider"\s*:\s*"([^"]+)"/)?.[1],
   },
   {
     // Direct Anthropic passthrough (not routed through another gateway), so
@@ -92,8 +126,10 @@ export const providers: AIGatewayProviderConfig[] = [
     // one so this sits in the same wireFormat group as Cloudflare/Pydantic/
     // anthropic-direct. `anthropic/` is this gateway's provider-prefix syntax
     // (same idea as llmgateway's pinning above) to route to Anthropic itself
-    // rather than Bedrock/Vertex, which the model catalog also lists as
-    // providers for this model.
+    // rather than Azure or Bedrock, which Concentrate's own "model fortress"
+    // catalog also lists as routing options for this model
+    // (anthropic/claude-haiku-4-5, azure/claude-haiku-4-5,
+    // bedrock/claude-haiku-4-5).
     name: 'concentrate-ai-gateway',
     requiredEnvVars: ['CONCENTRATE_AI_GATEWAY_API_KEY'],
     wireFormat: 'anthropic',

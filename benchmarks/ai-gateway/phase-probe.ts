@@ -24,6 +24,7 @@ function buildRequestBody(config: AIGatewayProviderConfig, prompt: string, maxTo
       temperature: 0,
       stream: true,
       stream_options: { include_usage: true },
+      ...config.extraBody,
     });
   }
   return JSON.stringify({
@@ -32,6 +33,7 @@ function buildRequestBody(config: AIGatewayProviderConfig, prompt: string, maxTo
     temperature: 0,
     messages: [{ role: 'user', content: prompt }],
     stream: true,
+    ...config.extraBody,
   });
 }
 
@@ -64,6 +66,7 @@ interface RawProbeOutcome {
   ttftMs: number;
   totalMs: number;
   outputTokens?: number;
+  resolvedProvider?: string;
   receipts: Record<string, string>;
 }
 
@@ -104,6 +107,7 @@ function sendAndMeasure(
       let buf = '';
       let ttftMs = 0;
       let outputTokens: number | undefined;
+      let resolvedProvider: string | undefined;
 
       res.on('data', (chunk: Buffer) => {
         buf += chunk.toString('utf8');
@@ -111,13 +115,14 @@ function sendAndMeasure(
           ttftMs = now() - start;
         }
         outputTokens = extractOutputTokens(config.wireFormat, buf) ?? outputTokens;
+        resolvedProvider = config.extractResolvedProvider?.(buf) ?? resolvedProvider;
       });
       res.on('end', () => {
         if (ttftMs === 0) {
           reject(new Error('Stream ended with no content token observed'));
           return;
         }
-        resolve({ ttfbMs, ttftMs, totalMs: now() - start, outputTokens, receipts });
+        resolve({ ttfbMs, ttftMs, totalMs: now() - start, outputTokens, resolvedProvider, receipts });
       });
       res.on('error', reject);
     });
@@ -178,6 +183,7 @@ export async function runColdProbe(
       coldE2eMs,
       outputTokens: outcome.outputTokens,
       outputTokensPerSec: tokensPerSecond(outcome),
+      resolvedProvider: outcome.resolvedProvider,
       receipts: outcome.receipts,
     };
   } catch (err) {
@@ -214,6 +220,7 @@ export async function runWarmProbe(
       ttftMs: outcome.ttftMs,
       outputTokens: outcome.outputTokens,
       outputTokensPerSec: tokensPerSecond(outcome),
+      resolvedProvider: outcome.resolvedProvider,
       receipts: outcome.receipts,
     };
   } catch (err) {
