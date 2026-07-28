@@ -17,7 +17,7 @@ on:
         required: false
         default: '20'
       provider:
-        description: 'Gateway to run (leave empty for all six, round-robin)'
+        description: 'Gateway to run (leave empty for all seven, round-robin)'
         required: false
         default: ''
         type: choice
@@ -28,6 +28,7 @@ on:
           - cloudflare-ai-gateway
           - llmgateway
           - pydantic-ai-gateway
+          - concentrate-ai-gateway
           - anthropic-direct
       dry_run:
         description: 'Run without ingesting or committing results'
@@ -75,7 +76,7 @@ jobs:
         # tests every gateway inside one process, so we load the union of all
         # ai-gateway providers' vars — not every mode's vars.
         run: |
-          . benchmarks/scripts/load-vault-secrets.sh '^(ANTHROPIC_API_KEY|CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID|CLOUDFLARE_AI_GATEWAY_GATEWAY_ID|LLM_GATEWAY_API_KEY|OPENROUTER_API_KEY|PYDANTIC_AI_GATEWAY_API_KEY|VERCEL_AI_GATEWAY_API_KEY)'
+          . benchmarks/scripts/load-vault-secrets.sh '^(ANTHROPIC_API_KEY|CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID|CLOUDFLARE_AI_GATEWAY_GATEWAY_ID|LLM_GATEWAY_API_KEY|OPENROUTER_API_KEY|PYDANTIC_AI_GATEWAY_API_KEY|VERCEL_AI_GATEWAY_API_KEY|CONCENTRATE_AI_GATEWAY_API_KEY)'
 
           PROVIDER_FLAG=""
           if [ -n "${{ github.event.inputs.provider }}" ]; then
@@ -114,6 +115,7 @@ jobs:
               'cloudflare-ai-gateway': 'Cloudflare AI Gateway',
               'llmgateway': 'LLM Gateway',
               'pydantic-ai-gateway': 'Pydantic AI Gateway',
+              'concentrate-ai-gateway': 'Concentrate AI',
               'anthropic-direct': 'Anthropic (direct)',
             };
 

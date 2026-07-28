@@ -21,6 +21,7 @@ function formatProviderName(s: string): string {
   if (s === 'cloudflare-ai-gateway') return 'Cloudflare AI Gateway';
   if (s === 'llmgateway') return 'LLM Gateway';
   if (s === 'pydantic-ai-gateway') return 'Pydantic AI Gateway';
+  if (s === 'concentrate-ai-gateway') return 'Concentrate AI';
   if (s === 'anthropic-direct') return 'Anthropic (direct)';
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
