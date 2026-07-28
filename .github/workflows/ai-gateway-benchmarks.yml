@@ -29,6 +29,11 @@ on:
           - llmgateway
           - pydantic-ai-gateway
           - anthropic-direct
+      dry_run:
+        description: 'Run without ingesting or committing results'
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: ai-gateway-benchmarks
@@ -175,7 +180,7 @@ jobs:
               });
             }
       - name: Commit and push
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && github.event.inputs.dry_run != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
