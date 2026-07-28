@@ -85,6 +85,14 @@ jobs:
             | select($name | test("^[A-Z][A-Z0-9_]*$"))
             | "\($name)=\(.object_id)"
           ' | grep -E "$KEYS" > /tmp/vault.envdef
+          # Only print the count, never the contents — envdef holds
+          # KEY=<object_id> mappings (object_ids are vault resource
+          # handles, not secret values, but we keep them off CI logs).
+          echo "::notice::envdef line count: $(wc -l < /tmp/vault.envdef)"
+          if [ ! -s /tmp/vault.envdef ]; then
+            echo "::error::envdef is empty after grep — no vault entries matched KEYS pattern"
+            exit 1
+          fi
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
 
           pnpm run bench -- \
