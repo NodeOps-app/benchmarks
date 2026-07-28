@@ -17,6 +17,11 @@ on:
         description: 'Iterations per provider (sessions)'
         required: false
         default: '100'
+      dry_run:
+        description: 'Run without ingesting or committing results'
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: browser-throughput-benchmarks
@@ -270,7 +275,7 @@ jobs:
               });
             }
       - name: Commit and push
-        if: github.event_name != 'push'
+        if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
