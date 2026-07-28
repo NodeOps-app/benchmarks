@@ -40,7 +40,7 @@ permissions:
 jobs:
   dax:
     name: Dax ${{ matrix.provider }}
-    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:describe
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -83,104 +83,65 @@ jobs:
           else
             pnpm install --frozen-lockfile
           fi
-      - name: Load E2B secrets from Namespace vault
-        if: matrix.provider == 'e2b'
-        run: |
-          nsc version ensure --at_least 0.0.550
-          node benchmarks/scripts/write-vault-envdef.mjs --mode sandbox --provider e2b > /tmp/vault.envdef
-          # Resolve vault secrets via `nsc vault export` then bridge them
-          # across GH Actions steps via $GITHUB_ENV (each step starts a
-          # fresh shell, so eval alone would not propagate the vars to
-          # subsequent steps like the bench run).
-          node benchmarks/scripts/write-vault-envdef.mjs --resolve-from /tmp/vault.envdef > /tmp/vault.resolved
-          cat /tmp/vault.resolved >> "$GITHUB_ENV"
-          # set -a makes every assignment in the eval below auto-exported,
-          # so child processes spawned next (like `node … --mask-from …`
-          # below) actually inherit the resolved values via process.env.
-          set -a
-          eval "$(cat /tmp/vault.resolved)"
-          set +a
-          # Re-add ::add-mask:: for every loaded var so an accidental echo
-          # in a downstream step is redacted in CI logs (load-ns-secrets.mjs
-          # did this; nsc does not).
-          node benchmarks/scripts/write-vault-envdef.mjs --mask-from /tmp/vault.resolved
       - name: Build E2B template with 8 vCPU / 16 GiB
         if: matrix.provider == 'e2b'
-        run: npx tsx benchmarks/scripts/build-e2b-template.ts
-      - name: Load Superserve secrets from Namespace vault
-        if: matrix.provider == 'superserve'
         run: |
           nsc version ensure --at_least 0.0.550
-          node benchmarks/scripts/write-vault-envdef.mjs --mode sandbox --provider superserve > /tmp/vault.envdef
-          # Resolve vault secrets via `nsc vault export` then bridge them
-          # across GH Actions steps via $GITHUB_ENV (each step starts a
-          # fresh shell, so eval alone would not propagate the vars to
-          # subsequent steps like the bench run).
-          node benchmarks/scripts/write-vault-envdef.mjs --resolve-from /tmp/vault.envdef > /tmp/vault.resolved
-          cat /tmp/vault.resolved >> "$GITHUB_ENV"
-          # set -a makes every assignment in the eval below auto-exported,
-          # so child processes spawned next (like `node … --mask-from …`
-          # below) actually inherit the resolved values via process.env.
-          set -a
-          eval "$(cat /tmp/vault.resolved)"
-          set +a
-          # Re-add ::add-mask:: for every loaded var so an accidental echo
-          # in a downstream step is redacted in CI logs (load-ns-secrets.mjs
-          # did this; nsc does not).
-          node benchmarks/scripts/write-vault-envdef.mjs --mask-from /tmp/vault.resolved
+          KEYS='^(E2B_API_KEY)=$'
+          nsc vault list --output json | jq -r '
+            .[]
+            | (.labels // []) as $l
+            | (($l | map(select(.name=="name")) | .[0].value) // .description // "") as $name
+            | select($name | test("^[A-Z][A-Z0-9_]*$"))
+            | "\($name)=\(.object_id)"
+          ' | grep -E "$KEYS" > /tmp/vault.envdef
+          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+          npx tsx benchmarks/scripts/build-e2b-template.ts
       - name: Build Superserve template with 8 vCPU / 16 GiB
         if: matrix.provider == 'superserve'
-        run: npx tsx benchmarks/scripts/build-superserve-template.ts
-      - name: Load Northflank secrets from Namespace vault
-        if: matrix.provider == 'northflank'
         run: |
           nsc version ensure --at_least 0.0.550
-          node benchmarks/scripts/write-vault-envdef.mjs --mode sandbox --provider northflank > /tmp/vault.envdef
-          # Resolve vault secrets via `nsc vault export` then bridge them
-          # across GH Actions steps via $GITHUB_ENV (each step starts a
-          # fresh shell, so eval alone would not propagate the vars to
-          # subsequent steps like the bench run).
-          node benchmarks/scripts/write-vault-envdef.mjs --resolve-from /tmp/vault.envdef > /tmp/vault.resolved
-          cat /tmp/vault.resolved >> "$GITHUB_ENV"
-          # set -a makes every assignment in the eval below auto-exported,
-          # so child processes spawned next (like `node … --mask-from …`
-          # below) actually inherit the resolved values via process.env.
-          set -a
-          eval "$(cat /tmp/vault.resolved)"
-          set +a
-          # Re-add ::add-mask:: for every loaded var so an accidental echo
-          # in a downstream step is redacted in CI logs (load-ns-secrets.mjs
-          # did this; nsc does not).
-          node benchmarks/scripts/write-vault-envdef.mjs --mask-from /tmp/vault.resolved
+          KEYS='^(SUPERSERVE_API_KEY)=$'
+          nsc vault list --output json | jq -r '
+            .[]
+            | (.labels // []) as $l
+            | (($l | map(select(.name=="name")) | .[0].value) // .description // "") as $name
+            | select($name | test("^[A-Z][A-Z0-9_]*$"))
+            | "\($name)=\(.object_id)"
+          ' | grep -E "$KEYS" > /tmp/vault.envdef
+          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+          npx tsx benchmarks/scripts/build-superserve-template.ts
       - name: Find Northflank plan for 8 vCPU / 16 GiB
         if: matrix.provider == 'northflank'
-        run: npx tsx benchmarks/scripts/find-northflank-plan.ts
-      - name: Clear stale results from checkout
-        run: rm -rf results/
-      - name: Load ${{ matrix.provider }} secrets from Namespace vault
         run: |
           nsc version ensure --at_least 0.0.550
-          node benchmarks/scripts/write-vault-envdef.mjs --mode sandbox --provider ${{ matrix.provider }} > /tmp/vault.envdef
-          # Resolve vault secrets via `nsc vault export` then bridge them
-          # across GH Actions steps via $GITHUB_ENV (each step starts a
-          # fresh shell, so eval alone would not propagate the vars to
-          # subsequent steps like the bench run).
-          node benchmarks/scripts/write-vault-envdef.mjs --resolve-from /tmp/vault.envdef > /tmp/vault.resolved
-          cat /tmp/vault.resolved >> "$GITHUB_ENV"
-          # set -a makes every assignment in the eval below auto-exported,
-          # so child processes spawned next (like `node … --mask-from …`
-          # below) actually inherit the resolved values via process.env.
-          set -a
-          eval "$(cat /tmp/vault.resolved)"
-          set +a
-          # Re-add ::add-mask:: for every loaded var so an accidental echo
-          # in a downstream step is redacted in CI logs (load-ns-secrets.mjs
-          # did this; nsc does not).
-          node benchmarks/scripts/write-vault-envdef.mjs --mask-from /tmp/vault.resolved
+          KEYS='^(NORTHFLANK_TOKEN|NORTHFLANK_PROJECT_ID)=$'
+          nsc vault list --output json | jq -r '
+            .[]
+            | (.labels // []) as $l
+            | (($l | map(select(.name=="name")) | .[0].value) // .description // "") as $name
+            | select($name | test("^[A-Z][A-Z0-9_]*$"))
+            | "\($name)=\(.object_id)"
+          ' | grep -E "$KEYS" > /tmp/vault.envdef
+          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+          npx tsx benchmarks/scripts/find-northflank-plan.ts
+      - name: Clear stale results from checkout
+        run: rm -rf results/
       - name: Run dax benchmark
         env:
           LIGHTNING_INSTANCE_TYPE: cpu-8 # 8 vCPU / 16 GiB, matching the standardized dax profile
         run: |
+          nsc version ensure --at_least 0.0.550
+          KEYS='^(ARCHIL_API_KEY|ARCHIL_REGION|ARCHIL_DISK_ID|BEAM_TOKEN|BEAM_WORKSPACE_ID|BL_API_KEY|BL_WORKSPACE|CLOUD_RUN_SANDBOX_URL|CLOUD_RUN_SANDBOX_SECRET|CLOUDFLARE_SANDBOX_URL|CLOUDFLARE_SANDBOX_SECRET|CSB_API_KEY|CREATEOS_SANDBOX_API_KEY|DAYTONA_API_KEY|DECLAW_API_KEY|E2B_API_KEY|HOPX_API_KEY|ISORUN_API_KEY|LIGHTNING_API_KEY|MODAL_TOKEN_ID|MODAL_TOKEN_SECRET|NSC_TOKEN|NORTHFLANK_TOKEN|NORTHFLANK_PROJECT_ID|OPENCOMPUTER_API_KEY|OPENCOMPUTER_API_URL|RUNLOOP_API_KEY|SPRITES_TOKEN|SUPERSERVE_API_KEY|TENKI_API_KEY|TENSORLAKE_API_KEY|UPSTASH_BOX_API_KEY|VERCEL_TOKEN|VERCEL_TEAM_ID|VERCEL_PROJECT_ID)=$'
+          nsc vault list --output json | jq -r '
+            .[]
+            | (.labels // []) as $l
+            | (($l | map(select(.name=="name")) | .[0].value) // .description // "") as $name
+            | select($name | test("^[A-Z][A-Z0-9_]*$"))
+            | "\($name)=\(.object_id)"
+          ' | grep -E "$KEYS" > /tmp/vault.envdef
+          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+
           pnpm run bench -- \
             --provider ${{ matrix.provider }} \
             --mode sandbox-dax \
@@ -196,7 +157,7 @@ jobs:
 
   collect:
     name: Collect Dax Results
-    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:describe
     needs: dax
     if: always()
     steps:
@@ -222,32 +183,21 @@ jobs:
           pattern: results-*
       - name: Merge results
         run: npx tsx benchmarks/src/merge-results.ts --input artifacts
-      - name: Load ingest secrets from Namespace vault
+      - name: Ingest results to platform
         if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         continue-on-error: true
         run: |
           nsc version ensure --at_least 0.0.550
-          node benchmarks/scripts/write-vault-envdef.mjs INGEST_URL INGEST_SECRET > /tmp/vault.envdef
-          # Resolve vault secrets via `nsc vault export` then bridge them
-          # across GH Actions steps via $GITHUB_ENV (each step starts a
-          # fresh shell, so eval alone would not propagate the vars to
-          # subsequent steps like the bench run).
-          node benchmarks/scripts/write-vault-envdef.mjs --resolve-from /tmp/vault.envdef > /tmp/vault.resolved
-          cat /tmp/vault.resolved >> "$GITHUB_ENV"
-          # set -a makes every assignment in the eval below auto-exported,
-          # so child processes spawned next (like `node … --mask-from …`
-          # below) actually inherit the resolved values via process.env.
-          set -a
-          eval "$(cat /tmp/vault.resolved)"
-          set +a
-          # Re-add ::add-mask:: for every loaded var so an accidental echo
-          # in a downstream step is redacted in CI logs (load-ns-secrets.mjs
-          # did this; nsc does not).
-          node benchmarks/scripts/write-vault-envdef.mjs --mask-from /tmp/vault.resolved
-      - name: Ingest results to platform
-        if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
-        continue-on-error: true
-        run: npx tsx benchmarks/src/ingest.ts --type sandbox
+          KEYS='^(INGEST_URL|INGEST_SECRET)=$'
+          nsc vault list --output json | jq -r '
+            .[]
+            | (.labels // []) as $l
+            | (($l | map(select(.name=="name")) | .[0].value) // .description // "") as $name
+            | select($name | test("^[A-Z][A-Z0-9_]*$"))
+            | "\($name)=\(.object_id)"
+          ' | grep -E "$KEYS" > /tmp/vault.envdef
+          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+          npx tsx benchmarks/src/ingest.ts --type sandbox
       - name: Post results to merged PR
         if: github.event_name == 'push'
         continue-on-error: true

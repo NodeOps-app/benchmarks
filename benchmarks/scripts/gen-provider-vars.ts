@@ -4,9 +4,9 @@
  * `requiredEnvVars` field on every provider config (the single source of
  * truth in benchmarks/{mode}/providers.ts).
  *
- * The vault envdef writer (write-vault-envdef.mjs) reads this to enumerate
- * ONLY a job's own secrets per run, passing them to `nsc vault export` instead
- * of revealing every secret in every job.
+ * Each workflow's Load+Run step grep's this manifest by env-var name to keep
+ * the per-job envdef (and thus the secrets the runner requests) scoped to
+ * only what that provider needs, instead of resolving every vault entry.
  *
  * Regenerate whenever providers change:
  *   npx tsx benchmarks/scripts/gen-provider-vars.ts

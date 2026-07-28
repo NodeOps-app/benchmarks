@@ -41,7 +41,7 @@ permissions:
 jobs:
   bench:
     name: AI Gateway Benchmark
-    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:describe
     # Deliberately a single job, not a matrix-per-provider like the other
     # benchmark workflows: the round-robin methodology (see AI_GATEWAYS.md)
     # requires every gateway to run interleaved within the same process.
@@ -65,31 +65,33 @@ jobs:
           else
             pnpm install --frozen-lockfile
           fi
-      - name: Load AI gateway secrets from Namespace vault
+      - name: Run AI gateway benchmark
         # Single job (no matrix); the round-robin methodology (see AI_GATEWAYS.md)
         # tests every gateway inside one process, so we load the union of all
         # ai-gateway providers' vars — not every mode's vars.
         run: |
           nsc version ensure --at_least 0.0.550
-          node benchmarks/scripts/write-vault-envdef.mjs --mode ai-gateway > /tmp/vault.envdef
-          # Resolve vault secrets via `nsc vault export` then bridge them
-          # across GH Actions steps via $GITHUB_ENV (each step starts a
-          # fresh shell, so eval alone would not propagate the vars to
-          # subsequent steps like the bench run).
-          node benchmarks/scripts/write-vault-envdef.mjs --resolve-from /tmp/vault.envdef > /tmp/vault.resolved
-          cat /tmp/vault.resolved >> "$GITHUB_ENV"
-          # set -a makes every assignment in the eval below auto-exported,
-          # so child processes spawned next (like `node … --mask-from …`
-          # below) actually inherit the resolved values via process.env.
-          set -a
-          eval "$(cat /tmp/vault.resolved)"
-          set +a
-          # Re-add ::add-mask:: for every loaded var so an accidental echo
-          # in a downstream step is redacted in CI logs (load-ns-secrets.mjs
-          # did this; nsc does not).
-          node benchmarks/scripts/write-vault-envdef.mjs --mask-from /tmp/vault.resolved
-      - name: Run AI gateway benchmark
-        run: |
+          # Build a per-mode envdef from `nsc vault list`: pull the env-var
+          # name from each entry's `name=` label (or description as fallback,
+          # when entries don't carry labels), and emit `KEY=<object_id>` for
+          # every name this mode needs. Filter via grep so a single envdef
+          # only carries the union of AI gateway providers' secrets.
+          KEYS='^(ANTHROPIC_API_KEY|CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID|CLOUDFLARE_AI_GATEWAY_GATEWAY_ID|LLM_GATEWAY_API_KEY|OPENROUTER_API_KEY|PYDANTIC_AI_GATEWAY_API_KEY|VERCEL_AI_GATEWAY_API_KEY)=$'
+          nsc vault list --output json | jq -r '
+            .[]
+            | (.labels // []) as $l
+            | (($l | map(select(.name=="name")) | .[0].value) // .description // "") as $name
+            | select($name | test("^[A-Z][A-Z0-9_]*$"))
+            | "\($name)=\(.object_id)"
+          ' | grep -E "$KEYS" > /tmp/vault.envdef
+
+          # `nsc vault export --shell=bash` emits `export `cat /tmp/X`` followed
+          # by `rm /tmp/X`; the eval here expands the backticks and exports
+          # each KEY=value into the current shell. The bench step below runs in
+          # the same process, so this load + run stay in one step — matches the
+          # nsc vault team's canonical recipe (no $GITHUB_ENV bridge needed).
+          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+
           PROVIDER_FLAG=""
           if [ -n "${{ github.event.inputs.provider }}" ]; then
             PROVIDER_FLAG="--provider ${{ github.event.inputs.provider }}"

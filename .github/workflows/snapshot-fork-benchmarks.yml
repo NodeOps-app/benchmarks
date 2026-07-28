@@ -44,7 +44,7 @@ jobs:
     # single iteration; the weekly schedule runs 100 for trend data and commits
     # the combined results. Fork PRs without secrets skip gracefully
     # (missing-creds path) rather than failing.
-    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:describe
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -74,28 +74,19 @@ jobs:
           fi
       - name: Clear stale results from checkout
         run: rm -rf results/snapshot-fork/
-      - name: Load ${{ matrix.provider }} secrets from Namespace vault
-        run: |
-          nsc version ensure --at_least 0.0.550
-          node benchmarks/scripts/write-vault-envdef.mjs --mode snapshot-fork --provider ${{ matrix.provider }} > /tmp/vault.envdef
-          # Resolve vault secrets via `nsc vault export` then bridge them
-          # across GH Actions steps via $GITHUB_ENV (each step starts a
-          # fresh shell, so eval alone would not propagate the vars to
-          # subsequent steps like the bench run).
-          node benchmarks/scripts/write-vault-envdef.mjs --resolve-from /tmp/vault.envdef > /tmp/vault.resolved
-          cat /tmp/vault.resolved >> "$GITHUB_ENV"
-          # set -a makes every assignment in the eval below auto-exported,
-          # so child processes spawned next (like `node … --mask-from …`
-          # below) actually inherit the resolved values via process.env.
-          set -a
-          eval "$(cat /tmp/vault.resolved)"
-          set +a
-          # Re-add ::add-mask:: for every loaded var so an accidental echo
-          # in a downstream step is redacted in CI logs (load-ns-secrets.mjs
-          # did this; nsc does not).
-          node benchmarks/scripts/write-vault-envdef.mjs --mask-from /tmp/vault.resolved
       - name: Run snapshot/fork test
         run: |
+          nsc version ensure --at_least 0.0.550
+          KEYS='^(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AWS_REGION|S3_BUCKET|S3_SNAPSHOT_ACCESS_KEY_ID|S3_SNAPSHOT_SECRET_ACCESS_KEY|S3_SNAPSHOT_BUCKET|R2_ACCESS_KEY_ID|R2_SECRET_ACCESS_KEY|R2_BUCKET|R2_ACCOUNT_ID|R2_SNAPSHOT_ACCESS_KEY_ID|R2_SNAPSHOT_SECRET_ACCESS_KEY|R2_SNAPSHOT_BUCKET|TIGRIS_STORAGE_ACCESS_KEY_ID|TIGRIS_STORAGE_SECRET_ACCESS_KEY|TIGRIS_STORAGE_BUCKET|TIGRIS_SNAPSHOT_ACCESS_KEY|TIGRIS_SNAPSHOT_SECRET_KEY|TIGRIS_SNAPSHOT_STORAGE_BUCKET|BLOB_READ_WRITE_TOKEN|VERCEL_BLOB_BUCKET|GCS_PROJECT_ID|GCS_BUCKET|GCS_CLIENT_EMAIL|GCS_PRIVATE_KEY|AZURE_ACCOUNT_NAME|AZURE_ACCOUNT_KEY|AZURE_CONTAINER|AZURE_SNAPSHOT_ACCOUNT_NAME|AZURE_SNAPSHOT_ACCOUNT_KEY|AZURE_SNAPSHOT_CONTAINER)=$'
+          nsc vault list --output json | jq -r '
+            .[]
+            | (.labels // []) as $l
+            | (($l | map(select(.name=="name")) | .[0].value) // .description // "") as $name
+            | select($name | test("^[A-Z][A-Z0-9_]*$"))
+            | "\($name)=\(.object_id)"
+          ' | grep -E "$KEYS" > /tmp/vault.envdef
+          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+
           pnpm run bench -- \
             --mode snapshot-fork \
             --provider ${{ matrix.provider }} \
@@ -112,7 +103,7 @@ jobs:
 
   collect:
     name: Collect Results
-    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:describe
     needs: [snapshot-fork]
     if: always()
     steps:
