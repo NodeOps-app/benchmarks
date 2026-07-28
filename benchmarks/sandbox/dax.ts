@@ -36,10 +36,7 @@ const DAX_RESOURCE_OPTIONS: Record<string, Record<string, any>> = {
   superserve:   { templateId: 'node22-8cpu-16gb' },           // 8 vCPU / 16 GiB template built in the pre-step
   createos:     { shape: 's-8vcpu-16gb', ephemeralDiskMb: 61440 }, // 8 vCPU, 16 GiB RAM, 60 GiB disk
   opencomputer: { cpuCount: 4, memoryMB: 16384, timeout: 600_000 },
-  // Sandbox0's ComputeSDK provider exposes only `memory` (no CPU knob); default
-  // vCPU is platform-side. Standardize on 16 GiB RAM (matches the 16 GiB target);
-  // results won't be a perfectly fair CPU-parity comparison, but the bench runs.
-  sandbox0:    { memory: 16384 },
+  sandbox0:    { memory: 16384 },  // Sandbox0 exposes only `memory`
 };
 
 function getSandboxOptionsWithResources(providerName: string, baseOptions?: Record<string, any>): Record<string, any> {
