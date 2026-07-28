@@ -93,11 +93,7 @@ export const providers: AIGatewayProviderConfig[] = [
     // anthropic-direct. `anthropic/` is this gateway's provider-prefix syntax
     // (same idea as llmgateway's pinning above) to route to Anthropic itself
     // rather than Bedrock/Vertex, which the model catalog also lists as
-    // providers for this model. NOTE: unlike the other entries above, this
-    // one has NOT been confirmed against a real successful response — the
-    // provisioned API key returned "Insufficient Funds Error" on a live test
-    // call, so the account needs credits deposited before a real run can
-    // verify routing/streaming end to end.
+    // providers for this model.
     name: 'concentrate-ai-gateway',
     requiredEnvVars: ['CONCENTRATE_AI_GATEWAY_API_KEY'],
     wireFormat: 'anthropic',
