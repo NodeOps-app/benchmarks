@@ -94,6 +94,14 @@ jobs:
             exit 1
           fi
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+          # Re-mask each loaded value via ::add-mask::, so a downstream echo
+          # or error message never leaks plaintext (the canonical recipe emits
+          # these via `export `cat /tmp/X`` after eval; GH Actions won't
+          # auto-redact values that were never registered as a `${{ secrets.* }}`).
+          awk -F= '{print $1}' /tmp/vault.envdef | while IFS= read -r key; do
+            v="${!key-}"
+            [ -n "$v" ] && echo "::add-mask::$v"
+          done
 
           pnpm run bench -- \
             --mode snapshot-fork \

@@ -91,6 +91,14 @@ jobs:
           # the same process, so this load + run stay in one step — matches the
           # nsc vault team's canonical recipe (no $GITHUB_ENV bridge needed).
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+          # Re-mask each loaded value via ::add-mask::, so a downstream echo
+          # or error message never leaks plaintext (the canonical recipe emits
+          # these via `export `cat /tmp/X`` after eval; GH Actions won't
+          # auto-redact values that were never registered as a `${{ secrets.* }}`).
+          awk -F= '{print $1}' /tmp/vault.envdef | while IFS= read -r key; do
+            v="${!key-}"
+            [ -n "$v" ] && echo "::add-mask::$v"
+          done
 
           PROVIDER_FLAG=""
           if [ -n "${{ github.event.inputs.provider }}" ]; then

@@ -104,6 +104,14 @@ jobs:
             exit 1
           fi
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+          # Re-mask each loaded value via ::add-mask::, so a downstream echo
+          # or error message never leaks plaintext (the canonical recipe emits
+          # these via `export `cat /tmp/X`` after eval; GH Actions won't
+          # auto-redact values that were never registered as a `${{ secrets.* }}`).
+          awk -F= '{print $1}' /tmp/vault.envdef | while IFS= read -r key; do
+            v="${!key-}"
+            [ -n "$v" ] && echo "::add-mask::$v"
+          done
           npx tsx benchmarks/scripts/build-e2b-template.ts
       - name: Build Superserve template with 8 vCPU / 16 GiB
         if: matrix.provider == 'superserve'
@@ -126,6 +134,14 @@ jobs:
             exit 1
           fi
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+          # Re-mask each loaded value via ::add-mask::, so a downstream echo
+          # or error message never leaks plaintext (the canonical recipe emits
+          # these via `export `cat /tmp/X`` after eval; GH Actions won't
+          # auto-redact values that were never registered as a `${{ secrets.* }}`).
+          awk -F= '{print $1}' /tmp/vault.envdef | while IFS= read -r key; do
+            v="${!key-}"
+            [ -n "$v" ] && echo "::add-mask::$v"
+          done
           npx tsx benchmarks/scripts/build-superserve-template.ts
       - name: Find Northflank plan for 8 vCPU / 16 GiB
         if: matrix.provider == 'northflank'
@@ -148,6 +164,14 @@ jobs:
             exit 1
           fi
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+          # Re-mask each loaded value via ::add-mask::, so a downstream echo
+          # or error message never leaks plaintext (the canonical recipe emits
+          # these via `export `cat /tmp/X`` after eval; GH Actions won't
+          # auto-redact values that were never registered as a `${{ secrets.* }}`).
+          awk -F= '{print $1}' /tmp/vault.envdef | while IFS= read -r key; do
+            v="${!key-}"
+            [ -n "$v" ] && echo "::add-mask::$v"
+          done
           npx tsx benchmarks/scripts/find-northflank-plan.ts
       - name: Clear stale results from checkout
         run: rm -rf results/
@@ -173,6 +197,14 @@ jobs:
             exit 1
           fi
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+          # Re-mask each loaded value via ::add-mask::, so a downstream echo
+          # or error message never leaks plaintext (the canonical recipe emits
+          # these via `export `cat /tmp/X`` after eval; GH Actions won't
+          # auto-redact values that were never registered as a `${{ secrets.* }}`).
+          awk -F= '{print $1}' /tmp/vault.envdef | while IFS= read -r key; do
+            v="${!key-}"
+            [ -n "$v" ] && echo "::add-mask::$v"
+          done
 
           pnpm run bench -- \
             --provider ${{ matrix.provider }} \
@@ -237,6 +269,14 @@ jobs:
             exit 1
           fi
           eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
+          # Re-mask each loaded value via ::add-mask::, so a downstream echo
+          # or error message never leaks plaintext (the canonical recipe emits
+          # these via `export `cat /tmp/X`` after eval; GH Actions won't
+          # auto-redact values that were never registered as a `${{ secrets.* }}`).
+          awk -F= '{print $1}' /tmp/vault.envdef | while IFS= read -r key; do
+            v="${!key-}"
+            [ -n "$v" ] && echo "::add-mask::$v"
+          done
           npx tsx benchmarks/src/ingest.ts --type sandbox
       - name: Post results to merged PR
         if: github.event_name == 'push'
