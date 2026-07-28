@@ -76,7 +76,7 @@ jobs:
         # tests every gateway inside one process, so we load the union of all
         # ai-gateway providers' vars — not every mode's vars.
         run: |
-          . benchmarks/scripts/load-vault-secrets.sh '^(ANTHROPIC_API_KEY|CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID|CLOUDFLARE_AI_GATEWAY_GATEWAY_ID|LLM_GATEWAY_API_KEY|OPENROUTER_API_KEY|PYDANTIC_AI_GATEWAY_API_KEY|VERCEL_AI_GATEWAY_API_KEY|CONCENTRATE_AI_GATEWAY_API_KEY)'
+          . benchmarks/scripts/load-vault-secrets.sh '^(ANTHROPIC_API_KEY|CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID|CLOUDFLARE_AI_GATEWAY_GATEWAY_ID|CLOUDFLARE_AI_GATEWAY_TOKEN|LLM_GATEWAY_API_KEY|OPENROUTER_API_KEY|PYDANTIC_AI_GATEWAY_API_KEY|VERCEL_AI_GATEWAY_API_KEY|CONCENTRATE_AI_GATEWAY_API_KEY)'
 
           PROVIDER_FLAG=""
           if [ -n "${{ github.event.inputs.provider }}" ]; then
