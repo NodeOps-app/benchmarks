@@ -40,7 +40,7 @@ permissions:
 jobs:
   dax:
     name: Dax ${{ matrix.provider }}
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -85,60 +85,27 @@ jobs:
           fi
       - name: Build E2B template with 8 vCPU / 16 GiB
         if: matrix.provider == 'e2b'
-        env:
-          E2B_API_KEY: ${{ secrets.E2B_API_KEY }}
-        run: npx tsx benchmarks/scripts/build-e2b-template.ts
+        run: |
+          . benchmarks/scripts/load-vault-secrets.sh '^(E2B_API_KEY)'
+          npx tsx benchmarks/scripts/build-e2b-template.ts
       - name: Build Superserve template with 8 vCPU / 16 GiB
         if: matrix.provider == 'superserve'
-        env:
-          SUPERSERVE_API_KEY: ${{ secrets.SUPERSERVE_API_KEY }}
-        run: npx tsx benchmarks/scripts/build-superserve-template.ts
+        run: |
+          . benchmarks/scripts/load-vault-secrets.sh '^(SUPERSERVE_API_KEY)'
+          npx tsx benchmarks/scripts/build-superserve-template.ts
       - name: Find Northflank plan for 8 vCPU / 16 GiB
         if: matrix.provider == 'northflank'
-        env:
-          NORTHFLANK_TOKEN: ${{ secrets.NORTHFLANK_TOKEN }}
-        run: npx tsx benchmarks/scripts/find-northflank-plan.ts
+        run: |
+          . benchmarks/scripts/load-vault-secrets.sh '^(NORTHFLANK_TOKEN|NORTHFLANK_PROJECT_ID)'
+          npx tsx benchmarks/scripts/find-northflank-plan.ts
       - name: Clear stale results from checkout
         run: rm -rf results/
       - name: Run dax benchmark
         env:
-          COMPUTESDK_API_KEY: ${{ secrets.COMPUTESDK_API_KEY }}
-          ARCHIL_API_KEY: ${{ secrets.ARCHIL_API_KEY }}
-          ARCHIL_REGION: ${{ secrets.ARCHIL_REGION }}
-          ARCHIL_DISK_ID: ${{ secrets.ARCHIL_DISK_ID }}
-          BEAM_TOKEN: ${{ secrets.BEAM_TOKEN }}
-          BEAM_WORKSPACE_ID: ${{ secrets.BEAM_WORKSPACE_ID }}
-          CLOUD_RUN_SANDBOX_URL: ${{ secrets.CLOUD_RUN_SANDBOX_URL }}
-          CLOUD_RUN_SANDBOX_SECRET: ${{ secrets.CLOUD_RUN_SANDBOX_SECRET }}
-          BL_API_KEY: ${{ secrets.BL_API_KEY }}
-          BL_WORKSPACE: ${{ secrets.BL_WORKSPACE }}
-          CLOUDFLARE_SANDBOX_URL: ${{ secrets.CLOUDFLARE_SANDBOX_URL }}
-          CLOUDFLARE_SANDBOX_SECRET: ${{ secrets.CLOUDFLARE_SANDBOX_SECRET }}
-          CSB_API_KEY: ${{ secrets.CSB_API_KEY }}
-          CREATEOS_SANDBOX_API_KEY: ${{ secrets.CREATEOS_SANDBOX_API_KEY }}
-          DAYTONA_API_KEY: ${{ secrets.DAYTONA_API_KEY }}
-          DECLAW_API_KEY: ${{ secrets.DECLAW_API_KEY }}
-          E2B_API_KEY: ${{ secrets.E2B_API_KEY }}
-          HOPX_API_KEY: ${{ secrets.HOPX_API_KEY }}
-          ISORUN_API_KEY: ${{ secrets.ISORUN_API_KEY }}
-          LIGHTNING_API_KEY: ${{ secrets.LIGHTNING_API_KEY }}
           LIGHTNING_INSTANCE_TYPE: cpu-8 # 8 vCPU / 16 GiB, matching the standardized dax profile
-          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
-          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
-          NORTHFLANK_TOKEN: ${{ secrets.NORTHFLANK_TOKEN }}
-          NSC_TOKEN: ${{ secrets.NSC_TOKEN }}
-          NORTHFLANK_PROJECT_ID: ${{ secrets.NORTHFLANK_PROJECT_ID }}
-          OPENCOMPUTER_API_KEY: ${{ secrets.OPENCOMPUTER_API_KEY }}
-          OPENCOMPUTER_API_URL: ${{ secrets.OPENCOMPUTER_API_URL }}
-          RUNLOOP_API_KEY: ${{ secrets.RUNLOOP_API_KEY }}
-          SUPERSERVE_API_KEY: ${{ secrets.SUPERSERVE_API_KEY }}
-          TENKI_API_KEY: ${{ secrets.TENKI_API_KEY }}
-          TENSORLAKE_API_KEY: ${{ secrets.TENSORLAKE_API_KEY }}
-          UPSTASH_BOX_API_KEY: ${{ secrets.UPSTASH_BOX_API_KEY }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
+          . benchmarks/scripts/load-vault-secrets.sh '^(ARCHIL_API_KEY|ARCHIL_REGION|ARCHIL_DISK_ID|BEAM_TOKEN|BEAM_WORKSPACE_ID|BL_API_KEY|BL_WORKSPACE|CLOUD_RUN_SANDBOX_URL|CLOUD_RUN_SANDBOX_SECRET|CLOUDFLARE_SANDBOX_URL|CLOUDFLARE_SANDBOX_SECRET|CSB_API_KEY|CREATEOS_SANDBOX_API_KEY|DAYTONA_API_KEY|DECLAW_API_KEY|E2B_API_KEY|HOPX_API_KEY|ISORUN_API_KEY|LIGHTNING_API_KEY|MODAL_TOKEN_ID|MODAL_TOKEN_SECRET|NSC_TOKEN|NORTHFLANK_TOKEN|NORTHFLANK_PROJECT_ID|OPENCOMPUTER_API_KEY|OPENCOMPUTER_API_URL|RUNLOOP_API_KEY|SPRITES_TOKEN|SUPERSERVE_API_KEY|TENKI_API_KEY|TENSORLAKE_API_KEY|UPSTASH_BOX_API_KEY|VERCEL_TOKEN|VERCEL_TEAM_ID|VERCEL_PROJECT_ID)'
+
           pnpm run bench -- \
             --provider ${{ matrix.provider }} \
             --mode sandbox-dax \
@@ -154,7 +121,7 @@ jobs:
 
   collect:
     name: Collect Dax Results
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
     needs: dax
     if: always()
     steps:
@@ -183,10 +150,9 @@ jobs:
       - name: Ingest results to platform
         if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         continue-on-error: true
-        env:
-          INGEST_URL: ${{ secrets.INGEST_URL }}
-          INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
-        run: npx tsx benchmarks/src/ingest.ts --type sandbox
+        run: |
+          . benchmarks/scripts/load-vault-secrets.sh '^(INGEST_URL|INGEST_SECRET)'
+          npx tsx benchmarks/src/ingest.ts --type sandbox
       - name: Post results to merged PR
         if: github.event_name == 'push'
         continue-on-error: true

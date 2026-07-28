@@ -34,7 +34,7 @@ permissions:
 jobs:
   bench:
     name: Bench ${{ matrix.provider }}
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -65,18 +65,9 @@ jobs:
       - name: Clear stale results from checkout
         run: rm -rf results/browser/
       - name: Run browser benchmark
-        env:
-          BROWSERBASE_API_KEY: ${{ secrets.BROWSERBASE_API_KEY }}
-          BROWSERBASE_PROJECT_ID: ${{ secrets.BROWSERBASE_PROJECT_ID }}
-          BROWSER_USE_API_KEY: ${{ secrets.BROWSER_USE_API_KEY }}
-          HYPERBROWSER_API_KEY: ${{ secrets.HYPERBROWSER_API_KEY }}
-          KERNEL_API_KEY: ${{ secrets.KERNEL_API_KEY }}
-          NOTTE_API_KEY: ${{ secrets.NOTTE_API_KEY }}
-          STEEL_API_KEY: ${{ secrets.STEEL_API_KEY }}
-          TILION_API_KEY: ${{ secrets.TILION_API_KEY }}
-          TILION_BASE_URL: ${{ secrets.TILION_BASE_URL }}
-          # ANCHORBROWSER_API_KEY: ${{ secrets.ANCHORBROWSER_API_KEY }}
         run: |
+          . benchmarks/scripts/load-vault-secrets.sh '^(BROWSERBASE_API_KEY|BROWSERBASE_PROJECT_ID|BROWSER_USE_API_KEY|HYPERBROWSER_API_KEY|KERNEL_API_KEY|NOTTE_API_KEY|STEEL_API_KEY|TILION_API_KEY|TILION_BASE_URL)'
+
           pnpm run bench -- \
             --mode browser \
             --provider ${{ matrix.provider }} \
@@ -92,7 +83,7 @@ jobs:
 
   collect:
     name: Collect Results
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
     needs: bench
     if: always()
     steps:
@@ -124,10 +115,9 @@ jobs:
       - name: Ingest results to platform
         if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         continue-on-error: true
-        env:
-          INGEST_URL: ${{ secrets.INGEST_URL }}
-          INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
-        run: npx tsx benchmarks/src/ingest.ts --type browser
+        run: |
+          . benchmarks/scripts/load-vault-secrets.sh '^(INGEST_URL|INGEST_SECRET)'
+          npx tsx benchmarks/src/ingest.ts --type browser
       - run: pnpm run generate-browser-svg
       - name: Upload SVG as artifact
         if: github.event_name == 'push'
