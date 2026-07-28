@@ -86,92 +86,17 @@ jobs:
       - name: Build E2B template with 8 vCPU / 16 GiB
         if: matrix.provider == 'e2b'
         run: |
-          nsc version ensure --at_least 0.0.550
-          KEYS='^(E2B_API_KEY)'
-          nsc vault list --output json | jq -r '
-            .[]
-            | (.labels // []) as $l
-            | (($l | map(select(.name=="name")) | .[0].value) // .description // "") as $name
-            | select($name | test("^[A-Z][A-Z0-9_]*$"))
-            | "\($name)=\(.object_id)"
-          ' | grep -E "$KEYS" > /tmp/vault.envdef
-          # Only print the count, never the contents — envdef holds
-          # KEY=<object_id> mappings (object_ids are vault resource
-          # handles, not secret values, but we keep them off CI logs).
-          echo "::notice::envdef line count: $(wc -l < /tmp/vault.envdef)"
-          if [ ! -s /tmp/vault.envdef ]; then
-            echo "::error::envdef is empty after grep — no vault entries matched KEYS pattern"
-            exit 1
-          fi
-          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
-          # Re-mask each loaded value via ::add-mask::, so a downstream echo
-          # or error message never leaks plaintext (the canonical recipe emits
-          # these via `export `cat /tmp/X`` after eval; GH Actions won't
-          # auto-redact values that were never registered as a `${{ secrets.* }}`).
-          awk -F= '{print $1}' /tmp/vault.envdef | while IFS= read -r key; do
-            v="${!key-}"
-            [ -n "$v" ] && echo "::add-mask::$v"
-          done
+          . benchmarks/scripts/load-vault-secrets.sh '^(E2B_API_KEY)'
           npx tsx benchmarks/scripts/build-e2b-template.ts
       - name: Build Superserve template with 8 vCPU / 16 GiB
         if: matrix.provider == 'superserve'
         run: |
-          nsc version ensure --at_least 0.0.550
-          KEYS='^(SUPERSERVE_API_KEY)'
-          nsc vault list --output json | jq -r '
-            .[]
-            | (.labels // []) as $l
-            | (($l | map(select(.name=="name")) | .[0].value) // .description // "") as $name
-            | select($name | test("^[A-Z][A-Z0-9_]*$"))
-            | "\($name)=\(.object_id)"
-          ' | grep -E "$KEYS" > /tmp/vault.envdef
-          # Only print the count, never the contents — envdef holds
-          # KEY=<object_id> mappings (object_ids are vault resource
-          # handles, not secret values, but we keep them off CI logs).
-          echo "::notice::envdef line count: $(wc -l < /tmp/vault.envdef)"
-          if [ ! -s /tmp/vault.envdef ]; then
-            echo "::error::envdef is empty after grep — no vault entries matched KEYS pattern"
-            exit 1
-          fi
-          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
-          # Re-mask each loaded value via ::add-mask::, so a downstream echo
-          # or error message never leaks plaintext (the canonical recipe emits
-          # these via `export `cat /tmp/X`` after eval; GH Actions won't
-          # auto-redact values that were never registered as a `${{ secrets.* }}`).
-          awk -F= '{print $1}' /tmp/vault.envdef | while IFS= read -r key; do
-            v="${!key-}"
-            [ -n "$v" ] && echo "::add-mask::$v"
-          done
+          . benchmarks/scripts/load-vault-secrets.sh '^(SUPERSERVE_API_KEY)'
           npx tsx benchmarks/scripts/build-superserve-template.ts
       - name: Find Northflank plan for 8 vCPU / 16 GiB
         if: matrix.provider == 'northflank'
         run: |
-          nsc version ensure --at_least 0.0.550
-          KEYS='^(NORTHFLANK_TOKEN|NORTHFLANK_PROJECT_ID)'
-          nsc vault list --output json | jq -r '
-            .[]
-            | (.labels // []) as $l
-            | (($l | map(select(.name=="name")) | .[0].value) // .description // "") as $name
-            | select($name | test("^[A-Z][A-Z0-9_]*$"))
-            | "\($name)=\(.object_id)"
-          ' | grep -E "$KEYS" > /tmp/vault.envdef
-          # Only print the count, never the contents — envdef holds
-          # KEY=<object_id> mappings (object_ids are vault resource
-          # handles, not secret values, but we keep them off CI logs).
-          echo "::notice::envdef line count: $(wc -l < /tmp/vault.envdef)"
-          if [ ! -s /tmp/vault.envdef ]; then
-            echo "::error::envdef is empty after grep — no vault entries matched KEYS pattern"
-            exit 1
-          fi
-          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
-          # Re-mask each loaded value via ::add-mask::, so a downstream echo
-          # or error message never leaks plaintext (the canonical recipe emits
-          # these via `export `cat /tmp/X`` after eval; GH Actions won't
-          # auto-redact values that were never registered as a `${{ secrets.* }}`).
-          awk -F= '{print $1}' /tmp/vault.envdef | while IFS= read -r key; do
-            v="${!key-}"
-            [ -n "$v" ] && echo "::add-mask::$v"
-          done
+          . benchmarks/scripts/load-vault-secrets.sh '^(NORTHFLANK_TOKEN|NORTHFLANK_PROJECT_ID)'
           npx tsx benchmarks/scripts/find-northflank-plan.ts
       - name: Clear stale results from checkout
         run: rm -rf results/
@@ -179,32 +104,7 @@ jobs:
         env:
           LIGHTNING_INSTANCE_TYPE: cpu-8 # 8 vCPU / 16 GiB, matching the standardized dax profile
         run: |
-          nsc version ensure --at_least 0.0.550
-          KEYS='^(ARCHIL_API_KEY|ARCHIL_REGION|ARCHIL_DISK_ID|BEAM_TOKEN|BEAM_WORKSPACE_ID|BL_API_KEY|BL_WORKSPACE|CLOUD_RUN_SANDBOX_URL|CLOUD_RUN_SANDBOX_SECRET|CLOUDFLARE_SANDBOX_URL|CLOUDFLARE_SANDBOX_SECRET|CSB_API_KEY|CREATEOS_SANDBOX_API_KEY|DAYTONA_API_KEY|DECLAW_API_KEY|E2B_API_KEY|HOPX_API_KEY|ISORUN_API_KEY|LIGHTNING_API_KEY|MODAL_TOKEN_ID|MODAL_TOKEN_SECRET|NSC_TOKEN|NORTHFLANK_TOKEN|NORTHFLANK_PROJECT_ID|OPENCOMPUTER_API_KEY|OPENCOMPUTER_API_URL|RUNLOOP_API_KEY|SPRITES_TOKEN|SUPERSERVE_API_KEY|TENKI_API_KEY|TENSORLAKE_API_KEY|UPSTASH_BOX_API_KEY|VERCEL_TOKEN|VERCEL_TEAM_ID|VERCEL_PROJECT_ID)'
-          nsc vault list --output json | jq -r '
-            .[]
-            | (.labels // []) as $l
-            | (($l | map(select(.name=="name")) | .[0].value) // .description // "") as $name
-            | select($name | test("^[A-Z][A-Z0-9_]*$"))
-            | "\($name)=\(.object_id)"
-          ' | grep -E "$KEYS" > /tmp/vault.envdef
-          # Only print the count, never the contents — envdef holds
-          # KEY=<object_id> mappings (object_ids are vault resource
-          # handles, not secret values, but we keep them off CI logs).
-          echo "::notice::envdef line count: $(wc -l < /tmp/vault.envdef)"
-          if [ ! -s /tmp/vault.envdef ]; then
-            echo "::error::envdef is empty after grep — no vault entries matched KEYS pattern"
-            exit 1
-          fi
-          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
-          # Re-mask each loaded value via ::add-mask::, so a downstream echo
-          # or error message never leaks plaintext (the canonical recipe emits
-          # these via `export `cat /tmp/X`` after eval; GH Actions won't
-          # auto-redact values that were never registered as a `${{ secrets.* }}`).
-          awk -F= '{print $1}' /tmp/vault.envdef | while IFS= read -r key; do
-            v="${!key-}"
-            [ -n "$v" ] && echo "::add-mask::$v"
-          done
+          . benchmarks/scripts/load-vault-secrets.sh '^(ARCHIL_API_KEY|ARCHIL_REGION|ARCHIL_DISK_ID|BEAM_TOKEN|BEAM_WORKSPACE_ID|BL_API_KEY|BL_WORKSPACE|CLOUD_RUN_SANDBOX_URL|CLOUD_RUN_SANDBOX_SECRET|CLOUDFLARE_SANDBOX_URL|CLOUDFLARE_SANDBOX_SECRET|CSB_API_KEY|CREATEOS_SANDBOX_API_KEY|DAYTONA_API_KEY|DECLAW_API_KEY|E2B_API_KEY|HOPX_API_KEY|ISORUN_API_KEY|LIGHTNING_API_KEY|MODAL_TOKEN_ID|MODAL_TOKEN_SECRET|NSC_TOKEN|NORTHFLANK_TOKEN|NORTHFLANK_PROJECT_ID|OPENCOMPUTER_API_KEY|OPENCOMPUTER_API_URL|RUNLOOP_API_KEY|SPRITES_TOKEN|SUPERSERVE_API_KEY|TENKI_API_KEY|TENSORLAKE_API_KEY|UPSTASH_BOX_API_KEY|VERCEL_TOKEN|VERCEL_TEAM_ID|VERCEL_PROJECT_ID)'
 
           pnpm run bench -- \
             --provider ${{ matrix.provider }} \
@@ -251,32 +151,7 @@ jobs:
         if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         continue-on-error: true
         run: |
-          nsc version ensure --at_least 0.0.550
-          KEYS='^(INGEST_URL|INGEST_SECRET)'
-          nsc vault list --output json | jq -r '
-            .[]
-            | (.labels // []) as $l
-            | (($l | map(select(.name=="name")) | .[0].value) // .description // "") as $name
-            | select($name | test("^[A-Z][A-Z0-9_]*$"))
-            | "\($name)=\(.object_id)"
-          ' | grep -E "$KEYS" > /tmp/vault.envdef
-          # Only print the count, never the contents — envdef holds
-          # KEY=<object_id> mappings (object_ids are vault resource
-          # handles, not secret values, but we keep them off CI logs).
-          echo "::notice::envdef line count: $(wc -l < /tmp/vault.envdef)"
-          if [ ! -s /tmp/vault.envdef ]; then
-            echo "::error::envdef is empty after grep — no vault entries matched KEYS pattern"
-            exit 1
-          fi
-          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
-          # Re-mask each loaded value via ::add-mask::, so a downstream echo
-          # or error message never leaks plaintext (the canonical recipe emits
-          # these via `export `cat /tmp/X`` after eval; GH Actions won't
-          # auto-redact values that were never registered as a `${{ secrets.* }}`).
-          awk -F= '{print $1}' /tmp/vault.envdef | while IFS= read -r key; do
-            v="${!key-}"
-            [ -n "$v" ] && echo "::add-mask::$v"
-          done
+          . benchmarks/scripts/load-vault-secrets.sh '^(INGEST_URL|INGEST_SECRET)'
           npx tsx benchmarks/src/ingest.ts --type sandbox
       - name: Post results to merged PR
         if: github.event_name == 'push'

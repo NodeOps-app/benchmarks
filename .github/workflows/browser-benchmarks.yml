@@ -61,37 +61,7 @@ jobs:
         run: rm -rf results/browser/
       - name: Run browser benchmark
         run: |
-          nsc version ensure --at_least 0.0.550
-          # Build a per-provider envdef from `nsc vault list --output json`.
-          # The grep filter is the union of every browser provider's
-          # required keys (from benchmarks/scripts/provider-vars.json) so
-          # an arbitrary provider in the matrix still finds any key it
-          # needs without per-provider templating.
-          KEYS='^(BROWSERBASE_API_KEY|BROWSERBASE_PROJECT_ID|BROWSER_USE_API_KEY|HYPERBROWSER_API_KEY|KERNEL_API_KEY|NOTTE_API_KEY|STEEL_API_KEY|TILION_API_KEY|TILION_BASE_URL)'
-          nsc vault list --output json | jq -r '
-            .[]
-            | (.labels // []) as $l
-            | (($l | map(select(.name=="name")) | .[0].value) // .description // "") as $name
-            | select($name | test("^[A-Z][A-Z0-9_]*$"))
-            | "\($name)=\(.object_id)"
-          ' | grep -E "$KEYS" > /tmp/vault.envdef
-          # Only print the count, never the contents — envdef holds
-          # KEY=<object_id> mappings (object_ids are vault resource
-          # handles, not secret values, but we keep them off CI logs).
-          echo "::notice::envdef line count: $(wc -l < /tmp/vault.envdef)"
-          if [ ! -s /tmp/vault.envdef ]; then
-            echo "::error::envdef is empty after grep — no vault entries matched KEYS pattern"
-            exit 1
-          fi
-          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
-          # Re-mask each loaded value via ::add-mask::, so a downstream echo
-          # or error message never leaks plaintext (the canonical recipe emits
-          # these via `export `cat /tmp/X`` after eval; GH Actions won't
-          # auto-redact values that were never registered as a `${{ secrets.* }}`).
-          awk -F= '{print $1}' /tmp/vault.envdef | while IFS= read -r key; do
-            v="${!key-}"
-            [ -n "$v" ] && echo "::add-mask::$v"
-          done
+          . benchmarks/scripts/load-vault-secrets.sh '^(BROWSERBASE_API_KEY|BROWSERBASE_PROJECT_ID|BROWSER_USE_API_KEY|HYPERBROWSER_API_KEY|KERNEL_API_KEY|NOTTE_API_KEY|STEEL_API_KEY|TILION_API_KEY|TILION_BASE_URL)'
 
           pnpm run bench -- \
             --mode browser \
@@ -141,32 +111,7 @@ jobs:
         if: github.event_name != 'push'
         continue-on-error: true
         run: |
-          nsc version ensure --at_least 0.0.550
-          KEYS='^(INGEST_URL|INGEST_SECRET)'
-          nsc vault list --output json | jq -r '
-            .[]
-            | (.labels // []) as $l
-            | (($l | map(select(.name=="name")) | .[0].value) // .description // "") as $name
-            | select($name | test("^[A-Z][A-Z0-9_]*$"))
-            | "\($name)=\(.object_id)"
-          ' | grep -E "$KEYS" > /tmp/vault.envdef
-          # Only print the count, never the contents — envdef holds
-          # KEY=<object_id> mappings (object_ids are vault resource
-          # handles, not secret values, but we keep them off CI logs).
-          echo "::notice::envdef line count: $(wc -l < /tmp/vault.envdef)"
-          if [ ! -s /tmp/vault.envdef ]; then
-            echo "::error::envdef is empty after grep — no vault entries matched KEYS pattern"
-            exit 1
-          fi
-          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
-          # Re-mask each loaded value via ::add-mask::, so a downstream echo
-          # or error message never leaks plaintext (the canonical recipe emits
-          # these via `export `cat /tmp/X`` after eval; GH Actions won't
-          # auto-redact values that were never registered as a `${{ secrets.* }}`).
-          awk -F= '{print $1}' /tmp/vault.envdef | while IFS= read -r key; do
-            v="${!key-}"
-            [ -n "$v" ] && echo "::add-mask::$v"
-          done
+          . benchmarks/scripts/load-vault-secrets.sh '^(INGEST_URL|INGEST_SECRET)'
           npx tsx benchmarks/src/ingest.ts --type browser
       - run: pnpm run generate-browser-svg
       - name: Upload SVG as artifact

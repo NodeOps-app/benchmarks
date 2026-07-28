@@ -70,35 +70,7 @@ jobs:
         # tests every gateway inside one process, so we load the union of all
         # ai-gateway providers' vars — not every mode's vars.
         run: |
-          nsc version ensure --at_least 0.0.550
-          # Build a per-mode envdef from `nsc vault list`: pull the env-var
-          # name from each entry's `name=` label (or description as fallback,
-          # when entries don't carry labels), and emit `KEY=<object_id>` for
-          # every name this mode needs. Filter via grep so a single envdef
-          # only carries the union of AI gateway providers' secrets.
-          KEYS='^(ANTHROPIC_API_KEY|CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID|CLOUDFLARE_AI_GATEWAY_GATEWAY_ID|LLM_GATEWAY_API_KEY|OPENROUTER_API_KEY|PYDANTIC_AI_GATEWAY_API_KEY|VERCEL_AI_GATEWAY_API_KEY)'
-          nsc vault list --output json | jq -r '
-            .[]
-            | (.labels // []) as $l
-            | (($l | map(select(.name=="name")) | .[0].value) // .description // "") as $name
-            | select($name | test("^[A-Z][A-Z0-9_]*$"))
-            | "\($name)=\(.object_id)"
-          ' | grep -E "$KEYS" > /tmp/vault.envdef
-
-          # `nsc vault export --shell=bash` emits `export `cat /tmp/X`` followed
-          # by `rm /tmp/X`; the eval here expands the backticks and exports
-          # each KEY=value into the current shell. The bench step below runs in
-          # the same process, so this load + run stay in one step — matches the
-          # nsc vault team's canonical recipe (no $GITHUB_ENV bridge needed).
-          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
-          # Re-mask each loaded value via ::add-mask::, so a downstream echo
-          # or error message never leaks plaintext (the canonical recipe emits
-          # these via `export `cat /tmp/X`` after eval; GH Actions won't
-          # auto-redact values that were never registered as a `${{ secrets.* }}`).
-          awk -F= '{print $1}' /tmp/vault.envdef | while IFS= read -r key; do
-            v="${!key-}"
-            [ -n "$v" ] && echo "::add-mask::$v"
-          done
+          . benchmarks/scripts/load-vault-secrets.sh '^(ANTHROPIC_API_KEY|CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID|CLOUDFLARE_AI_GATEWAY_GATEWAY_ID|LLM_GATEWAY_API_KEY|OPENROUTER_API_KEY|PYDANTIC_AI_GATEWAY_API_KEY|VERCEL_AI_GATEWAY_API_KEY)'
 
           PROVIDER_FLAG=""
           if [ -n "${{ github.event.inputs.provider }}" ]; then

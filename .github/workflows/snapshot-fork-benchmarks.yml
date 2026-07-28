@@ -76,32 +76,7 @@ jobs:
         run: rm -rf results/snapshot-fork/
       - name: Run snapshot/fork test
         run: |
-          nsc version ensure --at_least 0.0.550
-          KEYS='^(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AWS_REGION|S3_BUCKET|S3_SNAPSHOT_ACCESS_KEY_ID|S3_SNAPSHOT_SECRET_ACCESS_KEY|S3_SNAPSHOT_BUCKET|R2_ACCESS_KEY_ID|R2_SECRET_ACCESS_KEY|R2_BUCKET|R2_ACCOUNT_ID|R2_SNAPSHOT_ACCESS_KEY_ID|R2_SNAPSHOT_SECRET_ACCESS_KEY|R2_SNAPSHOT_BUCKET|TIGRIS_STORAGE_ACCESS_KEY_ID|TIGRIS_STORAGE_SECRET_ACCESS_KEY|TIGRIS_STORAGE_BUCKET|TIGRIS_SNAPSHOT_ACCESS_KEY|TIGRIS_SNAPSHOT_SECRET_KEY|TIGRIS_SNAPSHOT_STORAGE_BUCKET|BLOB_READ_WRITE_TOKEN|VERCEL_BLOB_BUCKET|GCS_PROJECT_ID|GCS_BUCKET|GCS_CLIENT_EMAIL|GCS_PRIVATE_KEY|AZURE_ACCOUNT_NAME|AZURE_ACCOUNT_KEY|AZURE_CONTAINER|AZURE_SNAPSHOT_ACCOUNT_NAME|AZURE_SNAPSHOT_ACCOUNT_KEY|AZURE_SNAPSHOT_CONTAINER)'
-          nsc vault list --output json | jq -r '
-            .[]
-            | (.labels // []) as $l
-            | (($l | map(select(.name=="name")) | .[0].value) // .description // "") as $name
-            | select($name | test("^[A-Z][A-Z0-9_]*$"))
-            | "\($name)=\(.object_id)"
-          ' | grep -E "$KEYS" > /tmp/vault.envdef
-          # Only print the count, never the contents — envdef holds
-          # KEY=<object_id> mappings (object_ids are vault resource
-          # handles, not secret values, but we keep them off CI logs).
-          echo "::notice::envdef line count: $(wc -l < /tmp/vault.envdef)"
-          if [ ! -s /tmp/vault.envdef ]; then
-            echo "::error::envdef is empty after grep — no vault entries matched KEYS pattern"
-            exit 1
-          fi
-          eval "$(nsc vault export --envdef /tmp/vault.envdef --shell=bash)"
-          # Re-mask each loaded value via ::add-mask::, so a downstream echo
-          # or error message never leaks plaintext (the canonical recipe emits
-          # these via `export `cat /tmp/X`` after eval; GH Actions won't
-          # auto-redact values that were never registered as a `${{ secrets.* }}`).
-          awk -F= '{print $1}' /tmp/vault.envdef | while IFS= read -r key; do
-            v="${!key-}"
-            [ -n "$v" ] && echo "::add-mask::$v"
-          done
+          . benchmarks/scripts/load-vault-secrets.sh '^(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AWS_REGION|S3_BUCKET|S3_SNAPSHOT_ACCESS_KEY_ID|S3_SNAPSHOT_SECRET_ACCESS_KEY|S3_SNAPSHOT_BUCKET|R2_ACCESS_KEY_ID|R2_SECRET_ACCESS_KEY|R2_BUCKET|R2_ACCOUNT_ID|R2_SNAPSHOT_ACCESS_KEY_ID|R2_SNAPSHOT_SECRET_ACCESS_KEY|R2_SNAPSHOT_BUCKET|TIGRIS_STORAGE_ACCESS_KEY_ID|TIGRIS_STORAGE_SECRET_ACCESS_KEY|TIGRIS_STORAGE_BUCKET|TIGRIS_SNAPSHOT_ACCESS_KEY|TIGRIS_SNAPSHOT_SECRET_KEY|TIGRIS_SNAPSHOT_STORAGE_BUCKET|BLOB_READ_WRITE_TOKEN|VERCEL_BLOB_BUCKET|GCS_PROJECT_ID|GCS_BUCKET|GCS_CLIENT_EMAIL|GCS_PRIVATE_KEY|AZURE_ACCOUNT_NAME|AZURE_ACCOUNT_KEY|AZURE_CONTAINER|AZURE_SNAPSHOT_ACCOUNT_NAME|AZURE_SNAPSHOT_ACCOUNT_KEY|AZURE_SNAPSHOT_CONTAINER)'
 
           pnpm run bench -- \
             --mode snapshot-fork \
