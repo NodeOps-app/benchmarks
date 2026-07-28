@@ -40,14 +40,14 @@
 
 import 'dotenv/config';
 import * as fs from 'node:fs';
-import { createBenchmarkClient, BenchmarkApiError } from 'benchsdk';
+import { createBenchmarkClient, BenchmarkApiError } from '@benchsdk/client';
 import type {
   BenchmarkResultLatencySummary,
   BenchmarkRunResults,
   BenchmarkRunTaskResults,
   BenchmarkRunTimeline,
   RunProgress,
-} from 'benchsdk';
+} from '@benchsdk/client';
 
 const BENCHMARK_SLUG = process.env.BENCHMARK_SLUG ?? 'scale';
 

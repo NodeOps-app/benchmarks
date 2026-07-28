@@ -1,2 +1,3 @@
 packages:
   - packages/benchsdk
+  - packages/create-bench

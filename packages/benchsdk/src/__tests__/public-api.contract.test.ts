@@ -1578,7 +1578,7 @@ describe('public API surface and type exports', () => {
 
   it('VAL-SDK-092: package.json exports map, main/module/types, and engines.node are preserved', () => {
     const pkg = JSON.parse(readFileSync(join(here, '..', '..', 'package.json'), 'utf8'));
-    expect(pkg.name).toBe('benchsdk');
+    expect(pkg.name).toBe('@benchsdk/client');
     expect(pkg.main).toBe('./dist/index.cjs');
     expect(pkg.module).toBe('./dist/index.js');
     expect(pkg.types).toBe('./dist/index.d.ts');

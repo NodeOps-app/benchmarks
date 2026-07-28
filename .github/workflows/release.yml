@@ -45,10 +45,14 @@ jobs:
         run: pnpm install --ignore-scripts
 
       - name: Build packages
-        run: pnpm --filter benchsdk run build
+        run: |
+          pnpm --filter @benchsdk/client run build
+          pnpm --filter create-bench run build
 
       - name: Test
-        run: pnpm --filter benchsdk run test
+        run: |
+          pnpm --filter @benchsdk/client run test
+          pnpm --filter create-bench run test
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
@@ -64,7 +68,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.CHANGESET_TOKEN || secrets.GITHUB_TOKEN }}
           # Sequence: (1) publish once with NPM_TOKEN, (2) configure the trusted
-          # publisher for benchsdk on npmjs.com, (3) remove NPM_TOKEN from this
+          # publisher for @benchsdk/client on npmjs.com, (3) remove NPM_TOKEN from this
           # workflow in a follow-up. Trusted publishers require an existing
           # package on the registry, so OIDC cannot be used for the initial
           # publication.

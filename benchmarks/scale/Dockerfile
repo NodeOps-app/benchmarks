@@ -10,7 +10,7 @@ RUN pnpm install --frozen-lockfile --ignore-scripts
 
 COPY benchmarks ./benchmarks
 COPY packages/benchsdk ./packages/benchsdk
-RUN pnpm --filter benchsdk run build
+RUN pnpm --filter @benchsdk/client run build
 RUN pnpm run --silent bundle:scale
 
 FROM node:24-alpine

@@ -1,20 +1,13 @@
 {
-  "name": "@benchsdk/client",
-  "version": "0.2.1",
+  "name": "create-bench",
+  "version": "0.1.1",
   "private": false,
   "type": "module",
-  "description": "Client and worker helpers for the ComputeSDK benchmark orchestrator",
+  "description": "Scaffold a new ComputeSDK benchmark project with @benchsdk/client",
   "author": "Garrison",
   "license": "MIT",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
+  "bin": {
+    "create-bench": "./dist/index.js"
   },
   "files": [
     "dist",
@@ -24,25 +17,23 @@
     "build": "tsup",
     "clean": "rimraf dist",
     "dev": "tsup --watch",
-    "lint": "eslint",
     "prepare": "tsup",
     "pretest": "tsup",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "test:integration": "vitest run src/__tests__/integration.test.ts",
-    "test:watch": "vitest watch",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [
-    "computesdk",
+    "create",
+    "scaffold",
     "benchmark",
-    "observability",
-    "orchestrator"
+    "computesdk",
+    "benchsdk",
+    "cli"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/computesdk/benchmarks.git",
-    "directory": "packages/benchsdk"
+    "directory": "packages/create-bench"
   },
   "homepage": "https://www.computesdk.com",
   "bugs": {
@@ -54,8 +45,6 @@
   "dependencies": {},
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "@vitest/coverage-v8": "^1.0.0",
-    "eslint": "^8.37.0",
     "rimraf": "^5.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0",
