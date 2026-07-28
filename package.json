@@ -83,6 +83,7 @@
     "bench:ai-gateway:cloudflare": "tsx benchmarks/src/run.ts --mode ai-gateway --provider cloudflare-ai-gateway",
     "bench:ai-gateway:llmgateway": "tsx benchmarks/src/run.ts --mode ai-gateway --provider llmgateway",
     "bench:ai-gateway:pydantic": "tsx benchmarks/src/run.ts --mode ai-gateway --provider pydantic-ai-gateway",
+    "bench:ai-gateway:concentrate": "tsx benchmarks/src/run.ts --mode ai-gateway --provider concentrate-ai-gateway",
     "bench:ai-gateway:anthropic": "tsx benchmarks/src/run.ts --mode ai-gateway --provider anthropic-direct",
     "generate-ai-gateway-svg": "tsx benchmarks/ai-gateway/generate-svg.ts"
   },

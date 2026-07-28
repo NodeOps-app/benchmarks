@@ -85,6 +85,31 @@ export const providers: AIGatewayProviderConfig[] = [
     }),
   },
   {
+    // Concentrate AI exposes an Anthropic-Messages-API-compatible endpoint
+    // (`/v1/messages/`, confirmed against its published OpenAPI spec at
+    // concentrate.ai/docs/api-reference/openapi.json) alongside a separate
+    // OpenAI-compatible `/v1/chat/completions/`. We use the Anthropic-shaped
+    // one so this sits in the same wireFormat group as Cloudflare/Pydantic/
+    // anthropic-direct. `anthropic/` is this gateway's provider-prefix syntax
+    // (same idea as llmgateway's pinning above) to route to Anthropic itself
+    // rather than Bedrock/Vertex, which the model catalog also lists as
+    // providers for this model. NOTE: unlike the other entries above, this
+    // one has NOT been confirmed against a real successful response — the
+    // provisioned API key returned "Insufficient Funds Error" on a live test
+    // call, so the account needs credits deposited before a real run can
+    // verify routing/streaming end to end.
+    name: 'concentrate-ai-gateway',
+    requiredEnvVars: ['CONCENTRATE_AI_GATEWAY_API_KEY'],
+    wireFormat: 'anthropic',
+    model: 'anthropic/claude-haiku-4-5-20251001',
+    host: 'api.concentrate.ai',
+    path: '/v1/messages/',
+    buildHeaders: () => ({
+      Authorization: `Bearer ${process.env.CONCENTRATE_AI_GATEWAY_API_KEY}`,
+      'anthropic-version': '2023-06-01',
+    }),
+  },
+  {
     // No-gateway baseline/control.
     name: 'anthropic-direct',
     requiredEnvVars: ['ANTHROPIC_API_KEY'],

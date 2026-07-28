@@ -17,7 +17,7 @@ on:
         required: false
         default: '20'
       provider:
-        description: 'Gateway to run (leave empty for all six, round-robin)'
+        description: 'Gateway to run (leave empty for all seven, round-robin)'
         required: false
         default: ''
         type: choice
@@ -28,6 +28,7 @@ on:
           - cloudflare-ai-gateway
           - llmgateway
           - pydantic-ai-gateway
+          - concentrate-ai-gateway
           - anthropic-direct
       dry_run:
         description: 'Run without ingesting or committing results'
@@ -79,6 +80,7 @@ jobs:
           CLOUDFLARE_AI_GATEWAY_TOKEN: ${{ secrets.CLOUDFLARE_AI_GATEWAY_TOKEN }}
           LLM_GATEWAY_API_KEY: ${{ secrets.LLM_GATEWAY_API_KEY }}
           PYDANTIC_AI_GATEWAY_API_KEY: ${{ secrets.PYDANTIC_AI_GATEWAY_API_KEY }}
+          CONCENTRATE_AI_GATEWAY_API_KEY: ${{ secrets.CONCENTRATE_AI_GATEWAY_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           PROVIDER_FLAG=""
@@ -118,6 +120,7 @@ jobs:
               'cloudflare-ai-gateway': 'Cloudflare AI Gateway',
               'llmgateway': 'LLM Gateway',
               'pydantic-ai-gateway': 'Pydantic AI Gateway',
+              'concentrate-ai-gateway': 'Concentrate AI',
               'anthropic-direct': 'Anthropic (direct)',
             };
 
