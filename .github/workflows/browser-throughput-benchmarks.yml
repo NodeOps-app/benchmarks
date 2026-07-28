@@ -34,7 +34,7 @@ permissions:
 jobs:
   setup:
     name: Resolve target pages
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
     outputs:
       urls: ${{ steps.pick.outputs.urls }}
     steps:
@@ -85,7 +85,7 @@ jobs:
 
   bench:
     name: Bench ${{ matrix.provider }}
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
     needs: setup
     timeout-minutes: 60
     strategy:
@@ -118,16 +118,9 @@ jobs:
       - name: Run browser throughput benchmark
         env:
           THROUGHPUT_URLS: ${{ needs.setup.outputs.urls }}
-          BROWSERBASE_API_KEY: ${{ secrets.BROWSERBASE_API_KEY }}
-          BROWSERBASE_PROJECT_ID: ${{ secrets.BROWSERBASE_PROJECT_ID }}
-          BROWSER_USE_API_KEY: ${{ secrets.BROWSER_USE_API_KEY }}
-          HYPERBROWSER_API_KEY: ${{ secrets.HYPERBROWSER_API_KEY }}
-          KERNEL_API_KEY: ${{ secrets.KERNEL_API_KEY }}
-          NOTTE_API_KEY: ${{ secrets.NOTTE_API_KEY }}
-          STEEL_API_KEY: ${{ secrets.STEEL_API_KEY }}
-          TILION_API_KEY: ${{ secrets.TILION_API_KEY }}
-          TILION_BASE_URL: ${{ secrets.TILION_BASE_URL }}
         run: |
+          . benchmarks/scripts/load-vault-secrets.sh '^(BROWSERBASE_API_KEY|BROWSERBASE_PROJECT_ID|BROWSER_USE_API_KEY|HYPERBROWSER_API_KEY|KERNEL_API_KEY|NOTTE_API_KEY|STEEL_API_KEY|TILION_API_KEY|TILION_BASE_URL)'
+
           pnpm run bench -- \
             --mode browser-throughput \
             --provider ${{ matrix.provider }} \
@@ -143,7 +136,7 @@ jobs:
 
   collect:
     name: Collect Results
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
     needs: bench
     if: always()
     steps:
