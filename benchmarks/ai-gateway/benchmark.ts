@@ -10,50 +10,6 @@ function roundStats(s: { median: number; p95: number; p99: number }) {
   return { median: round(s.median), p95: round(s.p95), p99: round(s.p99) };
 }
 
-const EMPTY_STATS = { median: 0, p95: 0, p99: 0 };
-
-function emptyGatewayStats(): AIGatewayStats {
-  return {
-    dnsMs: EMPTY_STATS,
-    tcpMs: EMPTY_STATS,
-    tlsMs: EMPTY_STATS,
-    coldTtfbMs: EMPTY_STATS,
-    coldTtftMs: EMPTY_STATS,
-    coldE2eMs: EMPTY_STATS,
-    warmTtfbMs: EMPTY_STATS,
-    warmTtftMs: EMPTY_STATS,
-    outputTokensPerSec: EMPTY_STATS,
-  };
-}
-
-function numbers(values: (number | undefined)[]): number[] {
-  return values.filter((v): v is number => typeof v === 'number');
-}
-
-function summarizeProvider(config: AIGatewayProviderConfig, iterations: PhaseProbeResult[]): AIGatewayBenchmarkResult {
-  const successful = iterations.filter(i => !i.error);
-  const cold = successful.filter(i => i.mode === 'cold');
-  const warm = successful.filter(i => i.mode === 'warm');
-
-  return {
-    provider: config.name,
-    mode: 'ai-gateway',
-    model: config.model,
-    iterations,
-    summary: {
-      dnsMs: computeStats(numbers(cold.map(i => i.dnsMs))),
-      tcpMs: computeStats(numbers(cold.map(i => i.tcpMs))),
-      tlsMs: computeStats(numbers(cold.map(i => i.tlsMs))),
-      coldTtfbMs: computeStats(cold.map(i => i.ttfbMs)),
-      coldTtftMs: computeStats(cold.map(i => i.ttftMs)),
-      coldE2eMs: computeStats(numbers(cold.map(i => i.coldE2eMs))),
-      warmTtfbMs: computeStats(warm.map(i => i.ttfbMs)),
-      warmTtftMs: computeStats(warm.map(i => i.ttftMs)),
-      outputTokensPerSec: computeStats(numbers(successful.map(i => i.outputTokensPerSec))),
-    },
-  };
-}
-
 export interface AIGatewayRunOptions {
   /** Number of cold-connection iterations to run per gateway. */
   iterationsCold: number;
@@ -77,70 +33,6 @@ export interface AIGatewayRunOptions {
  * sequential iteration — round-robin only has an observable effect when
  * more than one gateway is active at once.
  */
-export async function runAIGatewayBenchmarks(
-  providers: AIGatewayProviderConfig[],
-  options: AIGatewayRunOptions,
-): Promise<AIGatewayBenchmarkResult[]> {
-  const { iterationsCold, iterationsWarm, prompt, maxTokens, timeout } = options;
-  const results: AIGatewayBenchmarkResult[] = [];
-  const active: { config: AIGatewayProviderConfig; iterations: PhaseProbeResult[] }[] = [];
-
-  for (const config of providers) {
-    const missingVars = config.requiredEnvVars.filter(v => !process.env[v]);
-    if (missingVars.length > 0) {
-      console.log(`\nSkipping ${config.name}: missing ${missingVars.join(', ')}`);
-      results.push({
-        provider: config.name,
-        mode: 'ai-gateway',
-        model: config.model,
-        iterations: [],
-        summary: emptyGatewayStats(),
-        skipped: true,
-        skipReason: `Missing: ${missingVars.join(', ')}`,
-      });
-      continue;
-    }
-    active.push({ config, iterations: [] });
-  }
-
-  if (active.length === 0) {
-    return results;
-  }
-
-  const totalRounds = iterationsCold + iterationsWarm;
-  console.log(`\n--- AI Gateway Benchmark: ${active.length} gateway(s), ${iterationsCold} cold + ${iterationsWarm} warm iteration(s) each, round-robin across gateways ---`);
-
-  for (let round_ = 0; round_ < totalRounds; round_++) {
-    const isCold = round_ < iterationsCold;
-    const label = isCold ? 'cold' : 'warm';
-    const roundIndex = isCold ? round_ + 1 : round_ - iterationsCold + 1;
-    const roundTotal = isCold ? iterationsCold : iterationsWarm;
-
-    for (const entry of active) {
-      const probe = isCold ? runColdProbe : runWarmProbe;
-      const result = await probe(entry.config, prompt, maxTokens, timeout);
-      entry.iterations.push(result);
-
-      if (result.error) {
-        console.log(`  [${label} ${roundIndex}/${roundTotal}] ${entry.config.name}: FAILED — ${result.error}`);
-      } else {
-        const e2e = result.coldE2eMs !== undefined ? ` e2e ${result.coldE2eMs.toFixed(0)}ms` : '';
-        const isFallback = result.resolvedProvider !== undefined && result.resolvedProvider.toLowerCase() !== 'anthropic';
-        const provider = result.resolvedProvider ? ` [${isFallback ? '⚠ fell back to' : 'via'} ${result.resolvedProvider}]` : '';
-        console.log(`  [${label} ${roundIndex}/${roundTotal}] ${entry.config.name}: ttfb ${result.ttfbMs.toFixed(0)}ms ttft ${result.ttftMs.toFixed(0)}ms${e2e}${provider}`);
-      }
-    }
-  }
-
-  for (const entry of active) {
-    results.push(summarizeProvider(entry.config, entry.iterations));
-  }
-
-  // Preserve the input provider order in the output.
-  const byProvider = new Map(results.map(r => [r.provider, r]));
-  return providers.map(p => byProvider.get(p.name)!);
-}
-
 export async function writeAIGatewayResultsJson(results: AIGatewayBenchmarkResult[], outPath: string): Promise<void> {
   const fs = await import('fs');
   const os = await import('os');

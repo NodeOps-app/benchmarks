@@ -79,24 +79,25 @@ cp benchmarks/.env.example benchmarks/.env
 pnpm run bench
 
 # Run individual sandbox test modes
-pnpm run bench -- --mode sequential --iterations 10
-pnpm run bench -- --mode staggered --concurrency 10 --stagger-delay 200
-pnpm run bench -- --mode burst --concurrency 10
+pnpm run bench:sequential -- --iterations 10
+pnpm run bench:staggered -- --concurrency 10 --stagger-delay-ms 200
+pnpm run bench:burst -- --concurrency 10
 
-# Run a single provider
-pnpm run bench -- --provider e2b
+# Run a single provider (bench:* scripts forward flags; the bare `bench`
+# chain does not, so pass flags to the per-mode script instead)
+pnpm run bench:sequential -- --provider e2b
 
 # Combine flags
-pnpm run bench -- --provider e2b --mode sequential --iterations 5
+pnpm run bench:sequential -- --provider e2b --iterations 5
 
 # Run browser benchmarks
-pnpm run bench -- --mode browser
-pnpm run bench -- --mode browser --provider browserbase
+pnpm run bench:browser
+pnpm run bench:browser -- --provider browserbase
 
 # Run storage benchmarks
-pnpm run bench -- --mode storage
-pnpm run bench -- --mode storage --provider aws-s3
-pnpm run bench -- --mode storage --file-size 100MB
+pnpm run bench:storage
+pnpm run bench:storage -- --provider aws-s3
+pnpm run bench:storage -- --file-size 16MB
 ```
 
 ### Code Style

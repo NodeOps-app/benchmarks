@@ -1,3 +1,4 @@
 packages:
   - packages/benchsdk
   - packages/create-bench
+  - packages/benchsdk-cli

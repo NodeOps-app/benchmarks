@@ -6,7 +6,6 @@ on:
     paths:
       - 'benchmarks/storage/**'
       - 'benchmarks/src/util/**'
-      - 'benchmarks/src/run.ts'
       - 'benchmarks/src/merge-results.ts'
       - 'package.json'
   schedule:
@@ -80,14 +79,13 @@ jobs:
         run: rm -rf results/storage/
       - name: Run storage benchmark
         run: |
-          . benchmarks/scripts/load-vault-secrets.sh '^(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AWS_REGION|S3_BUCKET|R2_ACCESS_KEY_ID|R2_SECRET_ACCESS_KEY|R2_BUCKET|R2_ACCOUNT_ID|TIGRIS_STORAGE_ACCESS_KEY_ID|TIGRIS_STORAGE_SECRET_ACCESS_KEY|TIGRIS_STORAGE_BUCKET|BLOB_READ_WRITE_TOKEN|VERCEL_BLOB_BUCKET|GCS_PROJECT_ID|GCS_BUCKET|GCS_CLIENT_EMAIL|GCS_PRIVATE_KEY|AZURE_ACCOUNT_NAME|AZURE_ACCOUNT_KEY|AZURE_CONTAINER)'
+          . benchmarks/scripts/load-vault-secrets.sh '^(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AWS_REGION|S3_BUCKET|R2_ACCESS_KEY_ID|R2_SECRET_ACCESS_KEY|R2_BUCKET|R2_ACCOUNT_ID|TIGRIS_STORAGE_ACCESS_KEY_ID|TIGRIS_STORAGE_SECRET_ACCESS_KEY|TIGRIS_STORAGE_BUCKET|BLOB_READ_WRITE_TOKEN|VERCEL_BLOB_BUCKET|GCS_PROJECT_ID|GCS_BUCKET|GCS_CLIENT_EMAIL|GCS_PRIVATE_KEY|AZURE_ACCOUNT_NAME|AZURE_ACCOUNT_KEY|AZURE_CONTAINER|COMPUTESDK_ADMIN_API_KEY)'
 
           FILE_SIZE="${{ matrix.file_size }}"
-          pnpm run bench -- \
-            --mode storage \
+          npx tsx benchmarks/storage/storage.bench.ts \
             --provider ${{ matrix.provider }} \
             --file-size $FILE_SIZE \
-            --storage-concurrency ${{ (github.event_name == 'schedule' && '16') || (github.event_name == 'push' && '8') || github.event.inputs.storage_concurrency || '1' }} \
+            --concurrency ${{ (github.event_name == 'schedule' && '16') || (github.event_name == 'push' && '8') || github.event.inputs.storage_concurrency || '1' }} \
             --iterations ${{ (github.event_name == 'schedule' && '110') || (github.event_name == 'push' && '10') || github.event.inputs.iterations || '100' }}
       - name: Upload results
         if: always()

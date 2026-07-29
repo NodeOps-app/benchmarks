@@ -39,7 +39,7 @@ const DAX_RESOURCE_OPTIONS: Record<string, Record<string, any>> = {
   sandbox0:    { memory: 16384 },  // Sandbox0 exposes only `memory`
 };
 
-function getSandboxOptionsWithResources(providerName: string, baseOptions?: Record<string, any>): Record<string, any> {
+export function getSandboxOptionsWithResources(providerName: string, baseOptions?: Record<string, any>): Record<string, any> {
   const resourceOpts = DAX_RESOURCE_OPTIONS[providerName];
   if (!resourceOpts) return baseOptions ?? {};
   return { ...baseOptions, ...resourceOpts };
@@ -88,85 +88,7 @@ export interface DaxBenchmarkResult {
   skipReason?: string;
 }
 
-export async function runDaxBenchmark(config: ProviderConfig): Promise<DaxBenchmarkResult> {
-  const { name, iterations = 3, timeout = 600_000, requiredEnvVars, sandboxOptions, destroyTimeoutMs = 15_000 } = config;
-
-  const missingVars = requiredEnvVars.filter(v => !process.env[v]);
-  if (missingVars.length > 0) {
-    return {
-      provider: name,
-      mode: 'sandbox-dax',
-      iterations: [],
-      summary: emptySummary(),
-      skipped: true,
-      skipReason: `Missing: ${missingVars.join(', ')}`,
-    };
-  }
-
-  const compute = config.createCompute();
-  const results: DaxTimingResult[] = [];
-
-  console.log(`\n--- Dax Benchmark: ${name} (${iterations} iterations) ---`);
-
-  for (let i = 0; i < iterations; i++) {
-    console.log(`  Iteration ${i + 1}/${iterations}...`);
-    let sandbox: any = null;
-
-    try {
-      sandbox = await withTimeout(compute.sandbox.create(getSandboxOptionsWithResources(name, sandboxOptions)), timeout, 'Sandbox creation timed out');
-      const result = await runDaxIteration(sandbox, name, timeout);
-      results.push(result);
-      if (result.error) {
-        const parts = [];
-        if (result.prepareMs) parts.push(`prepare ${(result.prepareMs / 1000).toFixed(2)}s`);
-        if (result.bunDownloadMs) parts.push(`bun dl ${(result.bunDownloadMs / 1000).toFixed(2)}s`);
-        if (result.bunUnpackMs) parts.push(`bun unpack ${(result.bunUnpackMs / 1000).toFixed(2)}s`);
-        if (result.cloneMs) parts.push(`clone ${(result.cloneMs / 1000).toFixed(2)}s`);
-        if (result.installMs) parts.push(`install ${(result.installMs / 1000).toFixed(2)}s`);
-        if (result.typecheckMs) parts.push(`typecheck ${(result.typecheckMs / 1000).toFixed(2)}s`);
-        const phaseStr = parts.length > 0 ? ` | ${parts.join(' | ')}` : '';
-        const score = result.phasesCompleted != null ? `${result.phasesCompleted}/${result.phasesTotal}` : '';
-        console.log(`    FAILED${score ? ` (${score} phases)` : ''}: ${result.error}${phaseStr}`);
-      } else {
-        const fmt = (ms?: number) => ms ? `${(ms / 1000).toFixed(2)}s` : 'N/A';
-        console.log(`    OK (${result.phasesCompleted}/${result.phasesTotal}): total ${fmt(result.totalMs)} | prepare ${fmt(result.prepareMs)} | clone ${fmt(result.cloneMs)} | install ${fmt(result.installMs)} | typecheck ${fmt(result.typecheckMs)}`);
-      }
-    } catch (err) {
-      const error = err instanceof Error ? err.message : String(err);
-      console.log(`    FAILED: ${error}`);
-      results.push({ totalMs: 0, error });
-    } finally {
-      if (sandbox) {
-        let timer: ReturnType<typeof setTimeout> | undefined;
-        try {
-          await Promise.race([
-            sandbox.destroy(),
-            new Promise((_, reject) => {
-              timer = setTimeout(() => reject(new Error('Destroy timeout')), destroyTimeoutMs);
-            }),
-          ]);
-        } catch (err) {
-          console.warn(`    [cleanup] destroy failed: ${err instanceof Error ? err.message : String(err)}`);
-        } finally {
-          if (timer) clearTimeout(timer);
-        }
-      }
-    }
-  }
-
-  const successful = results.filter(r => !r.error);
-  const withTiming = results.filter(r => r.totalMs > 0 && (r.phasesCompleted ?? 0) > 0);
-
-  return {
-    provider: name,
-    mode: 'sandbox-dax',
-    iterations: results,
-    summary: withTiming.length > 0 ? summarize(withTiming) : emptySummary(),
-    successRate: results.length > 0 ? successful.length / results.length : 0,
-  };
-}
-
-async function runDaxIteration(sandbox: any, providerName: string, timeout: number): Promise<DaxTimingResult> {
+export async function runDaxIteration(sandbox: any, providerName: string, timeout: number): Promise<DaxTimingResult> {
   // Load the benchmark script from the local filesystem rather than fetching
   // it over HTTP inside the sandbox. This eliminates a curl dependency
   // (several providers don't ship curl in their sandboxes).
@@ -275,7 +197,7 @@ async function runDaxIteration(sandbox: any, providerName: string, timeout: numb
   };
 }
 
-function summarize(results: DaxTimingResult[]): DaxBenchmarkResult['summary'] {
+export function summarize(results: DaxTimingResult[]): DaxBenchmarkResult['summary'] {
   const empty = { median: 0, p95: 0, p99: 0 };
   const pick = (key: keyof DaxTimingResult) => {
     const values = results.map(r => r[key]).filter((v): v is number => typeof v === 'number' && v > 0);
@@ -292,7 +214,7 @@ function summarize(results: DaxTimingResult[]): DaxBenchmarkResult['summary'] {
   };
 }
 
-function emptySummary(): DaxBenchmarkResult['summary'] {
+export function emptySummary(): DaxBenchmarkResult['summary'] {
   const empty = { median: 0, p95: 0, p99: 0 };
   return { totalMs: empty, prepareMs: empty, bunDownloadMs: empty, bunUnpackMs: empty, cloneMs: empty, installMs: empty, typecheckMs: empty };
 }

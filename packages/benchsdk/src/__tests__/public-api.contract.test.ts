@@ -1514,7 +1514,7 @@ describe('public API surface and type exports', () => {
     'SendTaskResultsInput', 'TaskStepRecord', 'TaskResultRecord', 'TaskResultsResponse', 'TaskFunction',
     'UpdateBenchmarkInput', 'UpdateParticipantInput', 'UpdateRunInput', 'UpdateWorkerInput', 'WorkerConcurrencySample',
     'WorkerFinishContext', 'WorkerHeartbeatInput', 'WorkerTask', 'UpsertBenchmarkInput', 'UpsertParticipantInput',
-    'UploadWorkerArtifactInput',
+    'UploadWorkerArtifactInput', 'BaseParticipant',
   ];
   const REPORTER_EXPORTS = [
     'BenchmarkReporterArtifactInput', 'BenchmarkReporterBarrierInput', 'BenchmarkReporterBarrierResult',

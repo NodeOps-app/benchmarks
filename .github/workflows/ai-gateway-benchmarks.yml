@@ -4,7 +4,6 @@ on:
   pull_request:
     paths:
       - 'benchmarks/ai-gateway/**'
-      - 'benchmarks/src/run.ts'
       - 'benchmarks/src/merge-results.ts'
       - 'package.json'
       - '.github/workflows/ai-gateway-benchmarks.yml'
@@ -76,13 +75,13 @@ jobs:
         # tests every gateway inside one process, so we load the union of all
         # ai-gateway providers' vars — not every mode's vars.
         run: |
-          . benchmarks/scripts/load-vault-secrets.sh '^(ANTHROPIC_API_KEY|CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID|CLOUDFLARE_AI_GATEWAY_GATEWAY_ID|CLOUDFLARE_AI_GATEWAY_TOKEN|LLM_GATEWAY_API_KEY|OPENROUTER_API_KEY|PYDANTIC_AI_GATEWAY_API_KEY|VERCEL_AI_GATEWAY_API_KEY|CONCENTRATE_AI_GATEWAY_API_KEY)'
+          . benchmarks/scripts/load-vault-secrets.sh '^(ANTHROPIC_API_KEY|CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID|CLOUDFLARE_AI_GATEWAY_GATEWAY_ID|CLOUDFLARE_AI_GATEWAY_TOKEN|LLM_GATEWAY_API_KEY|OPENROUTER_API_KEY|PYDANTIC_AI_GATEWAY_API_KEY|VERCEL_AI_GATEWAY_API_KEY|CONCENTRATE_AI_GATEWAY_API_KEY|COMPUTESDK_ADMIN_API_KEY)'
 
           PROVIDER_FLAG=""
           if [ -n "${{ github.event.inputs.provider }}" ]; then
             PROVIDER_FLAG="--provider ${{ github.event.inputs.provider }}"
           fi
-          pnpm run bench:ai-gateway -- $PROVIDER_FLAG \
+          npx tsx benchmarks/ai-gateway/ai-gateway.bench.ts $PROVIDER_FLAG \
             --iterations ${{ (github.event_name == 'pull_request' && '2') || github.event.inputs.iterations || '10' }}
       - run: pnpm run generate-ai-gateway-svg
       - name: Upload results and SVG as artifacts

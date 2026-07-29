@@ -156,7 +156,7 @@ npm run bench:browser-throughput:browserbase -- --iterations 1
 npm run bench:browser-throughput
 
 # Specific provider with custom iteration count
-npm run bench -- --mode browser-throughput --provider hyperbrowser --iterations 25
+npm run bench:browser-throughput -- --provider hyperbrowser --iterations 25
 ```
 
 Required environment variables (set in `.env` or your shell):

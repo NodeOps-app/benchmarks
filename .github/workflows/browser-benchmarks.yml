@@ -6,7 +6,6 @@ on:
     paths:
       - 'benchmarks/browser/**'
       - 'benchmarks/src/util/**'
-      - 'benchmarks/src/run.ts'
       - 'benchmarks/src/merge-results.ts'
       - 'package.json'
   schedule:
@@ -66,10 +65,9 @@ jobs:
         run: rm -rf results/browser/
       - name: Run browser benchmark
         run: |
-          . benchmarks/scripts/load-vault-secrets.sh '^(BROWSERBASE_API_KEY|BROWSERBASE_PROJECT_ID|BROWSER_USE_API_KEY|HYPERBROWSER_API_KEY|KERNEL_API_KEY|NOTTE_API_KEY|STEEL_API_KEY|TILION_API_KEY|TILION_BASE_URL)'
+          . benchmarks/scripts/load-vault-secrets.sh '^(BROWSERBASE_API_KEY|BROWSERBASE_PROJECT_ID|BROWSER_USE_API_KEY|HYPERBROWSER_API_KEY|KERNEL_API_KEY|NOTTE_API_KEY|STEEL_API_KEY|TILION_API_KEY|TILION_BASE_URL|COMPUTESDK_ADMIN_API_KEY)'
 
-          pnpm run bench -- \
-            --mode browser \
+          npx tsx benchmarks/browser/browser.bench.ts \
             --provider ${{ matrix.provider }} \
             --iterations ${{ github.event_name == 'push' && '10' || github.event.inputs.iterations || '100' }}
       - name: Upload results

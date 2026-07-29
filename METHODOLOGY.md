@@ -92,7 +92,7 @@ This is the baseline measurement — isolated cold-start performance with no con
 Sandboxes are launched with a fixed delay between each, ramping up concurrent load gradually.
 
 ```bash
-pnpm run bench:staggered -- --concurrency 100 --stagger-delay 200
+pnpm run bench:staggered -- --concurrency 100 --stagger-delay-ms 200
 ```
 
 | Parameter | Default |
@@ -139,10 +139,15 @@ By default, `pnpm run bench` runs all three tests in sequence:
 
 ```bash
 pnpm run bench                          # Runs sequential → staggered → burst
-pnpm run bench -- --provider e2b        # All 3 tests, single provider
 pnpm run bench:sequential               # Sequential only
 pnpm run bench:staggered                # Staggered only
 pnpm run bench:burst                    # Burst only
+
+# The bare `bench` chain does not forward flags; to target a single
+# provider, pass the flag to each per-mode script:
+pnpm run bench:sequential -- --provider e2b
+pnpm run bench:staggered -- --provider e2b
+pnpm run bench:burst -- --provider e2b
 ```
 
 ## Test Configuration
@@ -309,11 +314,12 @@ pnpm run bench
 
 # Run individual tests
 pnpm run bench:sequential -- --iterations 10
-pnpm run bench:staggered -- --concurrency 10 --stagger-delay 200
+pnpm run bench:staggered -- --concurrency 10 --stagger-delay-ms 200
 pnpm run bench:burst -- --concurrency 10
 
-# Single provider
-pnpm run bench -- --provider e2b
+# Single provider (pass the flag to each per-mode script; the bare
+# `bench` chain does not forward flags)
+pnpm run bench:sequential -- --provider e2b
 ```
 
 **Note**: Your results will differ based on your network location and conditions.
