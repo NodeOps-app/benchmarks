@@ -1,17 +1,6 @@
 name: Latency Benchmark
 
 on:
-  push:
-    branches: [master]
-    paths:
-      - 'benchmarks/sandbox/latency/**'
-      - 'benchmarks/scripts/smoke.ts'
-      - 'benchmarks/scripts/build-bundles.ts'
-      - 'benchmarks/scripts/ensure-bundle.ts'
-      - 'benchmarks/src/run.ts'
-      - 'benchmarks/scripts/load-vault-secrets.sh'
-      - 'package.json'
-      - '.github/workflows/sandbox-latency.yml'
   workflow_dispatch:
     inputs:
       replicas:
