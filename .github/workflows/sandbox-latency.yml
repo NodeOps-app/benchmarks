@@ -12,8 +12,6 @@ on:
       - 'benchmarks/scripts/load-vault-secrets.sh'
       - 'package.json'
       - '.github/workflows/sandbox-latency.yml'
-  schedule:
-    - cron: '0 4 * * 5'
   workflow_dispatch:
     inputs:
       replicas:
