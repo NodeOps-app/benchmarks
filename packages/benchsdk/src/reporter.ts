@@ -186,7 +186,13 @@ export class BenchmarkReporter {
             isFinal: isFinal && batch.length === this.pending.length,
             records: batch,
           });
-        } catch {
+        } catch (error) {
+          // Results that never reach the platform are invisible otherwise: the
+          // worker still completes and the run just reports fewer tasks.
+          console.warn(
+            `[benchsdk] dropping ${this.pending.length} unsent task result(s) for worker ${this.assignment.workerId}: ` +
+              `${error instanceof Error ? error.message : String(error)}`,
+          );
           break;
         }
         this.pending.splice(0, batch.length);

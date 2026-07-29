@@ -385,10 +385,13 @@ async function runGroupedByRound<T extends BaseParticipant>(
   for (const participant of available) {
     logBuffers.set(participant.name, new LogBuffer());
     failed.set(participant.name, false);
-    // One task per participant runs at a time in round mode, so target concurrency is 1.
+    // One worker per participant drives every round sequentially. The platform
+    // reads `targetConcurrency` as tasks-per-worker, so it must be the full
+    // schedule length — otherwise only one task is planned and every record
+    // past the first falls outside the worker's task range.
     await client.planWorkers(config.benchmarkSlug, run.id, participant.name, {
       workerCount: 1,
-      targetConcurrency: 1,
+      targetConcurrency: schedule.length,
     });
     let reporter: BenchmarkReporter | null = null;
     try {
@@ -434,7 +437,19 @@ async function runGroupedByRound<T extends BaseParticipant>(
       if (!recordsByParticipant.has(participant.name)) {
         recordsByParticipant.set(participant.name, []);
       }
-      recordsByParticipant.get(participant.name)!.push(record);
+      const participantRecords = recordsByParticipant.get(participant.name)!;
+      participantRecords.push(record);
+      // Round mode drives the worker by hand, so nothing reports progress
+      // unless we do: without this the platform shows 0 done for the whole run.
+      if (reporter) {
+        reporter.setProgress({
+          done: participantRecords.length,
+          inFlight: 0,
+          errors: participantRecords.filter((item) => item.status !== 'success').length,
+          total: schedule.length,
+        });
+        await reporter.heartbeat();
+      }
     }
   }
 

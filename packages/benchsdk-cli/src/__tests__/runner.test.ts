@@ -280,6 +280,8 @@ describe('runBenchmark', () => {
       taskIndexStart: 0,
       recordResult: (r: TaskResultRecord) => recorded[cfg.participantSlug].push(r),
       uploadArtifact: async () => ({}),
+      setProgress: () => {},
+      heartbeat: async () => {},
       finish: async (failedFlag: boolean) => { finished[cfg.participantSlug] = failedFlag; },
     }));
 
@@ -311,10 +313,11 @@ describe('runBenchmark', () => {
     expect(recorded.e2b[0].status).toBe('success');
     expect(finished.e2b).toBe(false);
     expect(finished.modal).toBe(false);
-    // runWorker is NOT used in round mode; planWorkers targets concurrency 1.
+    // runWorker is NOT used in round mode; the single worker per participant is
+    // planned for every task in the schedule, not just one.
     expect(fakeClient.runWorker).not.toHaveBeenCalled();
     expect(fakeClient.planWorkers).toHaveBeenCalledTimes(2);
-    expect(calls.planWorkers[0][3]).toMatchObject({ workerCount: 1, targetConcurrency: 1 });
+    expect(calls.planWorkers[0][3]).toMatchObject({ workerCount: 1, targetConcurrency: 2 });
   });
 
   it('groupBy round with phases: tags each record with its phase in order', async () => {
@@ -323,6 +326,8 @@ describe('runBenchmark', () => {
       taskIndexStart: 0,
       recordResult: (r: TaskResultRecord) => recorded[cfg.participantSlug].push(r),
       uploadArtifact: async () => ({}),
+      setProgress: () => {},
+      heartbeat: async () => {},
       finish: async () => {},
     }));
 
@@ -344,6 +349,39 @@ describe('runBenchmark', () => {
     expect(recorded.e2b.map((r) => r.data?.phase)).toEqual(['cold', 'cold', 'warm']);
     // Task-owned latency overrides framework wall-clock.
     expect(recorded.e2b.every((r) => r.latencyMs === 11)).toBe(true);
+  });
+
+  it('groupBy round: reports worker progress after every record', async () => {
+    const progress: Array<{ done: number; inFlight: number; errors: number; total?: number }> = [];
+    let heartbeats = 0;
+    reporterClaim.mockImplementation(async () => ({
+      taskIndexStart: 0,
+      recordResult: () => {},
+      uploadArtifact: async () => ({}),
+      setProgress: (p: { done: number; inFlight: number; errors: number; total?: number }) => progress.push(p),
+      heartbeat: async () => { heartbeats += 1; },
+      finish: async () => {},
+    }));
+
+    let attempt = 0;
+    const task = vi.fn(async () => {
+      attempt += 1;
+      if (attempt === 2) throw new TaskError('boom', { code: 'probe_failed' });
+      return {};
+    });
+
+    await runBenchmark(
+      { benchmarkSlug: 's', benchmarkName: 'n', iterations: 3, groupBy: 'round', task },
+      [participants[0]],
+      [],
+    );
+
+    expect(progress).toEqual([
+      { done: 1, inFlight: 0, errors: 0, total: 3 },
+      { done: 2, inFlight: 0, errors: 1, total: 3 },
+      { done: 3, inFlight: 0, errors: 1, total: 3 },
+    ]);
+    expect(heartbeats).toBe(3);
   });
 
   it('participant mode: schedule + ctx.taskIndex are relative to the worker task range start', async () => {
@@ -401,6 +439,8 @@ describe('runBenchmark', () => {
       taskIndexStart: 10,
       recordResult: (r: TaskResultRecord) => recorded.push(r),
       uploadArtifact: async () => ({}),
+      setProgress: () => {},
+      heartbeat: async () => {},
       finish: async () => {},
     }));
 
@@ -438,6 +478,8 @@ describe('runBenchmark', () => {
       taskIndexStart: 0,
       recordResult: (r: TaskResultRecord) => recorded[cfg.participantSlug].push(r),
       uploadArtifact: async () => ({}),
+      setProgress: () => {},
+      heartbeat: async () => {},
       finish: async (failedFlag: boolean) => { finished[cfg.participantSlug] = failedFlag; },
     }));
 
