@@ -16,7 +16,7 @@ import type { StorageProviderConfig } from './types.js';
 export const storageProviders: StorageProviderConfig[] = [
   {
     name: 'aws-s3',
-    requiredEnvVars: ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'S3_BUCKET'],
+    requiredEnvVars: ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_REGION', 'S3_BUCKET'],
     bucket: process.env.S3_BUCKET!,
     createStorage: () => new Storage({
       adapter: s3({
@@ -34,7 +34,7 @@ export const storageProviders: StorageProviderConfig[] = [
     // permission — broader than the object-only creds used for upload/download.
     // Uses a dedicated bucket so the sibling-bucket churn is isolated.
     snapshotFork: {
-      requiredEnvVars: ['S3_SNAPSHOT_ACCESS_KEY_ID', 'S3_SNAPSHOT_SECRET_ACCESS_KEY', 'S3_SNAPSHOT_BUCKET'],
+      requiredEnvVars: ['S3_SNAPSHOT_ACCESS_KEY_ID', 'S3_SNAPSHOT_SECRET_ACCESS_KEY', 'AWS_REGION', 'S3_SNAPSHOT_BUCKET'],
       bucket: process.env.S3_SNAPSHOT_BUCKET!,
       createStorage: () => new Storage({
         adapter: s3({
