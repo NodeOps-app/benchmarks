@@ -156,8 +156,8 @@ the key, so with an org key the printed link may 404 — set that env var to the
 
 ## 6b. Probing tenant isolation
 
-All `app/api/v1/benchmarks/**` routes take either the global `ADMIN_API_KEY` or an org
-`bp_` key. Expected shapes when a key from org B addresses org A's run:
+With benchmarks-platform#47, all `app/api/v1/benchmarks/**` routes take either the global
+`ADMIN_API_KEY` or an org `bp_` key. Expected shapes when a key from org B addresses org A's run:
 `403 {"error":"API key is not authorized for this organization"}` (`getScopedRun` /
 `requireRunAccess`), `404` for an unknown run/benchmark, `401 Invalid API key` for
 revoked/expired/malformed tokens, `401 API key required` with no header. Listings
@@ -213,8 +213,11 @@ for requests slower than 1000 ms, so don't rely on the dev-server log for this.
   should be 202. If you see 413 on events, the raised cap is not wired up. Always
   check `benchmark_event_batches.status = 'persisted'` too — a 202 only means the
   body was accepted.
-- Benchmark v1 routes accept ONLY the global `ADMIN_API_KEY`; org-scoped API keys
-  (`bp_…`) get 401 there even though they work on `/api/v1/organizations/...`.
+- Org-scoped `bp_…` keys on benchmark v1 routes arrived with
+  benchmarks-platform#47 (see §3b/§6b). On a platform checkout without it those
+  routes are admin-only and every `bp_…` key 401s there, even though the same key
+  works on `/api/v1/organizations/...` — check which behaviour your checkout has
+  before debugging a 401.
 
 ## Devin Secrets Needed
 
