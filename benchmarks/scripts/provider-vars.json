@@ -141,6 +141,7 @@
     "aws-s3": [
       "AWS_ACCESS_KEY_ID",
       "AWS_SECRET_ACCESS_KEY",
+      "AWS_REGION",
       "S3_BUCKET"
     ],
     "cloudflare-r2": [
@@ -216,6 +217,9 @@
     "pydantic-ai-gateway": [
       "PYDANTIC_AI_GATEWAY_API_KEY"
     ],
+    "concentrate-ai-gateway": [
+      "CONCENTRATE_AI_GATEWAY_API_KEY"
+    ],
     "anthropic-direct": [
       "ANTHROPIC_API_KEY"
     ]
@@ -224,6 +228,7 @@
     "aws-s3": [
       "AWS_ACCESS_KEY_ID",
       "AWS_SECRET_ACCESS_KEY",
+      "AWS_REGION",
       "S3_BUCKET",
       "S3_SNAPSHOT_ACCESS_KEY_ID",
       "S3_SNAPSHOT_SECRET_ACCESS_KEY",
