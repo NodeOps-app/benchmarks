@@ -12,8 +12,6 @@ on:
       - 'benchmarks/scripts/load-vault-secrets.sh'
       - 'package.json'
       - '.github/workflows/sandbox-cpu-node.yml'
-  schedule:
-    - cron: '0 0 * * 5'
   workflow_dispatch:
     inputs:
       replicas:

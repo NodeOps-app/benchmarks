@@ -12,8 +12,6 @@ on:
       - 'benchmarks/scripts/load-vault-secrets.sh'
       - 'package.json'
       - '.github/workflows/sandbox-network-wan.yml'
-  schedule:
-    - cron: '30 2 * * 5'
   workflow_dispatch:
     inputs:
       replicas:
