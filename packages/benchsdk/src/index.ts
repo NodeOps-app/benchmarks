@@ -55,6 +55,7 @@ export type {
   DefineWorkerOptions,
   JsonObject,
   JsonValue,
+  PlanWorkersInput,
   RunProgress,
   RunProgressConcurrency,
   RunProgressParticipant,
@@ -83,6 +84,15 @@ export type {
   UpsertParticipantInput,
   UploadWorkerArtifactInput,
 } from './types';
+
+export {
+  filterParticipantsByEnv,
+  selectParticipants,
+} from './participants';
+
+export type {
+  BaseParticipant,
+} from './participants';
 export type {
   BenchmarkReporterArtifactInput,
   BenchmarkReporterBarrierInput,

@@ -15,6 +15,23 @@ export interface AIGatewayProviderConfig {
   path: string;
   /** Auth (and any gateway-specific) headers. Evaluated per-request so env vars can be read lazily. */
   buildHeaders: () => Record<string, string>;
+  /**
+   * Extra top-level fields merged into the request body, for gateways whose
+   * model id is a catalog alias that can resolve to more than one upstream
+   * (e.g. OpenRouter's or Vercel AI Gateway's `anthropic/...` can also be
+   * served via Bedrock/Vertex). Used to set Anthropic as the preferred
+   * provider so the benchmark measures that provider's overhead by default,
+   * while still allowing automatic fallback if Anthropic itself is down.
+   */
+  extraBody?: Record<string, unknown>;
+  /**
+   * Cheap regex-style extraction of which upstream provider actually served
+   * a request, from the raw SSE buffer accumulated so far — mirrors how
+   * token counts are extracted (see `extractOutputTokens`), so a gateway
+   * that's only pinned by preference (not restricted) can still report a
+   * fallback instead of it blending silently into that gateway's numbers.
+   */
+  extractResolvedProvider?: (buf: string) => string | undefined;
 }
 
 export interface AIGatewayStats {
@@ -47,6 +64,13 @@ export interface PhaseProbeResult {
   coldE2eMs?: number;
   outputTokens?: number;
   outputTokensPerSec?: number;
+  /**
+   * Upstream provider that actually served this request, when the gateway's
+   * response exposes it (see `extractResolvedProvider`). Only present for
+   * gateways whose model id is a catalog alias that can fall back to a
+   * different provider than the one requested.
+   */
+  resolvedProvider?: string;
   /** Request-identifying response headers (x-vercel-id, cf-ray, ...), for debugging. */
   receipts: Record<string, string>;
   error?: string;

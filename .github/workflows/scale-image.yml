@@ -1,11 +1,6 @@
 name: Scale Image
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - 'benchmarks/scale/**'
   pull_request:
     paths:
       - 'benchmarks/scale/**'

@@ -6,7 +6,6 @@ on:
     paths:
       - 'benchmarks/storage/**'
       - 'benchmarks/src/util/**'
-      - 'benchmarks/src/run.ts'
       - 'benchmarks/src/merge-results.ts'
       - 'package.json'
   schedule:
@@ -26,6 +25,11 @@ on:
           - small
           - wide
           - deep
+      dry_run:
+        description: 'Run without ingesting or committing results'
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: snapshot-fork-benchmarks
@@ -44,7 +48,7 @@ jobs:
     # single iteration; the weekly schedule runs 100 for trend data and commits
     # the combined results. Fork PRs without secrets skip gracefully
     # (missing-creds path) rather than failing.
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -76,50 +80,10 @@ jobs:
       - name: Clear stale results from checkout
         run: rm -rf results/snapshot-fork/
       - name: Run snapshot/fork test
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          S3_BUCKET: ${{ secrets.S3_BUCKET }}
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-          R2_BUCKET: ${{ secrets.R2_BUCKET }}
-          TIGRIS_STORAGE_ACCESS_KEY_ID: ${{ secrets.TIGRIS_STORAGE_ACCESS_KEY_ID }}
-          TIGRIS_STORAGE_SECRET_ACCESS_KEY: ${{ secrets.TIGRIS_STORAGE_SECRET_ACCESS_KEY }}
-          TIGRIS_STORAGE_BUCKET: ${{ secrets.TIGRIS_STORAGE_BUCKET }}
-          # Snapshot-fork emulates snapshots/forks as sibling buckets for S3/R2,
-          # so it needs credentials with bucket create/delete permission.
-          S3_SNAPSHOT_ACCESS_KEY_ID: ${{ secrets.S3_SNAPSHOT_ACCESS_KEY_ID }}
-          S3_SNAPSHOT_SECRET_ACCESS_KEY: ${{ secrets.S3_SNAPSHOT_SECRET_ACCESS_KEY }}
-          S3_SNAPSHOT_BUCKET: ${{ secrets.S3_SNAPSHOT_BUCKET }}
-          R2_SNAPSHOT_ACCESS_KEY_ID: ${{ secrets.R2_SNAPSHOT_ACCESS_KEY_ID }}
-          R2_SNAPSHOT_SECRET_ACCESS_KEY: ${{ secrets.R2_SNAPSHOT_SECRET_ACCESS_KEY }}
-          R2_SNAPSHOT_BUCKET: ${{ secrets.R2_SNAPSHOT_BUCKET }}
-          # Snapshot-fork uses a dedicated Standard-tier, snapshot-enabled Tigris bucket.
-          TIGRIS_SNAPSHOT_ACCESS_KEY: ${{ secrets.TIGRIS_SNAPSHOT_ACCESS_KEY }}
-          TIGRIS_SNAPSHOT_SECRET_KEY: ${{ secrets.TIGRIS_SNAPSHOT_SECRET_KEY }}
-          TIGRIS_SNAPSHOT_STORAGE_BUCKET: ${{ secrets.TIGRIS_SNAPSHOT_STORAGE_BUCKET }}
-          # Azure snapshot-fork emulates snapshots/forks as sibling containers,
-          # so it needs an account key (account-level container create/delete)
-          # and a dedicated snapshot container.
-          AZURE_SNAPSHOT_ACCOUNT_NAME: ${{ secrets.AZURE_SNAPSHOT_ACCOUNT_NAME }}
-          AZURE_SNAPSHOT_ACCOUNT_KEY: ${{ secrets.AZURE_SNAPSHOT_ACCOUNT_KEY }}
-          AZURE_SNAPSHOT_CONTAINER: ${{ secrets.AZURE_SNAPSHOT_CONTAINER }}
-          # Tensorlake snapshots and forks are native metadata operations and
-          # use the same filesystem and project-scoped credentials as I/O.
-          TENSORLAKE_API_KEY: ${{ secrets.TENSORLAKE_API_KEY }}
-          TENSORLAKE_API_URL: ${{ secrets.TENSORLAKE_API_URL }}
-          TENSORLAKE_ORGANIZATION_ID: ${{ secrets.TENSORLAKE_ORGANIZATION_ID }}
-          TENSORLAKE_PROJECT_ID: ${{ secrets.TENSORLAKE_PROJECT_ID }}
-          TENSORLAKE_FILESYSTEM: ${{ secrets.TENSORLAKE_FILESYSTEM }}
-          # vercel-blob snapshot-fork is disabled pending an adapter fix (see
-          # the matrix above and providers.ts). Re-add these when re-enabling.
-          # VERCEL_SNAPSHOT_BLOB_READ_WRITE_TOKEN: ${{ secrets.VERCEL_SNAPSHOT_BLOB_READ_WRITE_TOKEN }}
-          # VERCEL_SNAPSHOT_BLOB_BUCKET: ${{ secrets.VERCEL_SNAPSHOT_BLOB_BUCKET }}
         run: |
-          pnpm run bench -- \
-            --mode snapshot-fork \
+          . benchmarks/scripts/load-vault-secrets.sh '^(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AWS_REGION|S3_BUCKET|S3_SNAPSHOT_ACCESS_KEY_ID|S3_SNAPSHOT_SECRET_ACCESS_KEY|S3_SNAPSHOT_BUCKET|R2_ACCESS_KEY_ID|R2_SECRET_ACCESS_KEY|R2_BUCKET|R2_ACCOUNT_ID|R2_SNAPSHOT_ACCESS_KEY_ID|R2_SNAPSHOT_SECRET_ACCESS_KEY|R2_SNAPSHOT_BUCKET|TIGRIS_STORAGE_ACCESS_KEY_ID|TIGRIS_STORAGE_SECRET_ACCESS_KEY|TIGRIS_STORAGE_BUCKET|TIGRIS_SNAPSHOT_ACCESS_KEY|TIGRIS_SNAPSHOT_SECRET_KEY|TIGRIS_SNAPSHOT_STORAGE_BUCKET|BLOB_READ_WRITE_TOKEN|VERCEL_BLOB_BUCKET|GCS_PROJECT_ID|GCS_BUCKET|GCS_CLIENT_EMAIL|GCS_PRIVATE_KEY|AZURE_ACCOUNT_NAME|AZURE_ACCOUNT_KEY|AZURE_CONTAINER|AZURE_SNAPSHOT_ACCOUNT_NAME|AZURE_SNAPSHOT_ACCOUNT_KEY|AZURE_SNAPSHOT_CONTAINER|TENSORLAKE_API_KEY|TENSORLAKE_API_URL|TENSORLAKE_ORGANIZATION_ID|TENSORLAKE_PROJECT_ID|TENSORLAKE_FILESYSTEM|COMPUTESDK_ADMIN_API_KEY|BENCHMARKS_PLATFORM_API_KEY)'
+
+          npx tsx benchmarks/storage/snapshot-fork.bench.ts \
             --provider ${{ matrix.provider }} \
             --dataset ${{ github.event.inputs.dataset || 'small' }} \
             --iterations ${{ (github.event_name == 'schedule' && '100') || github.event.inputs.iterations || (github.event_name == 'push' && '1') || '3' }}
@@ -134,7 +98,7 @@ jobs:
 
   collect:
     name: Collect Results
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
     needs: [snapshot-fork]
     if: always()
     steps:
@@ -313,7 +277,7 @@ jobs:
               });
             }
       - name: Commit and push
-        if: github.event_name != 'push'
+        if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

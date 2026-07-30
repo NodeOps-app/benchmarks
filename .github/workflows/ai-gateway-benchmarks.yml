@@ -1,10 +1,11 @@
 name: AI Gateway Benchmark
 
 on:
-  pull_request:
+  push:
+    branches: [master]
     paths:
       - 'benchmarks/ai-gateway/**'
-      - 'benchmarks/src/run.ts'
+      - 'benchmarks/src/util/**'
       - 'benchmarks/src/merge-results.ts'
       - 'package.json'
       - '.github/workflows/ai-gateway-benchmarks.yml'
@@ -17,7 +18,7 @@ on:
         required: false
         default: '20'
       provider:
-        description: 'Gateway to run (leave empty for all six, round-robin)'
+        description: 'Gateway to run (leave empty for all seven, round-robin)'
         required: false
         default: ''
         type: choice
@@ -28,7 +29,13 @@ on:
           - cloudflare-ai-gateway
           - llmgateway
           - pydantic-ai-gateway
+          - concentrate-ai-gateway
           - anthropic-direct
+      dry_run:
+        description: 'Run without ingesting or committing results'
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: ai-gateway-benchmarks
@@ -41,7 +48,7 @@ permissions:
 jobs:
   bench:
     name: AI Gateway Benchmark
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
     # Deliberately a single job, not a matrix-per-provider like the other
     # benchmark workflows: the round-robin methodology (see AI_GATEWAYS.md)
     # requires every gateway to run interleaved within the same process.
@@ -66,22 +73,18 @@ jobs:
             pnpm install --frozen-lockfile
           fi
       - name: Run AI gateway benchmark
-        env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          VERCEL_AI_GATEWAY_API_KEY: ${{ secrets.VERCEL_AI_GATEWAY_API_KEY }}
-          CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID }}
-          CLOUDFLARE_AI_GATEWAY_GATEWAY_ID: ${{ secrets.CLOUDFLARE_AI_GATEWAY_GATEWAY_ID }}
-          CLOUDFLARE_AI_GATEWAY_TOKEN: ${{ secrets.CLOUDFLARE_AI_GATEWAY_TOKEN }}
-          LLM_GATEWAY_API_KEY: ${{ secrets.LLM_GATEWAY_API_KEY }}
-          PYDANTIC_AI_GATEWAY_API_KEY: ${{ secrets.PYDANTIC_AI_GATEWAY_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        # Single job (no matrix); the round-robin methodology (see AI_GATEWAYS.md)
+        # tests every gateway inside one process, so we load the union of all
+        # ai-gateway providers' vars — not every mode's vars.
         run: |
+          . benchmarks/scripts/load-vault-secrets.sh '^(ANTHROPIC_API_KEY|CLOUDFLARE_AI_GATEWAY_ACCOUNT_ID|CLOUDFLARE_AI_GATEWAY_GATEWAY_ID|CLOUDFLARE_AI_GATEWAY_TOKEN|LLM_GATEWAY_API_KEY|OPENROUTER_API_KEY|PYDANTIC_AI_GATEWAY_API_KEY|VERCEL_AI_GATEWAY_API_KEY|CONCENTRATE_AI_GATEWAY_API_KEY|COMPUTESDK_ADMIN_API_KEY|BENCHMARKS_PLATFORM_API_KEY)'
+
           PROVIDER_FLAG=""
           if [ -n "${{ github.event.inputs.provider }}" ]; then
             PROVIDER_FLAG="--provider ${{ github.event.inputs.provider }}"
           fi
-          pnpm run bench:ai-gateway -- $PROVIDER_FLAG \
-            --iterations ${{ (github.event_name == 'pull_request' && '2') || github.event.inputs.iterations || '10' }}
+          npx tsx benchmarks/ai-gateway/ai-gateway.bench.ts $PROVIDER_FLAG \
+            --iterations ${{ (github.event_name == 'push' && '10') || github.event.inputs.iterations || '10' }}
       - run: pnpm run generate-ai-gateway-svg
       - name: Upload results and SVG as artifacts
         if: always()
@@ -93,8 +96,8 @@ jobs:
             ai-gateway.svg
           if-no-files-found: ignore
           retention-days: 7
-      - name: Post results to PR
-        if: github.event_name == 'pull_request'
+      - name: Post results to merged PR
+        if: github.event_name == 'push'
         continue-on-error: true
         uses: actions/github-script@v7
         with:
@@ -113,6 +116,7 @@ jobs:
               'cloudflare-ai-gateway': 'Cloudflare AI Gateway',
               'llmgateway': 'LLM Gateway',
               'pydantic-ai-gateway': 'Pydantic AI Gateway',
+              'concentrate-ai-gateway': 'Concentrate AI',
               'anthropic-direct': 'Anthropic (direct)',
             };
 
@@ -150,11 +154,33 @@ jobs:
 
             body += `\n---\n*[View full run](${runUrl}) · SVG available as a [build artifact](${runUrl}#artifacts)*`;
 
-            const marker = '## AI Gateway Benchmark Results';
-            const { data: comments } = await github.rest.issues.listComments({
+            // This push is a merge to master — post results to the PR it closed.
+            // A commit can be associated with several PRs (backports, merge
+            // queue), so pick the one merged into the branch we pushed to.
+            const target = context.ref.replace('refs/heads/', '');
+            const { data: prs } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              commit_sha: context.sha,
+            });
+            const pr = prs.find(p => p.merged_at && p.base.ref === target);
+            if (!pr) {
+              // Direct push with no associated PR — fall back to a commit comment.
+              await github.rest.repos.createCommitComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: context.sha,
+                body,
+              });
+              return;
+            }
+
+            const marker = '## AI Gateway Benchmark Results';
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              per_page: 100,
             });
 
             const existing = comments.find(c => c.body.startsWith(marker));
@@ -170,12 +196,12 @@ jobs:
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: context.issue.number,
+                issue_number: pr.number,
                 body,
               });
             }
       - name: Commit and push
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

@@ -1,0 +1,53 @@
+{
+  "name": "create-bench",
+  "version": "0.1.1",
+  "private": false,
+  "type": "module",
+  "description": "Scaffold a new ComputeSDK benchmark project with @benchsdk/client",
+  "author": "Garrison",
+  "license": "MIT",
+  "bin": {
+    "create-bench": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "rimraf dist",
+    "dev": "tsup --watch",
+    "prepare": "tsup",
+    "pretest": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "create",
+    "scaffold",
+    "benchmark",
+    "computesdk",
+    "benchsdk",
+    "cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/computesdk/benchmarks.git",
+    "directory": "packages/create-bench"
+  },
+  "homepage": "https://www.computesdk.com",
+  "bugs": {
+    "url": "https://github.com/computesdk/benchmarks/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "rimraf": "^5.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}

@@ -6,7 +6,6 @@ on:
     paths:
       - 'benchmarks/storage/**'
       - 'benchmarks/src/util/**'
-      - 'benchmarks/src/run.ts'
       - 'benchmarks/src/merge-results.ts'
       - 'package.json'
   schedule:
@@ -32,6 +31,11 @@ on:
           - 4MB
           - 10MB
           - 16MB
+      dry_run:
+        description: 'Run without ingesting or committing results'
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: storage-benchmarks
@@ -44,7 +48,7 @@ permissions:
 jobs:
   bench:
     name: Bench ${{ matrix.provider }} ${{ matrix.file_size }}
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
     timeout-minutes: 90
     strategy:
       fail-fast: false
@@ -75,39 +79,14 @@ jobs:
       - name: Clear stale results from checkout
         run: rm -rf results/storage/
       - name: Run storage benchmark
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          S3_BUCKET: ${{ secrets.S3_BUCKET }}
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-          R2_BUCKET: ${{ secrets.R2_BUCKET }}
-          TIGRIS_STORAGE_ACCESS_KEY_ID: ${{ secrets.TIGRIS_STORAGE_ACCESS_KEY_ID }}
-          TIGRIS_STORAGE_SECRET_ACCESS_KEY: ${{ secrets.TIGRIS_STORAGE_SECRET_ACCESS_KEY }}
-          TIGRIS_STORAGE_BUCKET: ${{ secrets.TIGRIS_STORAGE_BUCKET }}
-          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
-          VERCEL_BLOB_BUCKET: ${{ secrets.VERCEL_BLOB_BUCKET }}
-          GCS_PROJECT_ID: ${{ secrets.GCS_PROJECT_ID }}
-          GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
-          GCS_CLIENT_EMAIL: ${{ secrets.GCS_CLIENT_EMAIL }}
-          GCS_PRIVATE_KEY: ${{ secrets.GCS_PRIVATE_KEY }}
-          AZURE_ACCOUNT_NAME: ${{ secrets.AZURE_ACCOUNT_NAME }}
-          AZURE_ACCOUNT_KEY: ${{ secrets.AZURE_ACCOUNT_KEY }}
-          AZURE_CONTAINER: ${{ secrets.AZURE_CONTAINER }}
-          TENSORLAKE_API_KEY: ${{ secrets.TENSORLAKE_API_KEY }}
-          TENSORLAKE_API_URL: ${{ secrets.TENSORLAKE_API_URL }}
-          TENSORLAKE_ORGANIZATION_ID: ${{ secrets.TENSORLAKE_ORGANIZATION_ID }}
-          TENSORLAKE_PROJECT_ID: ${{ secrets.TENSORLAKE_PROJECT_ID }}
-          TENSORLAKE_FILESYSTEM: ${{ secrets.TENSORLAKE_FILESYSTEM }}
         run: |
+          . benchmarks/scripts/load-vault-secrets.sh '^(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AWS_REGION|S3_BUCKET|R2_ACCESS_KEY_ID|R2_SECRET_ACCESS_KEY|R2_BUCKET|R2_ACCOUNT_ID|TIGRIS_STORAGE_ACCESS_KEY_ID|TIGRIS_STORAGE_SECRET_ACCESS_KEY|TIGRIS_STORAGE_BUCKET|BLOB_READ_WRITE_TOKEN|VERCEL_BLOB_BUCKET|GCS_PROJECT_ID|GCS_BUCKET|GCS_CLIENT_EMAIL|GCS_PRIVATE_KEY|AZURE_ACCOUNT_NAME|AZURE_ACCOUNT_KEY|AZURE_CONTAINER|TENSORLAKE_API_KEY|TENSORLAKE_API_URL|TENSORLAKE_ORGANIZATION_ID|TENSORLAKE_PROJECT_ID|TENSORLAKE_FILESYSTEM|COMPUTESDK_ADMIN_API_KEY|BENCHMARKS_PLATFORM_API_KEY)'
+
           FILE_SIZE="${{ matrix.file_size }}"
-          pnpm run bench -- \
-            --mode storage \
+          npx tsx benchmarks/storage/storage.bench.ts \
             --provider ${{ matrix.provider }} \
             --file-size $FILE_SIZE \
-            --storage-concurrency ${{ (github.event_name == 'schedule' && '16') || (github.event_name == 'push' && '8') || github.event.inputs.storage_concurrency || '1' }} \
+            --concurrency ${{ (github.event_name == 'schedule' && '16') || (github.event_name == 'push' && '8') || github.event.inputs.storage_concurrency || '1' }} \
             --iterations ${{ (github.event_name == 'schedule' && '110') || (github.event_name == 'push' && '10') || github.event.inputs.iterations || '100' }}
       - name: Upload results
         if: always()
@@ -120,7 +99,7 @@ jobs:
 
   collect:
     name: Collect Results
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
     needs: [bench]
     if: always()
     steps:
@@ -150,12 +129,11 @@ jobs:
       - name: Merge results
         run: npx tsx benchmarks/src/merge-results.ts --input artifacts --mode storage
       - name: Ingest results to platform
-        if: github.event_name != 'push'
+        if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         continue-on-error: true
-        env:
-          INGEST_URL: ${{ secrets.INGEST_URL }}
-          INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
-        run: npx tsx benchmarks/src/ingest.ts --type storage
+        run: |
+          . benchmarks/scripts/load-vault-secrets.sh '^(INGEST_URL|INGEST_SECRET)'
+          npx tsx benchmarks/src/ingest.ts --type storage
       - run: pnpm run generate-storage-svg
       - name: Upload SVGs as artifacts
         if: github.event_name == 'push'
@@ -275,7 +253,7 @@ jobs:
               });
             }
       - name: Commit and push
-        if: github.event_name != 'push'
+        if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

@@ -1,0 +1,77 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write # Required for npm OIDC trusted publishing
+
+jobs:
+  release:
+    name: Release
+    # Must use a GitHub-hosted runner — npm OIDC trusted publishing does not
+    # support self-hosted runners at this time.
+    # https://docs.npmjs.com/trusted-publishers/
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Update npm
+        # npm 11.5.1+ is required for OIDC trusted publishing support.
+        # Pin to 11.x: npm 12.0.0 ships a broken bundle missing the `sigstore`
+        # module in libnpmpublish, which breaks `publish --provenance` with
+        # "Cannot find module 'sigstore'".
+        run: npm install -g npm@11
+
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts
+
+      - name: Build packages
+        run: |
+          pnpm --filter @benchsdk/client run build
+          pnpm --filter @benchsdk/cli run build
+          pnpm --filter create-bench run build
+
+      - name: Test
+        run: |
+          pnpm --filter @benchsdk/client run test
+          pnpm --filter @benchsdk/cli run test
+          pnpm --filter create-bench run test
+
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          # Provenance (signed attestations linking each package to this
+          # workflow run) is configured via the NPM_CONFIG_PROVENANCE env var
+          # below rather than a `--provenance` CLI flag, which @changesets/cli
+          # does not support.
+          publish: pnpm changeset publish
+          title: "Version Packages"
+          commit: "Version Packages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.CHANGESET_TOKEN || secrets.GITHUB_TOKEN }}
+          # Sequence: (1) publish once with NPM_TOKEN, (2) configure the trusted
+          # publisher for @benchsdk/client on npmjs.com, (3) remove NPM_TOKEN from this
+          # workflow in a follow-up. Trusted publishers require an existing
+          # package on the registry, so OIDC cannot be used for the initial
+          # publication.
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true

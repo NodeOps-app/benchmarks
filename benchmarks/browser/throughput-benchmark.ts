@@ -332,57 +332,6 @@ export function emptySummary(): ThroughputStats {
   };
 }
 
-export async function runThroughputBenchmark(
-  config: ThroughputProviderConfig,
-): Promise<ThroughputBenchmarkResult> {
-  const {
-    name,
-    iterations = 100,
-    timeout = 120_000,
-    requiredEnvVars,
-    sessionCreateOptions = {},
-  } = config;
-
-  const missingVars = requiredEnvVars.filter(v => !process.env[v]);
-  if (missingVars.length > 0) {
-    return {
-      provider: name,
-      mode: 'browser-throughput',
-      iterations: [],
-      summary: emptySummary(),
-      skipped: true,
-      skipReason: `Missing: ${missingVars.join(', ')}`,
-    };
-  }
-
-  const provider = config.createBrowserProvider();
-  const results: ThroughputTimingResult[] = [];
-
-  console.log(`\n--- Throughput Benchmark: ${name} (${iterations} sessions × ${ACTIONS_PER_SESSION} actions) ---`);
-  console.log('Sess  Create   Connect  Task     Release  Total    APS    Actions');
-  console.log('────  ───────  ───────  ───────  ───────  ───────  ─────  ───────');
-
-  for (let i = 0; i < iterations; i++) {
-    const result = await runThroughputIteration(provider, timeout, sessionCreateOptions, navUrlForIteration(i));
-    results.push(result);
-
-    const pad = (n: number) => `${Math.round(n)}ms`.padStart(7);
-    const aps = result.actionsPerSecond.toFixed(1).padStart(5);
-    const status = `${result.actionsCompleted}/${ACTIONS_PER_SESSION}`;
-    const errSuffix = result.error ? `  ✗ ${result.error.slice(0, 50)}` : '';
-    console.log(
-      `${String(i + 1).padStart(4)}  ${pad(result.createMs)}  ${pad(result.connectMs)}  ${pad(result.taskMs)}  ${pad(result.releaseMs)}  ${pad(result.totalMs)}  ${aps}  ${status}${errSuffix}`,
-    );
-  }
-
-  return {
-    provider: name,
-    mode: 'browser-throughput',
-    iterations: results,
-    summary: summarizeIterations(results),
-  };
-}
-
 function roundStats(s: ThroughputStatsTriple): ThroughputStatsTriple {
   return { median: round(s.median), p95: round(s.p95), p99: round(s.p99) };
 }

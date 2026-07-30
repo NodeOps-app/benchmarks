@@ -52,10 +52,10 @@ irrelevant to the run.
 ## Where this fits in the benchmarks repo
 
 The 100k burst is a new sibling module to the existing `src/sandbox/`,
-`src/browser/`, and `src/storage/` families. It does **not** plug into
-`src/run.ts` — that dispatcher assumes in-process execution and local-JSON
-output, which is the wrong model for a coordinator that runs detached on a
-remote VM and streams to Tigris/Postgres.
+`src/browser/`, and `src/storage/` families. It does **not** plug into the
+per-area `.bench.ts` entrypoints — those assume in-process execution and a
+local-JSON bridge, which is the wrong model for a coordinator that runs
+detached on a remote VM and streams to Tigris/Postgres.
 
 ```
 src/burst-100k/
@@ -77,7 +77,7 @@ db/
   burst-100k.yml        ← workflow_dispatch (+ schedule later)
 ```
 
-The existing daily benchmark (`src/sandbox/`, `src/run.ts`) is untouched.
+The existing daily benchmark (`src/sandbox/` and its `.bench.ts` entrypoints) is untouched.
 
 **Provider opt-in is implicit.** A provider participates in the 100k burst
 iff there's an entry for it in `src/burst-100k/providers.ts`. There is no

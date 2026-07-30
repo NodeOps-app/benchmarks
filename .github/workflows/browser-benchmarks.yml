@@ -6,7 +6,6 @@ on:
     paths:
       - 'benchmarks/browser/**'
       - 'benchmarks/src/util/**'
-      - 'benchmarks/src/run.ts'
       - 'benchmarks/src/merge-results.ts'
       - 'package.json'
   schedule:
@@ -17,6 +16,11 @@ on:
         description: 'Iterations per provider'
         required: false
         default: '100'
+      dry_run:
+        description: 'Run without ingesting or committing results'
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: browser-benchmarks
@@ -29,7 +33,7 @@ permissions:
 jobs:
   bench:
     name: Bench ${{ matrix.provider }}
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -60,20 +64,10 @@ jobs:
       - name: Clear stale results from checkout
         run: rm -rf results/browser/
       - name: Run browser benchmark
-        env:
-          BROWSERBASE_API_KEY: ${{ secrets.BROWSERBASE_API_KEY }}
-          BROWSERBASE_PROJECT_ID: ${{ secrets.BROWSERBASE_PROJECT_ID }}
-          BROWSER_USE_API_KEY: ${{ secrets.BROWSER_USE_API_KEY }}
-          HYPERBROWSER_API_KEY: ${{ secrets.HYPERBROWSER_API_KEY }}
-          KERNEL_API_KEY: ${{ secrets.KERNEL_API_KEY }}
-          NOTTE_API_KEY: ${{ secrets.NOTTE_API_KEY }}
-          STEEL_API_KEY: ${{ secrets.STEEL_API_KEY }}
-          TILION_API_KEY: ${{ secrets.TILION_API_KEY }}
-          TILION_BASE_URL: ${{ secrets.TILION_BASE_URL }}
-          # ANCHORBROWSER_API_KEY: ${{ secrets.ANCHORBROWSER_API_KEY }}
         run: |
-          pnpm run bench -- \
-            --mode browser \
+          . benchmarks/scripts/load-vault-secrets.sh '^(BROWSERBASE_API_KEY|BROWSERBASE_PROJECT_ID|BROWSER_USE_API_KEY|HYPERBROWSER_API_KEY|KERNEL_API_KEY|NOTTE_API_KEY|STEEL_API_KEY|TILION_API_KEY|TILION_BASE_URL|COMPUTESDK_ADMIN_API_KEY|BENCHMARKS_PLATFORM_API_KEY)'
+
+          npx tsx benchmarks/browser/browser.bench.ts \
             --provider ${{ matrix.provider }} \
             --iterations ${{ github.event_name == 'push' && '10' || github.event.inputs.iterations || '100' }}
       - name: Upload results
@@ -87,7 +81,7 @@ jobs:
 
   collect:
     name: Collect Results
-    runs-on: namespace-profile-default
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
     needs: bench
     if: always()
     steps:
@@ -117,12 +111,11 @@ jobs:
       - name: Merge results
         run: npx tsx benchmarks/src/merge-results.ts --input artifacts --mode browser
       - name: Ingest results to platform
-        if: github.event_name != 'push'
+        if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         continue-on-error: true
-        env:
-          INGEST_URL: ${{ secrets.INGEST_URL }}
-          INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
-        run: npx tsx benchmarks/src/ingest.ts --type browser
+        run: |
+          . benchmarks/scripts/load-vault-secrets.sh '^(INGEST_URL|INGEST_SECRET)'
+          npx tsx benchmarks/src/ingest.ts --type browser
       - run: pnpm run generate-browser-svg
       - name: Upload SVG as artifact
         if: github.event_name == 'push'
@@ -226,7 +219,7 @@ jobs:
               });
             }
       - name: Commit and push
-        if: github.event_name != 'push'
+        if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

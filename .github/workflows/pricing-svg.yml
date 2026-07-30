@@ -1,10 +1,6 @@
 name: Pricing SVG
 
 on:
-  push:
-    branches: [master]
-    paths:
-      - 'pricing.json'
   workflow_dispatch:
 
 permissions:

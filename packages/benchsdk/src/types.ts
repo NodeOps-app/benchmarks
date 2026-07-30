@@ -646,6 +646,8 @@ export interface BenchmarkClient {
   createRun(benchmarkSlug: string, input: CreateRunInput): Promise<{
     run: BenchmarkRun;
     participants: BenchmarkParticipant[];
+    /** The slug of the org the run was attributed to, resolved server-side from the caller's API key. */
+    organizationSlug: string;
   }>;
   listRuns(benchmarkSlug: string): Promise<BenchmarkRun[]>;
   getRun(benchmarkSlug: string, runId: string): Promise<BenchmarkRun>;
