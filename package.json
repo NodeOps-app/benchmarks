@@ -101,7 +101,7 @@
     "@codesandbox/sdk": "^2.4.2",
     "@computesdk/anchorbrowser": "^0.2.6",
     "@computesdk/archil": "^0.4.7",
-    "@computesdk/beam": "^0.3.0",
+    "@computesdk/beam": "^0.3.1",
     "@computesdk/blaxel": "^1.6.18",
     "@computesdk/browserbase": "^0.3.10",
     "@computesdk/browseruse": "^0.2.8",
