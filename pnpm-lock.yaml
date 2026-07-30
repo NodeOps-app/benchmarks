@@ -23,12 +23,12 @@ importers:
       '@azure/storage-blob':
         specifier: ^12.33.0
         version: 12.33.0
-      '@benchsdk/cli':
-        specifier: workspace:*
-        version: link:packages/benchsdk-cli
       '@benchsdk/client':
         specifier: workspace:*
         version: link:packages/benchsdk
+      '@benchsdk/runner':
+        specifier: workspace:*
+        version: link:packages/benchsdk-runner
       '@codesandbox/sdk':
         specifier: ^2.4.2
         version: 2.4.2(@hey-api/openapi-ts@0.99.0(magicast@0.3.5)(typescript@6.0.3))(@xterm/xterm@5.5.0)(ink@7.1.1(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))
@@ -232,7 +232,7 @@ importers:
         specifier: ^1.0.0
         version: 1.6.1(@types/node@20.19.43)
 
-  packages/benchsdk-cli:
+  packages/benchsdk-runner:
     dependencies:
       '@benchsdk/client':
         specifier: workspace:*

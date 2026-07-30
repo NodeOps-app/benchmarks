@@ -6,11 +6,6 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   BenchmarkApiError,
   createBenchmarkClient,
-  defineBench,
-  defineStep,
-  defineTask,
-  defineWorker,
-  runBenchmarkWorker,
 } from '../client';
 import { BenchmarkReporter, claimBenchmarkReporter } from '../reporter';
 import { createSystemMetricsCollector } from '../metrics';
@@ -20,14 +15,12 @@ import type { BenchmarkAssignment, BenchmarkClient } from '../types';
 // The public type surface is imported by name here purely to prove every exported
 // type resolves against the package barrel (the consumer-compile contract).
 import type {
-  BenchDefinition,
   BenchmarkArtifact,
   BenchmarkClientConfig,
   BenchmarkConcurrencyPoint,
   BenchmarkAnalyticsReadiness,
   BenchmarkEventRateBucket,
   BenchmarkFailurePoint,
-  BenchmarkWorker,
   BenchmarkParticipant,
   BenchmarkResource,
   BenchmarkResultLatencySummary,
@@ -56,11 +49,7 @@ import type {
   CreateWorkerArtifactInput,
   CreateWorkerArtifactResponse,
   CreateRunInput,
-  DefineBenchOptions,
   DefineStepOptions,
-  DefinedStep,
-  DefinedTask,
-  DefineWorkerOptions,
   JsonObject,
   JsonValue,
   PlanWorkersInput,
@@ -87,7 +76,6 @@ import type {
   WorkerConcurrencySample,
   WorkerFinishContext,
   WorkerHeartbeatInput,
-  WorkerTask,
   UpsertBenchmarkInput,
   UpsertParticipantInput,
   UploadWorkerArtifactInput,
@@ -108,7 +96,6 @@ import type {
 // Referencing every named type forces `tsc --noEmit` to resolve each export.
 // If any public type were dropped from the barrel, this alias would fail to compile.
 type _PublicTypeSurface = [
-  BenchDefinition,
   BenchmarkAssignment,
   BenchmarkArtifact,
   BenchmarkClient,
@@ -117,7 +104,6 @@ type _PublicTypeSurface = [
   BenchmarkAnalyticsReadiness,
   BenchmarkEventRateBucket,
   BenchmarkFailurePoint,
-  BenchmarkWorker,
   BenchmarkParticipant,
   BenchmarkResource,
   BenchmarkResultLatencySummary,
@@ -146,11 +132,7 @@ type _PublicTypeSurface = [
   CreateWorkerArtifactInput,
   CreateWorkerArtifactResponse,
   CreateRunInput,
-  DefineBenchOptions,
   DefineStepOptions,
-  DefinedStep,
-  DefinedTask,
-  DefineWorkerOptions,
   JsonObject,
   JsonValue,
   PlanWorkersInput,
@@ -177,7 +159,6 @@ type _PublicTypeSurface = [
   WorkerConcurrencySample,
   WorkerFinishContext,
   WorkerHeartbeatInput,
-  WorkerTask,
   UpsertBenchmarkInput,
   UpsertParticipantInput,
   UploadWorkerArtifactInput,
@@ -739,13 +720,13 @@ describe('client method URL paths and response unwrapping', () => {
     });
   });
 
-  it('VAL-SDK-044: runBenchmarkWorker(config, options) === createBenchmarkClient(config).runWorker(options)', async () => {
+  it('VAL-SDK-044: runWorker with no assignment returns an empty result set', async () => {
     const direct = recordingClient(() => jsonResponse({ assignment: null }));
-    const viaHelper = await runBenchmarkWorker(
-      { baseUrl: BASE, apiKey: 'k', fetch: direct.fetchMock },
+    const client = createBenchmarkClient({ baseUrl: BASE, apiKey: 'k', fetch: direct.fetchMock });
+    const result = await client.runWorker(
       { benchmarkSlug: 'scale', runId: 'run_1', participantSlug: 'e2b', task: async () => undefined },
     );
-    expect(viaHelper).toEqual({ assignment: null, records: [] });
+    expect(result).toEqual({ assignment: null, records: [] });
     expect(direct.calls).toHaveLength(1);
     expect(direct.calls[0].url).toContain('/workers/claim');
   });
@@ -1074,84 +1055,12 @@ describe('runWorker lifecycle and task execution', () => {
     expect(record.errorCode).toBe('RangeError');
   });
 
-  it('VAL-SDK-061: defined task data includes taskName plus Object.assign-merged step data', async () => {
-    const { calls, fetchMock } = recordingClient(lifecycleResponder({ taskRange: { start: 0, end: 0, count: 1 } }));
-    const client = createBenchmarkClient({ baseUrl: BASE, apiKey: 'k', fetch: fetchMock });
-    const task = defineTask('sandbox.lifecycle', [
-      defineStep('create', { readiness: 'internal' }, () => ({ sandboxId: 'sbx_0' })),
-      defineStep('exec', { readiness: 'internal' }, () => ({ command: 'ls' })),
-    ]);
-    await client.runWorker({ benchmarkSlug: 'scale', runId: 'run_1', participantSlug: 'e2b', task });
-    const record = (calls.find((c) => c.url.endsWith('/events'))!.body as { records: TaskResultRecord[] }).records[0];
-    expect(record.data).toMatchObject({ taskName: 'sandbox.lifecycle', sandboxId: 'sbx_0', command: 'ls' });
-  });
 });
 
 // ---------------------------------------------------------------------------
-// defineStep / defineTask / defineWorker / defineBench — VAL-SDK-062 .. VAL-SDK-072
+// worker engine step semantics (readiness / concurrency) — VAL-SDK-066 .. VAL-SDK-070
 // ---------------------------------------------------------------------------
-describe('defineStep / defineTask / defineWorker / defineBench', () => {
-  it('VAL-SDK-062: defineStep supports both signatures and validates name/fn', () => {
-    const withFn = defineStep('a', () => ({ x: 1 }));
-    expect(withFn).toMatchObject({ name: 'a' });
-    expect(withFn.options).toBeUndefined();
-    const withOptions = defineStep('b', { readiness: 'poll' }, () => undefined);
-    expect(withOptions.options).toMatchObject({ readiness: 'poll' });
-    expect(() => defineStep('   ', () => undefined)).toThrow('non-empty');
-    expect(() => defineStep('c', { readiness: 'internal' })).toThrow('function is required');
-  });
-
-  it('VAL-SDK-063: defineTask validates name, non-empty steps, and duplicate step names', () => {
-    expect(() => defineTask('  ', [defineStep('a', () => undefined)])).toThrow('non-empty');
-    expect(() => defineTask('t', [])).toThrow('at least one step');
-    expect(() => defineTask('t', [defineStep('dup', () => undefined), defineStep('dup', () => undefined)])).toThrow('unique');
-    expect(defineTask('t', [defineStep('a', () => undefined)])).toMatchObject({ name: 't' });
-  });
-
-  it('VAL-SDK-064: defineTask cleanup runs on success and failure; step error preserved when cleanup also fails', async () => {
-    // success cleanup
-    const cleaned: string[] = [];
-    const okResponder = (url: string) => {
-      if (url.endsWith('/workers/claim')) return jsonResponse({ assignment: makeAssignment({ taskRange: { start: 0, end: 0, count: 1 } }) });
-      if (url.endsWith('/events')) return jsonResponse({ accepted: 1 }, 202);
-      if (url.endsWith('/complete')) return jsonResponse(lifecycleResponse());
-      if (url.endsWith('/fail')) return jsonResponse(lifecycleResponse());
-      throw new Error(`unexpected request: ${url}`);
-    };
-    const okClient = createBenchmarkClient({ baseUrl: BASE, apiKey: 'k', fetch: recordingClient(okResponder).fetchMock });
-    await okClient.runWorker({
-      benchmarkSlug: 'scale', runId: 'run_1', participantSlug: 'e2b',
-      task: defineTask('t', [defineStep('a', ({ state }) => { state.id = 'x'; }, )], { cleanup: ({ state }) => { cleaned.push(`ok:${String(state.id)}`); } }),
-    });
-    expect(cleaned).toEqual(['ok:x']);
-
-    // failure cleanup + preserve step error when cleanup also throws
-    const failClient = createBenchmarkClient({ baseUrl: BASE, apiKey: 'k', fetch: recordingClient(okResponder).fetchMock });
-    const failResult = await failClient.runWorker({
-      benchmarkSlug: 'scale', runId: 'run_1', participantSlug: 'e2b',
-      task: defineTask('t', [defineStep('a', () => { throw new TypeError('step failed'); })], { cleanup: () => { throw new Error('cleanup failed'); } }),
-    });
-    expect(failResult.records[0]).toMatchObject({ status: 'error', errorCode: 'TypeError' });
-    expect(failResult.records[0].data).toMatchObject({ errorMessage: 'step failed' });
-  });
-
-  it('VAL-SDK-065: cleanup failure after successful steps becomes the task error', async () => {
-    const responder = (url: string) => {
-      if (url.endsWith('/workers/claim')) return jsonResponse({ assignment: makeAssignment({ taskRange: { start: 0, end: 0, count: 1 } }) });
-      if (url.endsWith('/events')) return jsonResponse({ accepted: 1 }, 202);
-      if (url.endsWith('/fail')) return jsonResponse(lifecycleResponse());
-      throw new Error(`unexpected request: ${url}`);
-    };
-    const client = createBenchmarkClient({ baseUrl: BASE, apiKey: 'k', fetch: recordingClient(responder).fetchMock });
-    const result = await client.runWorker({
-      benchmarkSlug: 'scale', runId: 'run_1', participantSlug: 'e2b',
-      task: defineTask('t', [defineStep('a', () => ({ ok: true }))], { cleanup: () => { throw new Error('destroy failed'); } }),
-    });
-    expect(result.records[0]).toMatchObject({ status: 'error', errorCode: 'Error' });
-    expect(result.records[0].data).toMatchObject({ errorMessage: 'destroy failed' });
-    expect(result.records[0].steps).toMatchObject([{ name: 'a', status: 'success' }]);
-  });
-
+describe('worker engine step semantics', () => {
   it('VAL-SDK-066: step reportConcurrency defaults to true (opt out removes the sample)', async () => {
     const responder = (url: string) => {
       if (url.endsWith('/workers/claim')) return jsonResponse({ assignment: makeAssignment({ taskRange: { start: 0, end: 0, count: 1 }, targetConcurrency: 1 }) });
@@ -1188,7 +1097,7 @@ describe('defineStep / defineTask / defineWorker / defineBench', () => {
     const client = createBenchmarkClient({ baseUrl: BASE, apiKey: 'k', fetch: fetchMock });
     const result = await client.runWorker({
       benchmarkSlug: 'scale', runId: 'run_1', participantSlug: 'e2b',
-      task: defineTask('t', [defineStep('pause', { readiness: 'poll', readyPollIntervalMs: 1, readyTimeoutMs: 0 }, () => undefined)]),
+      task: async ({ step }) => { await step('pause', () => undefined, { readiness: 'poll', readyPollIntervalMs: 1, readyTimeoutMs: 0 }); },
     });
     expect(calls.some((c) => c.url.endsWith('/progress'))).toBe(true);
     expect(result.records[0]).toMatchObject({ status: 'error' });
@@ -1206,7 +1115,7 @@ describe('defineStep / defineTask / defineWorker / defineBench', () => {
     const client = createBenchmarkClient({ baseUrl: BASE, apiKey: 'k', fetch: fetchMock });
     await client.runWorker({
       benchmarkSlug: 'scale', runId: 'run_1', participantSlug: 'e2b',
-      task: defineTask('t', [defineStep('a', () => undefined)]),
+      task: async ({ step }) => { await step('a', () => undefined); },
     });
     expect(calls.some((c) => c.url.endsWith('/progress'))).toBe(false);
   });
@@ -1223,7 +1132,7 @@ describe('defineStep / defineTask / defineWorker / defineBench', () => {
     const client = createBenchmarkClient({ baseUrl: BASE, apiKey: 'k', fetch: fetchMock });
     await client.runWorker({
       benchmarkSlug: 'scale', runId: 'run_1', participantSlug: 'e2b',
-      task: defineTask('t', [defineStep('pause', { readiness: 'poll', readyPollIntervalMs: 1 }, () => undefined)]),
+      task: async ({ step }) => { await step('pause', () => undefined, { readiness: 'poll', readyPollIntervalMs: 1 }); },
     });
     expect(calls.filter((c) => c.url.endsWith('/progress'))).toHaveLength(1);
   });
@@ -1245,32 +1154,6 @@ describe('defineStep / defineTask / defineWorker / defineBench', () => {
       .flatMap((c) => (c.url.endsWith('/heartbeat') ? (c.body as { concurrency?: WorkerConcurrencySample[] }).concurrency ?? [] : []))
       .find((s) => s.step === 'custom');
     expect(sample?.target).toBe(7);
-  });
-
-  it('VAL-SDK-071: defineWorker.run(overrides) delegates to client.runWorker', async () => {
-    const runWorker = vi.fn(async (_options: RunWorkerOptions) => ({ assignment: null, records: [] }));
-    const fakeClient = { runWorker } as unknown as BenchmarkClient;
-    const worker = defineWorker({
-      benchmarkSlug: 'scale', runId: 'run_1', participantSlug: 'e2b', client: fakeClient,
-      concurrency: 2, task: async () => undefined,
-    });
-    await worker.run({ concurrency: 9, batchSize: 3 });
-    expect(runWorker).toHaveBeenCalledTimes(1);
-    expect(runWorker.mock.calls[0][0]).toMatchObject({
-      benchmarkSlug: 'scale', runId: 'run_1', participantSlug: 'e2b', concurrency: 9, batchSize: 3,
-    });
-  });
-
-  it('VAL-SDK-072: defineBench.defineWorker produces a reusable worker and throws on missing participantSlug', async () => {
-    const runWorker = vi.fn(async (_options: RunWorkerOptions) => ({ assignment: null, records: [] }));
-    const fakeClient = { runWorker } as unknown as BenchmarkClient;
-    const bench = defineBench({ slug: 'scale', client: fakeClient, task: async () => undefined });
-    expect(() => bench.defineWorker({ runId: 'run_1' })).toThrow('participantSlug is required');
-
-    const worker = bench.defineWorker({ runId: 'run_1', participantSlug: 'e2b' });
-    await worker.run();
-    expect(runWorker).toHaveBeenCalledTimes(1);
-    expect(runWorker.mock.calls[0][0]).toMatchObject({ benchmarkSlug: 'scale', participantSlug: 'e2b' });
   });
 });
 
@@ -1496,24 +1379,24 @@ describe('createSystemMetricsCollector', () => {
 describe('public API surface and type exports', () => {
   const here = dirname(fileURLToPath(import.meta.url));
   // The barrel re-exports the full public type surface from types/reporter/metrics.
-  // The 5 internal helper types must never appear here.
+  // Internal helper types must never appear here.
   const TYPES_EXPORTS = [
-    'BenchDefinition', 'BenchmarkAssignment', 'BenchmarkArtifact', 'BenchmarkClient', 'BenchmarkClientConfig',
+    'BenchmarkAssignment', 'BenchmarkArtifact', 'BenchmarkClient', 'BenchmarkClientConfig',
     'BenchmarkConcurrencyPoint', 'BenchmarkAnalyticsReadiness', 'BenchmarkEventRateBucket', 'BenchmarkFailurePoint',
-    'BenchmarkWorker', 'BenchmarkParticipant', 'BenchmarkResource', 'BenchmarkResultLatencySummary',
+    'BenchmarkParticipant', 'BenchmarkResource', 'BenchmarkResultLatencySummary',
     'BenchmarkResultsOverview', 'BenchmarkResultsOverviewAnalytics', 'BenchmarkResultsOverviewInput',
     'BenchmarkResultsOverviewRun', 'BenchmarkResultSummary', 'BenchmarkRun', 'BenchmarkRunImports',
     'BenchmarkRunAnalyticsSummary', 'BenchmarkRunImportsSummary', 'BenchmarkRunImportItem', 'BenchmarkRunResults',
     'BenchmarkRunStatus', 'BenchmarkRunTaskResults', 'BenchmarkRunTaskResultsInput', 'BenchmarkRunTimeline',
     'BenchmarkRunTimelineInput', 'BenchmarkRunWorker', 'BenchmarkStepResultSummary', 'BenchmarkTaskBucket',
     'BenchmarkWorkerAttempt', 'BenchmarkWorkerStatus', 'ClaimWorkerInput', 'CreateWorkerArtifactInput',
-    'CreateWorkerArtifactResponse', 'CreateRunInput', 'DefineBenchOptions', 'DefineStepOptions', 'DefinedStep',
-    'DefinedTask', 'DefineWorkerOptions', 'JsonObject', 'JsonValue', 'PlanWorkersInput', 'RunProgress', 'RunProgressConcurrency',
+    'CreateWorkerArtifactResponse', 'CreateRunInput', 'DefineStepOptions',
+    'JsonObject', 'JsonValue', 'PlanWorkersInput', 'RunProgress', 'RunProgressConcurrency',
     'RunProgressParticipant', 'RunProgressParticipantCounts', 'RunProgressStatus', 'RunProgressSummary',
     'RunProgressTaskCounts', 'RunProgressWorkerCounts', 'RunWorkerContext', 'RunWorkerOptions', 'RunWorkerResult',
     'SendTaskResultsInput', 'TaskStepRecord', 'TaskResultRecord', 'TaskResultsResponse', 'TaskFunction',
     'UpdateBenchmarkInput', 'UpdateParticipantInput', 'UpdateRunInput', 'UpdateWorkerInput', 'WorkerConcurrencySample',
-    'WorkerFinishContext', 'WorkerHeartbeatInput', 'WorkerTask', 'UpsertBenchmarkInput', 'UpsertParticipantInput',
+    'WorkerFinishContext', 'WorkerHeartbeatInput', 'UpsertBenchmarkInput', 'UpsertParticipantInput',
     'UploadWorkerArtifactInput', 'BaseParticipant',
   ];
   const REPORTER_EXPORTS = [
@@ -1521,9 +1404,9 @@ describe('public API surface and type exports', () => {
     'BenchmarkReporterConfig', 'BenchmarkReporterHeartbeatInput', 'BenchmarkReporterProgress',
   ];
   const METRICS_EXPORTS = ['BenchmarkSystemMetricsCollector', 'BenchmarkSystemMetricsSample'];
-  const INTERNAL_TYPES = ['DefineTaskOptions', 'StepContext', 'CleanupContext', 'WorkerDefaults', 'BenchmarkParticipantResultSummary'];
+  const INTERNAL_TYPES = ['BenchmarkParticipantResultSummary'];
 
-  it('VAL-SDK-090: built barrel re-exports exactly the public type set and excludes the 5 internal types', () => {
+  it('VAL-SDK-090: built barrel re-exports exactly the public type set and excludes internal types', () => {
     // Pin the actual shipped surface by reading the built dist/index.d.ts
     // declarations rather than regex-parsing the source barrel. This catches
     // drift between the source export list and what consumers receive.
@@ -1550,7 +1433,7 @@ describe('public API surface and type exports', () => {
       expect(distDecl).toMatch(new RegExp(`\\b${name}\\b`));
     }
 
-    // The 5 internal helper types must never be surfaced by the built barrel.
+    // Internal helper types must never be surfaced by the built barrel.
     for (const internal of INTERNAL_TYPES) {
       expect(exportedTypeNames).not.toContain(internal);
     }
@@ -1565,7 +1448,7 @@ describe('public API surface and type exports', () => {
   it('VAL-SDK-091: every value export is present on the package barrel', () => {
     const valueExports = [
       'BenchmarkApiError', 'BenchmarkReporter', 'claimBenchmarkReporter', 'createBenchmarkClient',
-      'createSystemMetricsCollector', 'defineBench', 'defineStep', 'defineTask', 'defineWorker', 'runBenchmarkWorker',
+      'createSystemMetricsCollector',
     ];
     for (const name of valueExports) {
       expect(barrel).toHaveProperty(name);

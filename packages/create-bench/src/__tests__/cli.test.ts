@@ -35,6 +35,6 @@ describe('create-bench CLI', () => {
     );
 
     expect(pkg.name).toBe(path.basename(tempDir));
-    expect(pkg.dependencies['@benchsdk/client']).toBe('^0.2.0');
+    expect(pkg.dependencies['@benchsdk/runner']).toBe('^0.1.0');
   });
 });

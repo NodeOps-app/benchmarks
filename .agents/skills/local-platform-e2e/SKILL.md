@@ -1,9 +1,9 @@
 ---
 name: local-platform-e2e
-description: Stand up benchmarks-platform locally (Postgres + MinIO + ClickHouse in docker) and run a real @benchsdk/cli benchmark against it, with no cloud or provider credentials. Use when testing @benchsdk/client / @benchsdk/cli against the platform end to end, or when debugging benchmark reporting, worker planning, artifacts, or dashboard results locally.
+description: Stand up benchmarks-platform locally (Postgres + MinIO + ClickHouse in docker) and run a real @benchsdk/runner benchmark against it, with no cloud or provider credentials. Use when testing @benchsdk/client / @benchsdk/runner against the platform end to end, or when debugging benchmark reporting, worker planning, artifacts, or dashboard results locally.
 ---
 
-# Local end-to-end: @benchsdk/cli ↔ benchmarks-platform
+# Local end-to-end: @benchsdk/runner ↔ benchmarks-platform
 
 Goal: exercise upsert benchmark → create run → planWorkers → claim → heartbeat →
 task_results → artifact upload → complete → dashboard, with zero external
@@ -130,29 +130,30 @@ Check `imported`/`failed`/`failureSamples` in the response.
 Build first (`packages/*/dist` is not committed): `pnpm install && pnpm -r --filter "./packages/**" build`.
 
 Write a throwaway bench inside the repo (untracked, e.g. `e2e-local/local.bench.ts`)
-so pnpm workspace resolution finds `@benchsdk/cli`, with a fake participant:
+so pnpm workspace resolution finds `@benchsdk/runner`, with a fake participant:
 
 ```ts
-import { defineBenchmark, runBenchmark } from '@benchsdk/cli';
-const config = defineBenchmark({
+import { defineBenchmarkConfig, defineTask } from '@benchsdk/runner';
+export const config = defineBenchmarkConfig({
   benchmarkSlug: 'e2e-local', benchmarkName: 'E2E', iterations: 4, concurrency: 1,
-  task: async (ctx) => { await ctx.step('create', () => new Promise(r => setTimeout(r, 50))); },
+  participants: [{ name: 'local', requiredEnvVars: [] }],
 });
-runBenchmark(config, [{ name: 'local', requiredEnvVars: [] } as any], process.argv.slice(2));
+export const task = defineTask(async (ctx) => {
+  await ctx.step('create', () => new Promise((r) => setTimeout(r, 50)));
+  ctx.measure({ ok: true });
+});
 ```
 
-Run it:
+Run it via the `bench run` CLI (under tsx so the `.bench.ts` module loads without a build):
 ```bash
-BENCHMARKS_PLATFORM_URL=http://localhost:3000 COMPUTESDK_ADMIN_API_KEY=local-admin-key \
-  npx tsx e2e-local/local.bench.ts --iterations 4 --concurrency 2
+BENCHMARKS_PLATFORM_URL=http://localhost:3000 BENCHMARKS_PLATFORM_API_KEY=<org bp_ key> \
+  npx tsx packages/benchsdk-runner/dist/bin.js run e2e-local/local.bench.ts --iterations 4 --concurrency 2
 ```
 `BENCHMARKS_PLATFORM_URL` is the **root** URL (the runner appends `/api/v1`).
 
-The runner reads `COMPUTESDK_ADMIN_API_KEY ?? COMPUTESDK_API_KEY`, so to prove the master key
-is not needed, pass an org `bp_` key as `COMPUTESDK_API_KEY` and strip the admin vars from the
-child env (`env -u COMPUTESDK_ADMIN_API_KEY -u ADMIN_API_KEY …`). Note the "View at:" URL the
-CLI prints uses `BENCHMARKS_PLATFORM_ORG_SLUG` (default `computesdk`), **not** the org that owns
-the key, so with an org key the printed link may 404 — set that env var to the key's org slug.
+The runner authenticates with `BENCHMARKS_PLATFORM_API_KEY` (an org-scoped `bp_` key — mint one
+locally per the section below) and pulls the owning org slug from the server, so the "View at:"
+URL it prints always points at the run's real org (no `BENCHMARKS_PLATFORM_ORG_SLUG` needed).
 
 ## 6b. Probing tenant isolation
 

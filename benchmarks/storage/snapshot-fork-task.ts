@@ -3,13 +3,13 @@
  *   seed dataset -> snapshot -> fork(from snapshot) -> fork(from live) ->
  *   read-back-from-fork (verify) -> teardown.
  * Every created resource is torn down in a `finally` so a mid-iteration failure
- * does not leak real storage. Orchestration is owned by @benchsdk/cli's
+ * does not leak real storage. Orchestration is owned by @benchsdk/runner's
  * runBenchmark — this file only describes what one iteration does.
  */
 import crypto from 'node:crypto';
 import type { Storage } from '@storagesdk/core';
-import type { BenchmarkTask, TaskContext, TaskResult } from '@benchsdk/cli';
-import { TaskError } from '@benchsdk/cli';
+import type { BenchmarkTask, TaskContext, TaskResult } from '@benchsdk/runner';
+import { TaskError } from '@benchsdk/runner';
 import { withTimeout } from '../src/util/timeout.js';
 import { formatError } from '../src/util/error.js';
 import type { StorageProviderConfig } from './types.js';

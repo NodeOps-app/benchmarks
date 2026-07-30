@@ -123,13 +123,13 @@ jobs:
           PARALLEL_ARGS="$SEQ_ARGS \
             --concurrency ${{ github.event.inputs.concurrency || (github.event_name == 'push' && '10') || '100' }}"
           case "${{ github.event.inputs.mode }}" in
-            sequential) npx tsx benchmarks/sandbox/sequential.bench.ts $SEQ_ARGS ;;
-            staggered)  npx tsx benchmarks/sandbox/staggered.bench.ts $PARALLEL_ARGS ;;
-            burst)      npx tsx benchmarks/sandbox/burst.bench.ts $PARALLEL_ARGS ;;
+            sequential) npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/sandbox/sequential.bench.ts $SEQ_ARGS ;;
+            staggered)  npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/sandbox/staggered.bench.ts $PARALLEL_ARGS ;;
+            burst)      npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/sandbox/burst.bench.ts $PARALLEL_ARGS ;;
             *)
-              npx tsx benchmarks/sandbox/sequential.bench.ts $SEQ_ARGS && \
-              npx tsx benchmarks/sandbox/staggered.bench.ts $PARALLEL_ARGS && \
-              npx tsx benchmarks/sandbox/burst.bench.ts $PARALLEL_ARGS ;;
+              npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/sandbox/sequential.bench.ts $SEQ_ARGS && \
+              npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/sandbox/staggered.bench.ts $PARALLEL_ARGS && \
+              npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/sandbox/burst.bench.ts $PARALLEL_ARGS ;;
           esac
       - name: Upload results
         if: always() && env.SHOULD_RUN == 'true'

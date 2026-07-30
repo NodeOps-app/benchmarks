@@ -31,9 +31,17 @@ import type {
   TaskStepRecord,
 } from '@benchsdk/client';
 import { TaskError } from './bench-config.js';
-import type { BenchmarkConfig, BenchmarkTask, GroupBy, TaskContext, TaskResult } from './bench-config.js';
-import { LogBuffer, uploadWorkerLog } from './log-buffer.js';
-import { loggedStep } from './logged-step.js';
+import type {
+  BenchmarkConfig,
+  BenchmarkRunOutcome,
+  BenchmarkTask,
+  GroupBy,
+  ParticipantRecords,
+  ResolvedRunConfig,
+  TaskContext,
+  TaskResult,
+} from './bench-config.js';
+import { LogBuffer } from './log-buffer.js';
 
 export interface CliArgs {
   iterations?: number;
@@ -42,33 +50,6 @@ export interface CliArgs {
   groupBy?: GroupBy;
   /** Participant names from `--provider a,b` (repeatable). */
   providers?: string[];
-}
-
-export interface ResolvedRunConfig {
-  iterations: number;
-  concurrency: number;
-  staggerDelayMs: number;
-  groupBy: GroupBy;
-  providers?: string[];
-}
-
-/** One participant's collected task records from a run. */
-export interface ParticipantRecords {
-  participant: string;
-  records: TaskResultRecord[];
-}
-
-/**
- * Result of a benchmark run. TEMPORARY BRIDGE: exposes the raw per-participant
- * records so callers can write legacy local JSON results, until the platform
- * read API can supply per-iteration data + `data` payloads directly.
- */
-export interface BenchmarkRunOutcome {
-  runId: string;
-  dashboardUrl: string;
-  participants: ParticipantRecords[];
-  /** Knobs the run actually used, after CLI overrides. */
-  config: ResolvedRunConfig;
 }
 
 // Matches @benchsdk/client's DEFAULT_BASE_URL origin. `resolvePlatform()`
@@ -192,18 +173,19 @@ interface Slot<T extends BaseParticipant = BaseParticipant> {
  * Flattens a config into an ordered list of task slots. With `phases`, each
  * phase contributes `iterations` slots tagged with its name (framework owns
  * the phase boundary — no index arithmetic in the task). Without phases, the
- * top-level task is repeated `iterations` times.
+ * task is repeated `iterations` times.
  */
 function buildSchedule<T extends BaseParticipant>(
   config: BenchmarkConfig<T>,
   iterations: number,
+  task: BenchmarkTask<T>,
 ): Slot<T>[] {
   if (config.phases?.length) {
     return config.phases.flatMap((phase) =>
-      Array.from({ length: phase.iterations }, () => ({ phase: phase.name, task: phase.task ?? config.task })),
+      Array.from({ length: phase.iterations }, () => ({ phase: phase.name, task })),
     );
   }
-  return Array.from({ length: iterations }, () => ({ phase: undefined, task: config.task }));
+  return Array.from({ length: iterations }, () => ({ phase: undefined, task }));
 }
 
 type OnResult = (record: TaskResultRecord, meta: { iterations: number }) => void;
@@ -234,19 +216,20 @@ function resolvePlatform(): { baseUrl: string; apiKey: string } {
 }
 
 /**
- * Runs `config` against `participants`. Selects participants by `--provider`
- * (if given), env-gates them, then drives them per the resolved `groupBy`.
+ * Runs `config`'s `task` against `participants`. Selects participants by
+ * `--provider` (if given), env-gates them, then drives them per the resolved
+ * `groupBy`.
  */
 export async function runBenchmark<T extends BaseParticipant>(
   config: BenchmarkConfig<T>,
-  participants: T[],
+  task: BenchmarkTask<T>,
   argv: string[] = [],
 ): Promise<BenchmarkRunOutcome> {
   const resolved = mergeConfig(config, parseCliArgs(argv));
-  const schedule = buildSchedule(config, resolved.iterations);
+  const schedule = buildSchedule(config, resolved.iterations, task);
   const totalTasks = schedule.length;
 
-  const selected = selectParticipants(participants, resolved.providers);
+  const selected = selectParticipants(config.participants, resolved.providers);
   const { available, skipped } = filterParticipantsByEnv(selected);
 
   for (const s of skipped) {
@@ -284,7 +267,7 @@ export async function runBenchmark<T extends BaseParticipant>(
   console.log(`Run created: ${run.id}`);
   console.log(`View at: ${dashboardUrl}\n`);
 
-  const onResult = config.onResult ?? defaultOnResult;
+  const onResult = defaultOnResult;
 
   let participantRecords: ParticipantRecords[];
   if (resolved.groupBy === 'round') {
@@ -294,7 +277,14 @@ export async function runBenchmark<T extends BaseParticipant>(
   }
 
   console.log(`All done. View at: ${dashboardUrl}`);
-  return { runId: run.id, dashboardUrl, participants: participantRecords, config: resolved };
+  const outcome: BenchmarkRunOutcome = {
+    runId: run.id,
+    dashboardUrl,
+    participants: participantRecords,
+    config: resolved,
+  };
+  if (config.onComplete) await config.onComplete(outcome);
+  return outcome;
 }
 
 /**
@@ -319,7 +309,6 @@ async function runGroupedByParticipant<T extends BaseParticipant>(
     console.log(`  Participant: ${participant.name}`);
     console.log('='.repeat(70));
 
-    const logBuffer = new LogBuffer();
     // Anchors the ramp to the worker's start, so a pool narrower than the task
     // count can't inflate launch offsets: a task whose slot frees after its
     // scheduled launch time starts immediately instead of sleeping index*delay.
@@ -341,17 +330,20 @@ async function runGroupedByParticipant<T extends BaseParticipant>(
           if (waitMs > 0) await sleep(waitMs);
         }
         const slot = schedule[scheduleIndex];
+        // The client owns step timing, `measure` attribution, and worker-log
+        // upload; the runner just threads them onto the task context.
         const taskResult = await slot.task({
           participant,
           taskIndex: scheduleIndex,
           phase: slot.phase,
-          step: (name, fn, options) => loggedStep(ctx, logBuffer, name, fn, options),
+          step: ctx.step,
+          measure: ctx.measure,
+          log: ctx.log,
         });
-        const data = taskResult?.data;
-        return slot.phase ? { ...(data ?? {}), phase: slot.phase } : data;
+        if (slot.phase) ctx.measure({ phase: slot.phase });
+        return taskResult?.data;
       },
       onResult: (record) => onResult(record, { iterations: schedule.length }),
-      onFinish: (ctx) => uploadWorkerLog(ctx, logBuffer, participant.name),
     });
 
     if (!result.assignment) {
@@ -479,8 +471,8 @@ async function runGroupedByRound<T extends BaseParticipant>(
 
 /** Merges a task's data payload with the current phase tag (if any). */
 function mergeData(data: JsonObject | undefined, phase: string | undefined): JsonObject | undefined {
-  if (!data && !phase) return undefined;
-  return { ...(data ?? {}), ...(phase ? { phase } : {}) };
+  const merged = { ...(data ?? {}), ...(phase ? { phase } : {}) };
+  return Object.keys(merged).length > 0 ? merged : undefined;
 }
 
 /**
@@ -504,6 +496,10 @@ async function runTaskRecord<T extends BaseParticipant>(
     startedAt: new Date(startedAtMs).toISOString(),
   };
   const frameworkSteps: TaskStepRecord[] = [];
+  const taskMeasures: JsonObject = {};
+  // Mirrors the client worker: `measure` lands on the active step (if any),
+  // else on task-level measurements folded into `record.data`.
+  let activeStep: TaskStepRecord | null = null;
 
   const ctx: TaskContext<T> = {
     participant,
@@ -518,6 +514,8 @@ async function runTaskRecord<T extends BaseParticipant>(
         completedAt: new Date(stepStartedAtMs).toISOString(),
         latencyMs: 0,
       };
+      const previousStep = activeStep;
+      activeStep = stepRecord;
       try {
         const result = await fn();
         logBuffer.step(taskIndex, name, {});
@@ -528,26 +526,40 @@ async function runTaskRecord<T extends BaseParticipant>(
         logBuffer.step(taskIndex, name, { error: error instanceof Error ? error.message : String(error) });
         throw error;
       } finally {
+        activeStep = previousStep;
         stepRecord.completedAt = new Date().toISOString();
         stepRecord.latencyMs = Date.now() - stepStartedAtMs;
         frameworkSteps.push(stepRecord);
       }
+    },
+    measure(data) {
+      if (activeStep) {
+        activeStep.data = { ...(activeStep.data ?? {}), ...data };
+      } else {
+        Object.assign(taskMeasures, data);
+      }
+    },
+    log(message, meta) {
+      logBuffer.line(`[task ${taskIndex}] ${message}`, meta);
     },
   };
 
   let result: TaskResult | void = undefined;
   try {
     result = await task(ctx);
-    record.data = mergeData(result?.data, phase);
+    record.data = mergeData({ ...taskMeasures, ...(result?.data ?? {}) }, phase);
   } catch (error) {
     record.status = 'error';
     if (error instanceof TaskError) {
       record.errorCode = error.code ?? error.name;
-      record.data = mergeData(error.data, phase);
+      record.data = mergeData({ ...taskMeasures, ...(error.data ?? {}) }, phase);
       if (error.steps?.length) frameworkSteps.push(...error.steps);
     } else {
       record.errorCode = getErrorCode(error);
-      record.data = mergeData({ errorMessage: error instanceof Error ? error.message : String(error) }, phase);
+      record.data = mergeData(
+        { ...taskMeasures, errorMessage: error instanceof Error ? error.message : String(error) },
+        phase,
+      );
     }
   } finally {
     const endMs = Date.now();
@@ -558,7 +570,20 @@ async function runTaskRecord<T extends BaseParticipant>(
         : endMs - startedAtMs;
     const taskSteps = record.status === 'success' && result?.steps ? result.steps : [];
     const allSteps = [...frameworkSteps, ...taskSteps];
-    record.steps = allSteps.length > 0 ? allSteps : undefined;
+    // A task that declared no steps is recorded as a single implicit 'task'
+    // step, matching the client worker's behavior.
+    if (allSteps.length === 0) {
+      allSteps.push({
+        name: 'task',
+        status: record.status === 'success' ? 'success' : 'error',
+        startedAt: record.startedAt,
+        completedAt: record.completedAt,
+        latencyMs: record.latencyMs,
+        errorCode: record.errorCode ?? null,
+        data: Object.keys(taskMeasures).length > 0 ? { ...taskMeasures } : undefined,
+      });
+    }
+    record.steps = allSteps;
   }
 
   return record;

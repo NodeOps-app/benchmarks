@@ -1,16 +1,10 @@
 export {
   BenchmarkApiError,
   createBenchmarkClient,
-  defineBench,
-  defineStep,
-  defineTask,
-  defineWorker,
-  runBenchmarkWorker,
 } from './client';
 export { BenchmarkReporter, claimBenchmarkReporter } from './reporter';
 export { createSystemMetricsCollector } from './metrics';
 export type {
-  BenchDefinition,
   BenchmarkAssignment,
   BenchmarkArtifact,
   BenchmarkClient,
@@ -19,7 +13,6 @@ export type {
   BenchmarkAnalyticsReadiness,
   BenchmarkEventRateBucket,
   BenchmarkFailurePoint,
-  BenchmarkWorker,
   BenchmarkParticipant,
   BenchmarkResource,
   BenchmarkResultLatencySummary,
@@ -48,11 +41,7 @@ export type {
   CreateWorkerArtifactInput,
   CreateWorkerArtifactResponse,
   CreateRunInput,
-  DefineBenchOptions,
   DefineStepOptions,
-  DefinedStep,
-  DefinedTask,
-  DefineWorkerOptions,
   JsonObject,
   JsonValue,
   PlanWorkersInput,
@@ -79,7 +68,6 @@ export type {
   WorkerConcurrencySample,
   WorkerFinishContext,
   WorkerHeartbeatInput,
-  WorkerTask,
   UpsertBenchmarkInput,
   UpsertParticipantInput,
   UploadWorkerArtifactInput,
