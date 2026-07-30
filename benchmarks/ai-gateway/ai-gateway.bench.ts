@@ -72,7 +72,18 @@ function phaseSteps(result: PhaseProbeResult): TaskStepRecord[] {
     if (result.tlsMs !== undefined) steps.push({ name: 'tls', status: 'success', latencyMs: result.tlsMs });
   }
   steps.push({ name: 'ttfb', status: stepStatus, latencyMs: result.ttfbMs });
-  steps.push({ name: 'ttft', status: stepStatus, latencyMs: result.ttftMs });
+  // Token throughput/count are non-latency metrics (a rate the step's latency
+  // can't express), so attach them to the ttft step's data → step_data_json.
+  const ttftData: JsonObject = {
+    ...(result.outputTokens !== undefined ? { outputTokens: result.outputTokens } : {}),
+    ...(result.outputTokensPerSec !== undefined ? { outputTokensPerSec: result.outputTokensPerSec } : {}),
+  };
+  steps.push({
+    name: 'ttft',
+    status: stepStatus,
+    latencyMs: result.ttftMs,
+    ...(Object.keys(ttftData).length > 0 ? { data: ttftData } : {}),
+  });
   return steps;
 }
 

@@ -30,7 +30,7 @@ export function makeStorageTask(
   const storageCache = new Map<string, Storage>();
 
   return async function storageTask(ctx: TaskContext<StorageProviderConfig>): Promise<TaskResult> {
-    const { participant, step } = ctx;
+    const { participant, step, measure } = ctx;
     const timeout = participant.timeout ?? 30_000;
 
     let storage = storageCache.get(participant.name);
@@ -49,15 +49,19 @@ export function makeStorageTask(
       );
       const uploadMs = performance.now() - uploadStart;
 
-      // Download timing — request raw bytes so we measure a full object fetch
-      const downloadStart = performance.now();
-      await step('download', () =>
-        withTimeout(storage!.download(key, { as: 'bytes' }), timeout, 'Download timed out'),
-      );
-      const downloadMs = performance.now() - downloadStart;
-
-      // Throughput in Mbps (download-side)
-      const throughputMbps = (fileSizeBytes * 8) / (downloadMs / 1000) / 1_000_000;
+      // Download timing — request raw bytes so we measure a full object fetch.
+      // Throughput (Mbps) is a rate, not a duration, so it can't be inferred
+      // from the step's latency; measure it inside the `download` step so it
+      // lands on that step's data (platform step_data_json).
+      let downloadMs = 0;
+      let throughputMbps = 0;
+      await step('download', async () => {
+        const downloadStart = performance.now();
+        await withTimeout(storage!.download(key, { as: 'bytes' }), timeout, 'Download timed out');
+        downloadMs = performance.now() - downloadStart;
+        throughputMbps = (fileSizeBytes * 8) / (downloadMs / 1000) / 1_000_000;
+        measure({ throughputMbps });
+      });
 
       // Cleanup: best-effort delete; failures are warned but don't fail the task.
       await step(

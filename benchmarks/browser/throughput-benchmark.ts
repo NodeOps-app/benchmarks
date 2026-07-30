@@ -1,4 +1,5 @@
 import { chromium, type Browser, type Page } from 'playwright-core';
+import type { TaskContext } from '@benchsdk/runner';
 import { withTimeout } from '../src/util/timeout.js';
 import {
   ACTION_TYPES,
@@ -210,17 +211,28 @@ async function runActionLoop(page: Page, results: ActionResult[], navigateUrl: s
   }
 }
 
+// The session lifecycle (create / connect / actions / release) runs as real
+// framework steps via `ctx.step`, so the platform records each phase's true
+// timing and status rather than us fabricating step records after the fact.
+// `actionsPerSecond`/`actionsCompleted` are non-latency throughput metrics, so
+// they're reported with `ctx.measure` inside the `actions` step.
+type StepCtx = Pick<TaskContext<ThroughputProviderConfig>, 'step' | 'measure'>;
+
 export async function runThroughputIteration(
   provider: any,
   timeout: number,
   sessionCreateOptions: Record<string, unknown>,
   navigateUrl: string,
+  { step, measure }: StepCtx,
 ): Promise<ThroughputTimingResult> {
   const totalStart = performance.now();
   const actions: ActionResult[] = [];
   let createMs = 0;
   let connectMs = 0;
   let releaseMs = 0;
+  let taskMs = 0;
+  let actionsCompleted = 0;
+  let actionsPerSecond = 0;
 
   let session: { sessionId: string; connectUrl: string } | undefined;
   let browser: Browser | undefined;
@@ -229,30 +241,40 @@ export async function runThroughputIteration(
   try {
     // 1. Create session
     const createStart = performance.now();
-    session = await withTimeout(
-      provider.session.create(sessionCreateOptions),
-      timeout,
-      'Session creation timed out',
+    session = await step('create', () =>
+      withTimeout(
+        provider.session.create(sessionCreateOptions),
+        timeout,
+        'Session creation timed out',
+      ),
     ) as { sessionId: string; connectUrl: string };
     createMs = performance.now() - createStart;
 
     // 2. Connect over CDP
     const connectStart = performance.now();
-    browser = await withTimeout(
-      chromium.connectOverCDP(session.connectUrl),
-      30_000,
-      'CDP connection timed out',
-    );
-
-    const [context] = browser.contexts();
-    if (!context) throw new Error('No default browser context found');
-    const [existingPage] = context.pages();
-    const page = existingPage ?? await context.newPage();
+    const page = await step('connect', async () => {
+      browser = await withTimeout(
+        chromium.connectOverCDP(session!.connectUrl),
+        30_000,
+        'CDP connection timed out',
+      );
+      const [context] = browser.contexts();
+      if (!context) throw new Error('No default browser context found');
+      const [existingPage] = context.pages();
+      return existingPage ?? (await context.newPage());
+    });
     connectMs = performance.now() - connectStart;
 
-    // 3. Run the 50-action loop. Individual action failures are recorded but
-    // do not abort the session.
-    await runActionLoop(page, actions, navigateUrl);
+    // 3. Run the 10-action loop. Individual action failures are recorded but
+    // do not abort the session. Throughput is a rate the step latency can't
+    // express, so report it as step data via `measure`.
+    await step('actions', async () => {
+      await runActionLoop(page, actions, navigateUrl);
+      taskMs = actions.reduce((sum, a) => sum + a.durationMs, 0);
+      actionsCompleted = actions.filter((a) => a.success).length;
+      actionsPerSecond = taskMs > 0 ? actionsCompleted / (taskMs / 1000) : 0;
+      measure({ actionsPerSecond, actionsCompleted });
+    });
   } catch (err) {
     iterationError = err instanceof Error ? err.message : String(err);
   } finally {
@@ -262,10 +284,15 @@ export async function runThroughputIteration(
     if (session) {
       const releaseStart = performance.now();
       try {
-        await withTimeout(
-          provider.session.destroy(session.sessionId),
-          15_000,
-          'Session destroy timed out',
+        await step(
+          'release',
+          () =>
+            withTimeout(
+              provider.session.destroy(session!.sessionId),
+              15_000,
+              'Session destroy timed out',
+            ),
+          { reportConcurrency: false },
         );
       } catch {
         // Swallow release errors — they're recorded via releaseMs but should
@@ -276,9 +303,6 @@ export async function runThroughputIteration(
   }
 
   const totalMs = performance.now() - totalStart;
-  const taskMs = actions.reduce((sum, a) => sum + a.durationMs, 0);
-  const actionsCompleted = actions.filter(a => a.success).length;
-  const actionsPerSecond = taskMs > 0 ? actionsCompleted / (taskMs / 1000) : 0;
 
   return {
     createMs,

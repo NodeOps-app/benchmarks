@@ -31,7 +31,10 @@ export function makeThroughputTask(): BenchmarkTask<ThroughputProviderConfig> {
     }
 
     const navigateUrl = navUrlForIteration(taskIndex);
-    const result = await runThroughputIteration(provider, timeout, sessionCreateOptions, navigateUrl);
+    // runThroughputIteration wraps the session lifecycle in real `ctx.step`
+    // calls (create/connect/actions/release) and reports throughput via
+    // `ctx.measure` inside the `actions` step — no fabricated step records.
+    const result = await runThroughputIteration(provider, timeout, sessionCreateOptions, navigateUrl, ctx);
 
     const data = {
       createMs: result.createMs,
@@ -51,6 +54,10 @@ export function makeThroughputTask(): BenchmarkTask<ThroughputProviderConfig> {
     if (result.error) {
       throw new TaskError(result.error, { code: 'THROUGHPUT_ERROR', data });
     }
+
+    // Steps (create/connect/actions/release) and the throughput metric on
+    // `actions` are recorded by the framework via the `ctx.step`/`ctx.measure`
+    // calls inside runThroughputIteration; the task just returns task-level data.
     return { data };
   };
 }
