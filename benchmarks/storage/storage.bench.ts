@@ -11,12 +11,14 @@ import '../src/env.js';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import crypto from 'node:crypto';
-import { defineBenchmarkConfig, defineTask } from '@benchsdk/runner';
+import { defineBenchmarkConfig, defineTask, TaskError } from '@benchsdk/runner';
+import type { Storage } from '@storagesdk/core';
+import { withTimeout } from '../src/util/timeout.js';
+import { formatError } from '../src/util/error.js';
 import { storageProviders } from './providers.js';
-import { makeStorageTask } from './storage-task.js';
 import { writeStorageLegacyResults } from './legacy-results.js';
 import { FILE_SIZE_BYTES } from './types.js';
-import type { StorageFileSize } from './types.js';
+import type { StorageFileSize, StorageProviderConfig } from './types.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -53,4 +55,69 @@ export const config = defineBenchmarkConfig({
     }),
 });
 
-export const task = defineTask(makeStorageTask(testData, fileSizeBytes));
+function randomId(): string {
+  return Math.random().toString(36).substring(2, 15);
+}
+
+/**
+ * One `Storage` instance per participant, so the adapter (and its credentials
+ * lookup) isn't recreated on every iteration.
+ */
+const storageCache = new Map<string, Storage>();
+
+export const task = defineTask<StorageProviderConfig>(async (ctx) => {
+  const { participant, step, measure } = ctx;
+  const timeout = participant.timeout ?? 30_000;
+
+  let storage = storageCache.get(participant.name);
+  if (!storage) {
+    storage = participant.createStorage();
+    storageCache.set(participant.name, storage);
+  }
+
+  const key = `benchmark-${Date.now()}-${randomId()}`;
+
+  try {
+    // Upload timing
+    const uploadStart = performance.now();
+    await step('upload', () =>
+      withTimeout(storage!.upload(key, testData), timeout, 'Upload timed out'),
+    );
+    const uploadMs = performance.now() - uploadStart;
+
+    // Download timing — request raw bytes so we measure a full object fetch.
+    // Throughput (Mbps) is a rate, not a duration, so it can't be inferred
+    // from the step's latency; measure it inside the `download` step so it
+    // lands on that step's data (platform step_data_json).
+    let downloadMs = 0;
+    let throughputMbps = 0;
+    await step('download', async () => {
+      const downloadStart = performance.now();
+      await withTimeout(storage!.download(key, { as: 'bytes' }), timeout, 'Download timed out');
+      downloadMs = performance.now() - downloadStart;
+      throughputMbps = (fileSizeBytes * 8) / (downloadMs / 1000) / 1_000_000;
+      measure({ throughputMbps });
+    });
+
+    // Cleanup: best-effort delete; failures are warned but don't fail the task.
+    await step(
+      'delete',
+      () => withTimeout(storage!.delete(key), 10_000, 'Delete timed out'),
+      { reportConcurrency: false },
+    ).catch((err) => console.warn(`    [cleanup] delete failed: ${formatError(err)}`));
+
+    return { data: { uploadMs, downloadMs, throughputMbps, fileSizeBytes } };
+  } catch (err) {
+    // Attempt cleanup even on failure.
+    try {
+      await withTimeout(storage!.delete(key), 10_000, 'Delete timed out');
+    } catch {
+      // Ignore cleanup errors on the failure path.
+    }
+    const message = formatError(err);
+    throw new TaskError(message, {
+      code: 'STORAGE_ERROR',
+      data: { uploadMs: 0, downloadMs: 0, throughputMbps: 0, fileSizeBytes },
+    });
+  }
+});

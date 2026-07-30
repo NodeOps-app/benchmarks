@@ -1,11 +1,12 @@
 /**
- * AI Gateway benchmark, built on @benchsdk/runner's runBenchmark with
- * `groupBy: 'round'`. Fairness is the whole point (see AI_GATEWAYS.md): every
- * gateway's Nth iteration must run at roughly the same point in time as every
- * other gateway's Nth iteration, so no gateway is favored by running during a
- * different network condition. `groupBy: 'round'` provides exactly that — one
- * task per gateway per round, taking turns — replacing the bespoke round-robin
- * loop this file used to hand-roll.
+ * AI Gateway benchmark. Declarative — exports `config` + `task`; `bench run`
+ * owns the entrypoint. Configured with `groupBy: 'round'`. Fairness is the
+ * whole point (see AI_GATEWAYS.md): every gateway's Nth iteration must run at
+ * roughly the same point in time as every other gateway's Nth iteration, so no
+ * gateway is favored by running during a different network condition.
+ * `groupBy: 'round'` provides exactly that — one task per gateway per round,
+ * taking turns — replacing the bespoke round-robin loop this file used to
+ * hand-roll.
  *
  * Declared as two phases (cold, warm); the framework owns the phase boundary
  * and exposes it via `ctx.phase`, so the task branches on phase identity, not
