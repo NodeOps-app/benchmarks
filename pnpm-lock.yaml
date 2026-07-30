@@ -153,11 +153,11 @@ importers:
         specifier: ^7.21.0
         version: 7.21.0
       '@storagesdk/adapters':
-        specifier: ^0.7.1
-        version: 0.7.1(@aws-sdk/client-s3@3.1092.0)(@aws-sdk/lib-storage@3.1092.0(@aws-sdk/client-s3@3.1092.0))(@aws-sdk/s3-presigned-post@3.1092.0)(@aws-sdk/s3-request-presigner@3.1092.0)(@azure/storage-blob@12.33.0)(@google-cloud/storage@7.21.0)(@tigrisdata/storage@3.17.2)(@vercel/blob@2.6.1)
+        specifier: ^0.10.0
+        version: 0.10.0(@aws-sdk/client-s3@3.1092.0)(@aws-sdk/lib-storage@3.1092.0(@aws-sdk/client-s3@3.1092.0))(@aws-sdk/s3-presigned-post@3.1092.0)(@aws-sdk/s3-request-presigner@3.1092.0)(@azure/storage-blob@12.33.0)(@google-cloud/storage@7.21.0)(@tigrisdata/storage@3.17.2)(@vercel/blob@2.6.1)(tensorlake@0.5.89(bufferutil@4.1.0)(utf-8-validate@6.0.6))
       '@storagesdk/core':
-        specifier: ^0.4.2
-        version: 0.4.2
+        specifier: ^0.5.0
+        version: 0.5.0
       '@superserve/sdk':
         specifier: ^0.8.1
         version: 0.8.1
@@ -188,6 +188,9 @@ importers:
       sql.js:
         specifier: ^1.13.0
         version: 1.14.1
+      tensorlake:
+        specifier: 0.5.89
+        version: 0.5.89(bufferutil@4.1.0)(utf-8-validate@6.0.6)
     devDependencies:
       '@changesets/cli':
         specifier: ^2.27.12
@@ -2099,8 +2102,8 @@ packages:
     resolution: {integrity: sha512-R8Rdn8Hy72KKcebgLiv8jQcQkXoLMOGGv5uI1/k0l+snqkOzQ1R0ChUBCxWMlBsFMekWjq0wRudIweFs7sKT5A==}
     engines: {node: '>=14.0.0'}
 
-  '@storagesdk/adapters@0.7.1':
-    resolution: {integrity: sha512-0mkZVdg/AVfazyIvT602SFV4qOZB2IcEoDmzu/WqMS0qKQGmMLk2Qe7AT57OqUOQshM61iYA4e2bz6xUGll40A==}
+  '@storagesdk/adapters@0.10.0':
+    resolution: {integrity: sha512-/742qc+DxY2nVFFMB+RI1NHnIC5hO+clE1Fu3F9nqnwuMp+tDehz6nPfaendAZZ4apgIdZ8EhGY2vQgRbRTjZQ==}
     engines: {node: '>=20'}
     peerDependencies:
       '@aws-sdk/client-s3': ^3.0.0
@@ -2109,9 +2112,12 @@ packages:
       '@aws-sdk/s3-request-presigner': ^3.0.0
       '@azure/storage-blob': ^12.0.0
       '@google-cloud/storage': ^7.0.0
+      '@mesadev/sdk': ^0.38.0
       '@octokit/rest': ^21.0.0
-      '@tigrisdata/storage': ^3.11.0
+      '@pierre/storage': ^1.13.0
+      '@tigrisdata/storage': ^3.17.1
       '@vercel/blob': ^2.3.0
+      tensorlake: '>=0.5.89 <0.6.0'
       vitest: ^4.0.0
       webdav: ^5.10.0
     peerDependenciesMeta:
@@ -2127,19 +2133,25 @@ packages:
         optional: true
       '@google-cloud/storage':
         optional: true
+      '@mesadev/sdk':
+        optional: true
       '@octokit/rest':
+        optional: true
+      '@pierre/storage':
         optional: true
       '@tigrisdata/storage':
         optional: true
       '@vercel/blob':
+        optional: true
+      tensorlake:
         optional: true
       vitest:
         optional: true
       webdav:
         optional: true
 
-  '@storagesdk/core@0.4.2':
-    resolution: {integrity: sha512-TASJvFpf4tHM52Sgg3AWMF1VsW6tiZAf6cG1PWktyqKWm+P4Iaz8cILEpD1VncvC4DzFYKeXRkq/xgaY3phKtg==}
+  '@storagesdk/core@0.5.0':
+    resolution: {integrity: sha512-v4Ya5h4Ulc5yj+FO0iNCm05hvc1UvvFJxT/e44Ip/WcXMHpHAAQioOGG+S89iKJ+YXywRhCjwz0S2141gH/agA==}
     engines: {node: '>=20'}
 
   '@superserve/sdk@0.7.8':
@@ -4902,6 +4914,11 @@ packages:
 
   tensorlake@0.5.33:
     resolution: {integrity: sha512-9TX/hKkEL7w6tbZy/yKAJ522Fps9kMkGcoCKibb4XT7OANmwdS3A5GLLsq4ufkVeSxQjaswnmVUoghzFzF1XtQ==}
+    engines: {node: '>=22.0.0'}
+    hasBin: true
+
+  tensorlake@0.5.89:
+    resolution: {integrity: sha512-ibLb35jxG0B77Rpmu6trjYYJ+qEBU5YhtQvzCYrTtkA3d8tCJIOYkKTfwULTyz6sgNO7lj5JPFA+vHnSHZvszw==}
     engines: {node: '>=22.0.0'}
     hasBin: true
 
@@ -7743,9 +7760,9 @@ snapshots:
       '@smithy/util-buffer-from': 2.2.0
       tslib: 2.8.1
 
-  '@storagesdk/adapters@0.7.1(@aws-sdk/client-s3@3.1092.0)(@aws-sdk/lib-storage@3.1092.0(@aws-sdk/client-s3@3.1092.0))(@aws-sdk/s3-presigned-post@3.1092.0)(@aws-sdk/s3-request-presigner@3.1092.0)(@azure/storage-blob@12.33.0)(@google-cloud/storage@7.21.0)(@tigrisdata/storage@3.17.2)(@vercel/blob@2.6.1)':
+  '@storagesdk/adapters@0.10.0(@aws-sdk/client-s3@3.1092.0)(@aws-sdk/lib-storage@3.1092.0(@aws-sdk/client-s3@3.1092.0))(@aws-sdk/s3-presigned-post@3.1092.0)(@aws-sdk/s3-request-presigner@3.1092.0)(@azure/storage-blob@12.33.0)(@google-cloud/storage@7.21.0)(@tigrisdata/storage@3.17.2)(@vercel/blob@2.6.1)(tensorlake@0.5.89(bufferutil@4.1.0)(utf-8-validate@6.0.6))':
     dependencies:
-      '@storagesdk/core': 0.4.2
+      '@storagesdk/core': 0.5.0
     optionalDependencies:
       '@aws-sdk/client-s3': 3.1092.0
       '@aws-sdk/lib-storage': 3.1092.0(@aws-sdk/client-s3@3.1092.0)
@@ -7755,8 +7772,9 @@ snapshots:
       '@google-cloud/storage': 7.21.0
       '@tigrisdata/storage': 3.17.2
       '@vercel/blob': 2.6.1
+      tensorlake: 0.5.89(bufferutil@4.1.0)(utf-8-validate@6.0.6)
 
-  '@storagesdk/core@0.4.2': {}
+  '@storagesdk/core@0.5.0': {}
 
   '@superserve/sdk@0.7.8': {}
 
@@ -10821,6 +10839,14 @@ snapshots:
       - react-native-b4a
 
   tensorlake@0.5.33(bufferutil@4.1.0)(utf-8-validate@6.0.6):
+    dependencies:
+      undici: 8.3.0
+      ws: 8.21.1(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
+  tensorlake@0.5.89(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     dependencies:
       undici: 8.3.0
       ws: 8.21.1(bufferutil@4.1.0)(utf-8-validate@6.0.6)

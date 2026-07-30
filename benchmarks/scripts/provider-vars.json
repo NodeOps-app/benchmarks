@@ -168,6 +168,12 @@
       "AZURE_ACCOUNT_NAME",
       "AZURE_ACCOUNT_KEY",
       "AZURE_CONTAINER"
+    ],
+    "tensorlake": [
+      "TENSORLAKE_API_KEY",
+      "TENSORLAKE_ORGANIZATION_ID",
+      "TENSORLAKE_PROJECT_ID",
+      "TENSORLAKE_FILESYSTEM"
     ]
   },
   "scale": {
@@ -267,6 +273,12 @@
       "AZURE_SNAPSHOT_ACCOUNT_NAME",
       "AZURE_SNAPSHOT_ACCOUNT_KEY",
       "AZURE_SNAPSHOT_CONTAINER"
+    ],
+    "tensorlake": [
+      "TENSORLAKE_API_KEY",
+      "TENSORLAKE_ORGANIZATION_ID",
+      "TENSORLAKE_PROJECT_ID",
+      "TENSORLAKE_FILESYSTEM"
     ]
   }
 }
