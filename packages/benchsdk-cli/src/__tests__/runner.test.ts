@@ -151,6 +151,7 @@ describe('runBenchmark', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     process.env.E2B_API_KEY = 'x';
     process.env.MODAL_TOKEN = 'y';
+    process.env.BENCHMARKS_PLATFORM_API_KEY = 'bp_test';
     calls = { upsertBenchmark: [], createRun: [], planWorkers: [], runWorker: [], taskData: [] };
     fakeClient = {
       upsertBenchmark: vi.fn(async (...a: any[]) => { calls.upsertBenchmark.push(a); return {}; }),
@@ -180,6 +181,7 @@ describe('runBenchmark', () => {
   afterEach(() => {
     delete process.env.E2B_API_KEY;
     delete process.env.MODAL_TOKEN;
+    delete process.env.BENCHMARKS_PLATFORM_API_KEY;
   });
 
   it('drives upsert -> createRun -> planWorkers/runWorker per available participant', async () => {
