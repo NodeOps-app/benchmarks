@@ -44,6 +44,8 @@ import type {
 import { LogBuffer } from './log-buffer.js';
 
 export interface CliArgs {
+  slug?: string;
+  name?: string;
   iterations?: number;
   concurrency?: number;
   staggerDelayMs?: number;
@@ -96,6 +98,22 @@ export function parseCliArgs(argv: string[]): CliArgs {
     const arg = argv[i];
     const name = arg.includes('=') ? arg.slice(0, arg.indexOf('=')) : arg;
     switch (name) {
+      case '--slug': {
+        const { value, nextIndex } = readValue(arg, i);
+        if (!/^[a-z0-9][a-z0-9-]*$/.test(value)) {
+          throw new Error(`--slug expects a lowercase slug (got "${value}")`);
+        }
+        args.slug = value;
+        i = nextIndex;
+        break;
+      }
+      case '--name': {
+        const { value, nextIndex } = readValue(arg, i);
+        if (value.trim() === '') throw new Error('--name expects a value');
+        args.name = value;
+        i = nextIndex;
+        break;
+      }
       case '--iterations': {
         const { value, nextIndex } = readValue(arg, i);
         args.iterations = intFlag(value, '--iterations');
@@ -218,14 +236,21 @@ function resolvePlatform(): { baseUrl: string; apiKey: string } {
 /**
  * Runs `config`'s `task` against `participants`. Selects participants by
  * `--provider` (if given), env-gates them, then drives them per the resolved
- * `groupBy`.
+ * `groupBy`. `--slug`/`--name` retarget the whole run at a different platform
+ * benchmark, so one entrypoint can report under several slugs.
  */
 export async function runBenchmark<T extends BaseParticipant>(
-  config: BenchmarkConfig<T>,
+  fileConfig: BenchmarkConfig<T>,
   task: BenchmarkTask<T>,
   argv: string[] = [],
 ): Promise<BenchmarkRunOutcome> {
-  const resolved = mergeConfig(config, parseCliArgs(argv));
+  const args = parseCliArgs(argv);
+  const config = {
+    ...fileConfig,
+    ...(args.slug ? { benchmarkSlug: args.slug } : {}),
+    ...(args.name ? { benchmarkName: args.name } : {}),
+  };
+  const resolved = mergeConfig(config, args);
   const schedule = buildSchedule(config, resolved.iterations, task);
   const totalTasks = schedule.length;
 

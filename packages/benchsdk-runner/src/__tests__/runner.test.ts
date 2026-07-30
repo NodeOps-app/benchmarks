@@ -49,6 +49,18 @@ describe('parseCliArgs', () => {
     expect(parseCliArgs(['--group-by=participant'])).toEqual({ groupBy: 'participant' });
   });
 
+  it('parses --slug and --name', () => {
+    expect(parseCliArgs(['--slug', 'sandbox-burst-local'])).toEqual({ slug: 'sandbox-burst-local' });
+    expect(parseCliArgs(['--slug=sandbox-tti-local'])).toEqual({ slug: 'sandbox-tti-local' });
+    expect(parseCliArgs(['--name', 'Sandbox burst TTI'])).toEqual({ name: 'Sandbox burst TTI' });
+    expect(() => parseCliArgs(['--name', ' '])).toThrow('--name');
+  });
+
+  it('throws on a non-slug --slug', () => {
+    expect(() => parseCliArgs(['--slug', 'Sandbox TTI'])).toThrow('--slug');
+    expect(() => parseCliArgs(['--slug', ''])).toThrow('--slug');
+  });
+
   it('throws on invalid --group-by', () => {
     expect(() => parseCliArgs(['--group-by', 'nope'])).toThrow('--group-by');
   });
@@ -260,6 +272,26 @@ describe('runBenchmark', () => {
     expect(calls.createRun[0][1]).toMatchObject({ totalTasks: 5, participants: ['e2b'] });
     expect(calls.runWorker).toHaveLength(1);
     expect(calls.runWorker[0].concurrency).toBe(5);
+  });
+
+  it('reports under --slug/--name instead of the config slug and name', async () => {
+    const config: BenchmarkConfig<typeof participants[number]> = {
+      benchmarkSlug: 'sandbox-tti-local',
+      benchmarkName: 'Sandbox TTI',
+      iterations: 1,
+      participants: [participants[0]],
+    };
+
+    await runBenchmark(config, defineTask(async () => ({})), [
+      '--slug',
+      'sandbox-burst-local',
+      '--name',
+      'Sandbox burst TTI',
+    ]);
+
+    expect(calls.upsertBenchmark[0][0]).toBe('sandbox-burst-local');
+    expect(calls.upsertBenchmark[0][1]).toMatchObject({ name: 'Sandbox burst TTI' });
+    expect(calls.createRun[0][0]).toBe('sandbox-burst-local');
   });
 
   it('throws NoAvailableParticipantsError, listing the skips, when no participant has its env vars set', async () => {

@@ -116,20 +116,24 @@ jobs:
         run: |
           . benchmarks/scripts/load-vault-secrets.sh '^(ARCHIL_API_KEY|ARCHIL_REGION|ARCHIL_DISK_ID|BEAM_TOKEN|BEAM_WORKSPACE_ID|BL_API_KEY|BL_WORKSPACE|CLOUD_RUN_SANDBOX_URL|CLOUD_RUN_SANDBOX_SECRET|CLOUDFLARE_SANDBOX_URL|CLOUDFLARE_SANDBOX_SECRET|CSB_API_KEY|CREATEOS_SANDBOX_API_KEY|DAYTONA_API_KEY|DECLAW_API_KEY|E2B_API_KEY|HOPX_API_KEY|ISORUN_API_KEY|LIGHTNING_API_KEY|MODAL_TOKEN_ID|MODAL_TOKEN_SECRET|NSC_TOKEN|NORTHFLANK_TOKEN|NORTHFLANK_PROJECT_ID|OPENCOMPUTER_API_KEY|OPENCOMPUTER_API_URL|RUNLOOP_API_KEY|SANDBOX0_TOKEN|SPRITES_TOKEN|SUPERSERVE_API_KEY|TENKI_API_KEY|TENSORLAKE_API_KEY|UPSTASH_BOX_API_KEY|VERCEL_TOKEN|VERCEL_TEAM_ID|VERCEL_PROJECT_ID|COMPUTESDK_ADMIN_API_KEY|BENCHMARKS_PLATFORM_API_KEY)'
 
+          # One entrypoint, three launch shapes: the knobs come from the CLI
+          # and --slug/--name pick which platform benchmark each reports to.
+          BENCH=(npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/sandbox/tti.bench.ts)
+          COMMON=(--provider ${{ matrix.provider }} \
+            --iterations ${{ github.event.inputs.iterations || (github.event_name == 'push' && '10') || '100' }})
+          CONCURRENCY=${{ github.event.inputs.concurrency || (github.event_name == 'push' && '10') || '100' }}
           # Sequential is one-at-a-time by definition, so it never gets
-          # --concurrency (its config pins concurrency: 1).
-          SEQ_ARGS="--provider ${{ matrix.provider }} \
-            --iterations ${{ github.event.inputs.iterations || (github.event_name == 'push' && '10') || '100' }}"
-          PARALLEL_ARGS="$SEQ_ARGS \
-            --concurrency ${{ github.event.inputs.concurrency || (github.event_name == 'push' && '10') || '100' }}"
+          # --concurrency (the config default pins it to 1).
+          SEQUENTIAL=("${BENCH[@]}" "${COMMON[@]}")
+          STAGGERED=("${BENCH[@]}" "${COMMON[@]}" --concurrency "$CONCURRENCY" --stagger-delay-ms 200 \
+            --slug sandbox-staggered-local --name 'Sandbox staggered TTI (local)')
+          BURST=("${BENCH[@]}" "${COMMON[@]}" --concurrency "$CONCURRENCY" \
+            --slug sandbox-burst-local --name 'Sandbox burst TTI (local)')
           case "${{ github.event.inputs.mode }}" in
-            sequential) npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/sandbox/sequential.bench.ts $SEQ_ARGS ;;
-            staggered)  npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/sandbox/staggered.bench.ts $PARALLEL_ARGS ;;
-            burst)      npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/sandbox/burst.bench.ts $PARALLEL_ARGS ;;
-            *)
-              npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/sandbox/sequential.bench.ts $SEQ_ARGS && \
-              npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/sandbox/staggered.bench.ts $PARALLEL_ARGS && \
-              npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/sandbox/burst.bench.ts $PARALLEL_ARGS ;;
+            sequential) "${SEQUENTIAL[@]}" ;;
+            staggered)  "${STAGGERED[@]}" ;;
+            burst)      "${BURST[@]}" ;;
+            *)          "${SEQUENTIAL[@]}" && "${STAGGERED[@]}" && "${BURST[@]}" ;;
           esac
       - name: Upload results
         if: always() && env.SHOULD_RUN == 'true'

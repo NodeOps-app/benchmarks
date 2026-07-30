@@ -16,7 +16,8 @@ import type { BenchmarkConfig, BenchmarkTask } from './bench-config.js';
 
 const USAGE =
   'Usage: bench run <file.bench.ts> [--iterations N] [--concurrency N] ' +
-  '[--stagger-delay-ms N] [--group-by participant|round] [--provider a,b]';
+  '[--stagger-delay-ms N] [--group-by participant|round] [--provider a,b] ' +
+  "[--slug my-benchmark] [--name 'My benchmark']";
 
 /** A benchmark module is expected to export `config` and `task`. */
 interface BenchmarkModule {
