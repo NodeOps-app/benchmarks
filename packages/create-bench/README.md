@@ -20,7 +20,7 @@ The CLI creates a directory with the given project name and writes:
 
 - `package.json` — with `@benchsdk/client`, `tsx`, and benchmark scripts
 - `tsconfig.json` — basic TypeScript configuration
-- `bench.ts` — a minimal benchmark worker using `defineWorker`, `defineTask`, and `defineStep`
+- `bench.ts` — a minimal benchmark worker using `createBenchmarkClient().runWorker()`
 - `.env.example` — environment variables to configure the worker
 - `README.md` — instructions for the new project
 

@@ -1,10 +1,9 @@
 /**
- * Accumulates one text log per worker across a sandbox lifecycle's steps
- * (create → exec → destroy), uploaded once via `runWorker`'s `onFinish` hook
- * as a `coordinator.log` artifact.
+ * Accumulates one text log per worker across a task's steps, uploaded once as a
+ * `coordinator.log` artifact. Used by the runner's manual `round` mode, where
+ * `client.runWorker` (which owns log upload in `participant` mode) is not in
+ * play.
  */
-import type { WorkerFinishContext } from '@benchsdk/client';
-
 export interface StepOutcome {
   stdout?: string;
   stderr?: string;
@@ -28,6 +27,12 @@ export class LogBuffer {
     }
   }
 
+  /** Appends a free-form narration line (backs the task context's `log`). */
+  line(message: string, meta?: Record<string, unknown>): void {
+    const suffix = meta && Object.keys(meta).length > 0 ? ` ${JSON.stringify(meta)}` : '';
+    this.lines.push(`${new Date().toISOString()} ${message}${suffix}`);
+  }
+
   isEmpty(): boolean {
     return this.lines.length === 0;
   }
@@ -43,23 +48,4 @@ function indent(text: string, prefix = ''): string {
     .split('\n')
     .map((line) => `  ${prefix}${line}`)
     .join('\n');
-}
-
-/** Uploads the buffered log as a `coordinator.log` artifact; never throws. */
-export async function uploadWorkerLog(
-  ctx: WorkerFinishContext,
-  buffer: LogBuffer,
-  participantName: string,
-): Promise<void> {
-  if (buffer.isEmpty()) return;
-  try {
-    await ctx.uploadArtifact({
-      kind: 'coordinator.log',
-      contentType: 'text/plain',
-      name: 'worker.log',
-      body: buffer.toText(),
-    });
-  } catch (err) {
-    console.warn(`  [${participantName}] failed to upload log artifact: ${err instanceof Error ? err.message : String(err)}`);
-  }
 }

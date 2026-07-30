@@ -522,6 +522,15 @@ export interface RunWorkerContext {
   assignment: BenchmarkAssignment;
   taskIndex: number;
   step<T>(name: string, fn: () => Promise<T> | T, options?: DefineStepOptions): Promise<T>;
+  /**
+   * Attaches a JSON measurement to the platform. Called inside a `step`, it
+   * lands on that step's `data`; called at task top-level, on the task record's
+   * `data`. Repeated calls merge (shallow). Use this for anything you want on
+   * the platform — step return values are control flow and are never recorded.
+   */
+  measure(data: JsonObject): void;
+  /** Appends a line to the worker log, uploaded as an artifact when the worker finishes. */
+  log(message: string, meta?: JsonObject): void;
 }
 
 export interface WorkerFinishContext {
@@ -531,14 +540,6 @@ export interface WorkerFinishContext {
   client: BenchmarkClient;
   uploadArtifact(input: Omit<UploadWorkerArtifactInput, 'attemptId'>): Promise<CreateWorkerArtifactResponse>;
 }
-
-export interface StepContext<TState extends Record<string, unknown> = Record<string, unknown>> {
-  assignment: BenchmarkAssignment;
-  taskIndex: number;
-  state: TState;
-}
-
-export type CleanupContext<TState extends Record<string, unknown> = Record<string, unknown>> = StepContext<TState>;
 
 export interface DefineStepOptions {
   /** Report this step as active in heartbeat concurrency samples. Defaults to true. */
@@ -553,28 +554,13 @@ export interface DefineStepOptions {
   readyTimeoutMs?: number;
 }
 
-export interface DefinedStep<TState extends Record<string, unknown> = Record<string, unknown>> {
-  name: string;
-  options?: DefineStepOptions;
-  fn: (context: StepContext<TState>) => Promise<JsonObject | void> | JsonObject | void;
-}
-
-export interface DefineTaskOptions<TState extends Record<string, unknown> = Record<string, unknown>> {
-  /**
-   * Runs after the task finishes, whether it succeeded or failed.
-   * Use this to tear down resources stored in task state.
-   */
-  cleanup?: (context: CleanupContext<TState>) => Promise<void> | void;
-}
-
-export interface DefinedTask<TState extends Record<string, unknown> = Record<string, unknown>> {
-  name: string;
-  steps: DefinedStep<TState>[];
-  options?: DefineTaskOptions<TState>;
-}
-
+/**
+ * The unit of work a worker runs, once per task index. Steps are declared
+ * imperatively via `context.step(...)`; this is the sole task shape the worker
+ * engine accepts. Higher-level authoring (`defineTask`) lives in
+ * `@benchsdk/runner`, which compiles down to a function of this shape.
+ */
 export type TaskFunction = (context: RunWorkerContext) => Promise<JsonObject | void> | JsonObject | void;
-export type WorkerTask = DefinedTask | TaskFunction;
 
 export interface RunWorkerResult {
   assignment: BenchmarkAssignment | null;
@@ -595,47 +581,7 @@ export interface RunWorkerOptions {
   onResult?: (record: TaskResultRecord) => void;
   /** Runs once after final result flush and before worker completion/failure is reported. */
   onFinish?: (context: WorkerFinishContext) => Promise<void> | void;
-  task: WorkerTask;
-}
-
-export interface WorkerDefaults {
-  concurrency?: number;
-  batchSize?: number;
-  flushIntervalMs?: number;
-  heartbeatIntervalMs?: number;
-  readyPollIntervalMs?: number;
-}
-
-export interface DefineWorkerOptions extends WorkerDefaults {
-  benchmarkSlug: string;
-  runId: string;
-  participantSlug: string;
-  processKind?: string;
-  processKey?: string;
-  client?: BenchmarkClient;
-  onFinish?: RunWorkerOptions['onFinish'];
-  task: WorkerTask;
-}
-
-export interface BenchmarkWorker {
-  run(overrides?: Partial<WorkerDefaults>): Promise<RunWorkerResult>;
-}
-
-export interface DefineBenchOptions extends WorkerDefaults {
-  slug: string;
-  participantSlug?: string;
-  client?: BenchmarkClient;
-  task: WorkerTask;
-}
-
-export interface BenchDefinition {
-  slug: string;
-  task: WorkerTask;
-  defineWorker(options: Omit<DefineWorkerOptions, 'benchmarkSlug' | 'client' | 'task' | 'participantSlug'> & {
-    client?: BenchmarkClient;
-    participantSlug?: string;
-    task?: WorkerTask;
-  }): BenchmarkWorker;
+  task: TaskFunction;
 }
 
 export interface BenchmarkClient {

@@ -1,8 +1,14 @@
 /**
- * Declarative config for a self-contained `*.bench.ts` file. A benchmark
- * declares its identity plus three orchestration knobs and a `task`; the CLI
- * runner (see runner.ts) turns that into platform runs. There is no "mode":
- * all orchestration shapes emerge from the knobs.
+ * A `*.bench.ts` file is the composition of a **config** and a **task**:
+ *
+ *   export const config = defineBenchmarkConfig({ benchmarkSlug, participants, ... });
+ *   export const task = defineTask(async (ctx) => { await ctx.step('work', () => ...); });
+ *
+ * `defineBenchmarkConfig` holds the orchestration knobs (including the
+ * participants and an optional `onComplete` hook); `defineTask` holds the
+ * workload. The `bench run <file>` binary imports the module, reads those two
+ * exports, and drives the run. There is no "mode": all orchestration shapes
+ * emerge from the knobs.
  *
  *   iterations       total tasks to run (default 1)
  *   concurrency      max tasks in flight at once — 1 = sequential, N = burst (default 1)
@@ -12,6 +18,13 @@
  *   sequential  { iterations: N, concurrency: 1 }
  *   burst       { iterations: N, concurrency: N }
  *   staggered   { iterations: N, concurrency: N, staggerDelayMs: 200 }
+ *
+ * A task is comprised of steps, declared via `ctx.step` inside a task function
+ * — it supports closures, conditionals and try/finally, so values (a created
+ * sandbox, say) flow naturally between steps. A task that declares no steps is
+ * recorded as a single implicit `task` step. Measurements reach the platform
+ * via `ctx.measure(...)`; step return values are control flow and never
+ * recorded.
  */
 import type {
   BaseParticipant,
@@ -69,10 +82,17 @@ export interface TaskContext<T extends BaseParticipant = BaseParticipant> {
   /** Current phase name, when the benchmark declares `phases`. */
   phase?: string;
   /**
-   * Runs `fn` as a named platform step and mirrors its outcome into the
-   * per-worker log buffer. Mirrors `@benchsdk/client`'s `RunWorkerContext.step`.
+   * Runs `fn` as a named platform step. Mirrors `@benchsdk/client`'s
+   * `RunWorkerContext.step`; supports closures and try/finally.
    */
   step<R>(name: string, fn: () => Promise<R> | R, options?: DefineStepOptions): Promise<R>;
+  /**
+   * Attaches a JSON measurement to the platform. Inside a `step` it lands on
+   * that step's data; at task top-level it lands on the task record's data.
+   */
+  measure(data: JsonObject): void;
+  /** Appends a line to the worker log, uploaded as an artifact when the worker finishes. */
+  log(message: string, meta?: JsonObject): void;
 }
 
 export type BenchmarkTask<T extends BaseParticipant = BaseParticipant> = (
@@ -80,19 +100,49 @@ export type BenchmarkTask<T extends BaseParticipant = BaseParticipant> = (
 ) => Promise<TaskResult | void> | TaskResult | void;
 
 /**
- * A named run segment with its own iteration count and optional task. Phases
- * run in order; each record is tagged with the phase name via `data.phase`,
- * and `ctx.phase` lets a task branch on identity instead of index arithmetic.
+ * A named run segment with its own iteration count. Phases run in order; each
+ * record is tagged with the phase name via `data.phase`, and `ctx.phase` lets
+ * the task branch on identity instead of index arithmetic.
  */
-export interface Phase<T extends BaseParticipant = BaseParticipant> {
+export interface Phase {
   /** Phase name, tagged onto every record produced in this phase. */
   name: string;
   /** Iterations to run in this phase. */
   iterations: number;
-  /** Optional per-phase task; falls back to the top-level `task`. */
-  task?: BenchmarkTask<T>;
 }
 
+/** One participant's collected task records from a run. */
+export interface ParticipantRecords {
+  participant: string;
+  records: TaskResultRecord[];
+}
+
+/** The orchestration knobs a run actually used, after CLI overrides. */
+export interface ResolvedRunConfig {
+  iterations: number;
+  concurrency: number;
+  staggerDelayMs: number;
+  groupBy: GroupBy;
+  providers?: string[];
+}
+
+/**
+ * Result of a benchmark run, passed to `config.onComplete`. Exposes the raw
+ * per-participant records so completion hooks can write legacy local results.
+ */
+export interface BenchmarkRunOutcome {
+  runId: string;
+  dashboardUrl: string;
+  participants: ParticipantRecords[];
+  config: ResolvedRunConfig;
+}
+
+/**
+ * Orchestration config for a benchmark. Holds identity, the knobs, the
+ * participants, and the optional completion hook — the workload lives in a
+ * separate `defineTask`. `bench run <file>` reads the `config` and `task`
+ * exports from the module and drives the run.
+ */
 export interface BenchmarkConfig<T extends BaseParticipant = BaseParticipant> {
   /** Stable platform slug for this benchmark (e.g. 'sandbox-tti-local'). */
   benchmarkSlug: string;
@@ -109,7 +159,7 @@ export interface BenchmarkConfig<T extends BaseParticipant = BaseParticipant> {
    * Named run segments (e.g. cold/warm). Runs in order; each record is tagged
    * with the phase name via `data.phase`. Mutually exclusive with `iterations`.
    */
-  phases?: Phase<T>[];
+  phases?: Phase[];
   /** Max tasks in flight at once. 1 = sequential, N = burst. Default: 1. */
   concurrency?: number;
   /** Delay each task's start by `taskIndex * staggerDelayMs`. Default: 0. */
@@ -126,13 +176,14 @@ export interface BenchmarkConfig<T extends BaseParticipant = BaseParticipant> {
    * run all env-available participants. `--provider` always overrides this.
    */
   defaultProviders?: string[];
+  /** The participants this benchmark can run against. `--provider` selects a subset by name. */
+  participants: T[];
   /**
-   * Optional per-record logger, called as each task result finalizes. When
-   * omitted the runner prints a generic success/failure line.
+   * Run-level completion hook, called once with the full outcome after every
+   * participant finishes. Use it for aggregate output (legacy JSON/SVG
+   * writers). This is the run-level counterpart to per-step `ctx.measure`.
    */
-  onResult?: (record: TaskResultRecord, meta: { iterations: number }) => void;
-  /** The workload run once per task. */
-  task: BenchmarkTask<T>;
+  onComplete?: (outcome: BenchmarkRunOutcome) => void | Promise<void>;
 }
 
 function assertPositiveInt(value: number | undefined, field: string): void {
@@ -143,7 +194,7 @@ function assertPositiveInt(value: number | undefined, field: string): void {
 }
 
 /** Validates `config` at file-evaluation time so mistakes surface immediately. */
-export function defineBenchmark<T extends BaseParticipant = BaseParticipant>(
+export function defineBenchmarkConfig<T extends BaseParticipant = BaseParticipant>(
   config: BenchmarkConfig<T>,
 ): BenchmarkConfig<T> {
   if (!config.benchmarkSlug || typeof config.benchmarkSlug !== 'string') {
@@ -151,9 +202,6 @@ export function defineBenchmark<T extends BaseParticipant = BaseParticipant>(
   }
   if (!config.benchmarkName || typeof config.benchmarkName !== 'string') {
     throw new Error('benchmarkName is required');
-  }
-  if (typeof config.task !== 'function') {
-    throw new Error('task must be a function');
   }
   if (config.phases !== undefined) {
     if (config.iterations !== undefined) {
@@ -172,9 +220,6 @@ export function defineBenchmark<T extends BaseParticipant = BaseParticipant>(
       }
       seen.add(phase.name);
       assertPositiveInt(phase.iterations, `phase '${phase.name}' iterations`);
-      if (phase.task !== undefined && typeof phase.task !== 'function') {
-        throw new Error(`phase '${phase.name}' task must be a function`);
-      }
     }
   }
   assertPositiveInt(config.iterations, 'iterations');
@@ -186,4 +231,24 @@ export function defineBenchmark<T extends BaseParticipant = BaseParticipant>(
     throw new Error(`groupBy must be 'participant' or 'round' (got ${config.groupBy})`);
   }
   return config;
+}
+
+/**
+ * Declares the workload for a benchmark: a function invoked once per iteration.
+ * Steps are named via `ctx.step`, which supports closures and try/finally so
+ * values flow naturally between steps.
+ *
+ *   export const task = defineTask(async (ctx) => {
+ *     const sandbox = await ctx.step('create', () => provider.create());
+ *     try { await ctx.step('exec', () => sandbox.run('node -v')); }
+ *     finally { await ctx.step('destroy', () => sandbox.destroy()); }
+ *   });
+ */
+export function defineTask<T extends BaseParticipant = BaseParticipant>(
+  task: BenchmarkTask<T>,
+): BenchmarkTask<T> {
+  if (typeof task !== 'function') {
+    throw new Error('defineTask requires a task function.');
+  }
+  return task;
 }

@@ -83,7 +83,7 @@ jobs:
           if [ -n "${{ github.event.inputs.provider }}" ]; then
             PROVIDER_FLAG="--provider ${{ github.event.inputs.provider }}"
           fi
-          npx tsx benchmarks/ai-gateway/ai-gateway.bench.ts $PROVIDER_FLAG \
+          npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/ai-gateway/ai-gateway.bench.ts $PROVIDER_FLAG \
             --iterations ${{ (github.event_name == 'push' && '10') || github.event.inputs.iterations || '10' }}
       - run: pnpm run generate-ai-gateway-svg
       - name: Upload results and SVG as artifacts

@@ -10,76 +10,51 @@ This package talks to the platform-owned benchmark/run/participant/worker API. I
 npm install @benchsdk/client
 ```
 
-## Define A Worker
+> Higher-level benchmark authoring (`defineBenchmarkConfig` / `defineTask` and
+> the local orchestrator) lives in
+> [`@benchsdk/runner`](../benchsdk-runner). This package is REST transport plus
+> the worker engine only.
+
+## Run A Worker
 
 ```ts
-import { defineStep, defineTask, defineWorker } from '@benchsdk/client';
+import { createBenchmarkClient } from '@benchsdk/client';
 import { compute } from 'computesdk';
 
-const worker = defineWorker({
+const client = createBenchmarkClient({
+  apiKey: process.env.COMPUTESDK_ADMIN_API_KEY,
+});
+
+// `task` is a raw function; declare named steps imperatively via `step(...)`,
+// so values flow between steps with closures and cleanup runs in a `finally`.
+const { assignment, records } = await client.runWorker({
   benchmarkSlug: 'scale',
   runId: process.env.BENCHMARK_RUN_ID!,
   participantSlug: 'e2b',
   processKind: 'container',
   processKey: process.env.HOSTNAME,
   concurrency: 100,
-  task: defineTask('sandbox.lifecycle', [
-    defineStep('create', async ({ assignment, state }) => {
-      state.sandbox = await compute.sandbox.create({
-        provider: assignment.provider ?? 'e2b',
-      });
-    }),
-    defineStep('readiness', async ({ state }) => {
-      await (state.sandbox as any).runCommand('true');
-    }),
-    defineStep('exec.first-command', async ({ state }) => {
-      await (state.sandbox as any).runCommand('node -v');
-    }),
-    defineStep('pause', { readiness: 'poll' }, async () => {
-      // Every worker reports active pause concurrency and waits here until
-      // the platform reports the participant's pause step is ready.
-    }),
-    defineStep('destroy', async ({ state }) => {
-      await (state.sandbox as any).destroy();
-    }),
-  ]),
+  task: async ({ assignment, step }) => {
+    const sandbox = await step('create', () =>
+      compute.sandbox.create({ provider: assignment.provider ?? 'e2b' }),
+    );
+    try {
+      await step('readiness', () => sandbox.runCommand('true'), { readiness: 'internal' });
+      await step('exec.first-command', () => sandbox.runCommand('node -v'));
+      // A `readiness: 'poll'` step reports active concurrency and waits until
+      // the platform reports the participant's step is ready (a barrier).
+      await step('pause', () => {}, { readiness: 'poll' });
+      return { sandboxId: sandbox.id };
+    } finally {
+      await step('destroy', () => sandbox.destroy());
+    }
+  },
 });
-
-await worker.run();
 ```
 
-`worker.run()` claims the next pending platform assignment for the participant. If no work is available, it returns `{ assignment: null, records: [] }`.
+`client.runWorker(...)` claims the next pending platform assignment for the participant. If no work is available, it returns `{ assignment: null, records: [] }`.
 
 Task results are flushed to the platform in batches of 1,000 records by default. Set `batchSize` to tune this per worker; the SDK validates the platform limit of 5,000 records per batch. Workers also flush partial batches every 30 seconds by default via `flushIntervalMs`, and always flush pending records during final completion or shutdown.
-
-## Reuse A Bench Definition
-
-```ts
-import { defineBench, defineStep, defineTask } from '@benchsdk/client';
-
-const lifecycleTask = defineTask('sandbox.lifecycle', [
-  defineStep('create', async ({ state }) => {
-    state.sandboxId = 'sandbox_123';
-  }),
-  defineStep('exec.first-command', async ({ state }) => ({
-    sandboxId: String(state.sandboxId),
-  })),
-]);
-
-const bench = defineBench({
-  slug: 'scale',
-  participantSlug: 'e2b',
-  concurrency: 100,
-  task: lifecycleTask,
-});
-
-const worker = bench.defineWorker({
-  runId: process.env.BENCHMARK_RUN_ID!,
-  processKey: process.env.HOSTNAME,
-});
-
-await worker.run();
-```
 
 ## Create A Platform Run
 
@@ -110,55 +85,27 @@ await client.planWorkers('scale', run.id, 'modal');
 console.log(run.id);
 ```
 
-Workers must be planned before `worker.run()` can claim assignments.
+Workers must be planned before `client.runWorker(...)` can claim assignments.
 
 ## API
 
-### Definition Helpers
+### Worker Engine
 
 ```ts
-defineStep(name, fn)
-defineTask(name, steps)
-defineWorker(options)
-defineBench(options)
+client.runWorker(options)
 ```
 
-Step functions receive:
+The `task` function receives:
 
 | Field | Type | Description |
 |-------|------|-------------|
 | `assignment` | `BenchmarkAssignment` | Platform-owned assignment for this worker |
 | `taskIndex` | `number` | Deterministic task index within the benchmark run |
-| `state` | `Record<string, unknown>` | Mutable per-task state shared across steps |
+| `step` | `(name, fn, options?) => Promise<R>` | Runs `fn` as a named platform step and records its timing/outcome |
 
-If a step returns a JSON object, it is merged into the task result `data` object. Defined tasks also include `taskName` in `data`.
+If the task returns a JSON object, it is stored as the task result `data`.
 
-`defineTask(name, steps, options)` supports task cleanup:
-
-| Option | Type | Description |
-|--------|------|-------------|
-| `cleanup` | `(context) => Promise<void> \| void` | Runs after the task finishes, whether steps succeeded or failed. Use shared `state` to tear down resources created by earlier steps. |
-
-```ts
-type SandboxState = {
-  sandbox?: Awaited<ReturnType<typeof compute.sandbox.create>>;
-};
-
-defineTask<SandboxState>('sandbox.lifecycle', [
-  defineStep<SandboxState>('create', async ({ state }) => {
-    state.sandbox = await compute.sandbox.create();
-  }),
-  defineStep<SandboxState>('exec', async ({ state }) => {
-    await state.sandbox.runCommand('node -v');
-  }),
-], {
-  cleanup: async ({ state }) => {
-    await state.sandbox?.destroy?.();
-  },
-});
-```
-
-`defineStep(name, options, fn)` supports step-level progress coordination:
+`step(name, fn, options)` supports step-level progress coordination via `options`:
 
 | Option | Type | Description |
 |--------|------|-------------|
@@ -202,7 +149,7 @@ client.failWorker(benchmarkSlug, runId, workerId, attemptId, error)
 client.runWorker(options)
 ```
 
-For custom coordinators that do not fit `defineWorker`, use the best-effort reporter wrapper:
+For custom coordinators that do not fit `runWorker`, use the best-effort reporter wrapper:
 
 ```ts
 const reporter = await BenchmarkReporter.claim({
@@ -227,10 +174,10 @@ await reporter?.finish(false);
 
 `BenchmarkReporter` swallows platform telemetry failures for claim, heartbeat, result flushing, artifact upload, and finish calls. Benchmark work can continue even when reporting is temporarily unavailable.
 
-For `defineWorker` / `runWorker`, use `onFinish` to upload worker-level logs once, after final task results are flushed and before the worker attempt is completed or failed:
+For `runWorker`, use `onFinish` to upload worker-level logs once, after final task results are flushed and before the worker attempt is completed or failed:
 
 ```ts
-defineWorker({
+client.runWorker({
   benchmarkSlug: 'scale',
   runId,
   participantSlug: 'e2b',
@@ -269,7 +216,7 @@ console.log(participant?.tasks.completionRatio);
 console.log(participant?.concurrency.find((item) => item.step === 'pause')?.ready);
 ```
 
-Most workers should use `defineWorker(...).run()`.
+Most workers should use `client.runWorker(...)`.
 
 ## Task Result Shape
 
@@ -286,7 +233,6 @@ Most workers should use `defineWorker(...).run()`.
     { "name": "destroy", "status": "success", "startedAt": "...", "completedAt": "...", "latencyMs": 180 }
   ],
   "data": {
-    "taskName": "sandbox.lifecycle",
     "sandboxId": "..."
   }
 }

@@ -9,8 +9,8 @@
  * the same article URL (via navUrlForIteration(taskIndex)) before anyone starts
  * their (N+1)th — matching the legacy interleaved throughput benchmark.
  */
-import type { BenchmarkTask, TaskContext, TaskResult } from '@benchsdk/cli';
-import { TaskError } from '@benchsdk/cli';
+import type { BenchmarkTask, TaskContext, TaskResult } from '@benchsdk/runner';
+import { TaskError } from '@benchsdk/runner';
 import type { JsonValue } from '@benchsdk/client';
 import { navUrlForIteration, runThroughputIteration } from './throughput-benchmark.js';
 import type { ThroughputProviderConfig } from './throughput-types.js';
