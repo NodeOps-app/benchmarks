@@ -47,7 +47,11 @@ export const providers: ProviderConfig[] = [
     // Activated in daily + PR benchmarks once BEAM_TOKEN / BEAM_WORKSPACE_ID secrets landed.
     name: 'beam',
     requiredEnvVars: ['BEAM_TOKEN', 'BEAM_WORKSPACE_ID'],
-    createCompute: () => beam({ token: process.env.BEAM_TOKEN!, workspaceId: process.env.BEAM_WORKSPACE_ID! }),
+    createCompute: () => beam({
+      token: process.env.BEAM_TOKEN!,
+      workspaceId: process.env.BEAM_WORKSPACE_ID!,
+      gatewayUrl: process.env.BEAM_GATEWAY_URL,
+    }),
     sandboxOptions: { name: 'computesdk-benchmarks', runtime: 'node' },
   },
   {
