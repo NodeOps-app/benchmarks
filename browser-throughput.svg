@@ -59,95 +59,95 @@
   <!-- Row 1 -->
   <text class="rank rank-1" x="40" y="208">1</text>
   <text class="row provider" x="80" y="208">Kernel</text>
-  <text class="row total" x="240" y="208">80.3</text>
-  <text class="row total fast" x="360" y="208">5.84/s</text>
-  <text class="row" x="500" y="208">1.71s</text>
-  <text class="row" x="640" y="208">2.28s</text>
-  <text class="row" x="780" y="208">248ms</text>
+  <text class="row total" x="240" y="208">74.5</text>
+  <text class="row total fast" x="360" y="208">5.13/s</text>
+  <text class="row" x="500" y="208">1.95s</text>
+  <text class="row" x="640" y="208">2.90s</text>
+  <text class="row" x="780" y="208">243ms</text>
   <text class="row" x="920" y="208">0.17s</text>
-  <text class="row" x="1040" y="208">1.96s</text>
-  <text class="row status" x="1180" y="208">100/100</text>
+  <text class="row" x="1040" y="208">2.24s</text>
+  <text class="row status" x="1180" y="208">97/100</text>
   <line class="divider" x1="24" y1="222" x2="1256" y2="222"/>
 
   <!-- Row 2 -->
   <text class="rank rank-2" x="40" y="252">2</text>
   <text class="row provider" x="80" y="252">Tilion</text>
-  <text class="row total" x="240" y="252">71.4</text>
-  <text class="row total fast" x="360" y="252">4.04/s</text>
-  <text class="row" x="500" y="252">2.48s</text>
-  <text class="row" x="640" y="252">3.88s</text>
-  <text class="row" x="780" y="252">251ms</text>
-  <text class="row" x="920" y="252">0.08s</text>
-  <text class="row" x="1040" y="252">2.96s</text>
-  <text class="row status" x="1180" y="252">100/100</text>
+  <text class="row total" x="240" y="252">66.9</text>
+  <text class="row total fast" x="360" y="252">3.71/s</text>
+  <text class="row" x="500" y="252">2.70s</text>
+  <text class="row" x="640" y="252">4.20s</text>
+  <text class="row" x="780" y="252">213ms</text>
+  <text class="row" x="920" y="252">0.02s</text>
+  <text class="row" x="1040" y="252">2.82s</text>
+  <text class="row status" x="1180" y="252">96/100</text>
   <line class="divider" x1="24" y1="266" x2="1256" y2="266"/>
 
   <!-- Row 3 -->
   <text class="rank rank-3" x="40" y="296">3</text>
   <text class="row provider" x="80" y="296">Browseruse</text>
-  <text class="row total" x="240" y="296">67.2</text>
-  <text class="row total medium" x="360" y="296">3.15/s</text>
-  <text class="row" x="500" y="296">3.18s</text>
-  <text class="row" x="640" y="296">3.95s</text>
-  <text class="row" x="780" y="296">323ms</text>
-  <text class="row" x="920" y="296">0.56s</text>
-  <text class="row" x="1040" y="296">4.00s</text>
-  <text class="row status" x="1180" y="296">100/100</text>
+  <text class="row total" x="240" y="296">65.3</text>
+  <text class="row total medium" x="360" y="296">3.36/s</text>
+  <text class="row" x="500" y="296">2.97s</text>
+  <text class="row" x="640" y="296">4.16s</text>
+  <text class="row" x="780" y="296">279ms</text>
+  <text class="row" x="920" y="296">0.16s</text>
+  <text class="row" x="1040" y="296">3.43s</text>
+  <text class="row status" x="1180" y="296">96/100</text>
   <line class="divider" x1="24" y1="310" x2="1256" y2="310"/>
 
   <!-- Row 4 -->
   <text class="rank" x="40" y="340">4</text>
   <text class="row provider" x="80" y="340">Hyperbrowser</text>
-  <text class="row total" x="240" y="340">65.7</text>
-  <text class="row total medium" x="360" y="340">2.93/s</text>
-  <text class="row" x="500" y="340">3.41s</text>
-  <text class="row" x="640" y="340">4.42s</text>
-  <text class="row" x="780" y="340">451ms</text>
-  <text class="row" x="920" y="340">0.28s</text>
-  <text class="row" x="1040" y="340">3.96s</text>
-  <text class="row status" x="1180" y="340">100/100</text>
+  <text class="row total" x="240" y="340">63.6</text>
+  <text class="row total medium" x="360" y="340">3.05/s</text>
+  <text class="row" x="500" y="340">3.28s</text>
+  <text class="row" x="640" y="340">4.51s</text>
+  <text class="row" x="780" y="340">413ms</text>
+  <text class="row" x="920" y="340">0.55s</text>
+  <text class="row" x="1040" y="340">4.25s</text>
+  <text class="row status" x="1180" y="340">96/100</text>
   <line class="divider" x1="24" y1="354" x2="1256" y2="354"/>
 
   <!-- Row 5 -->
   <text class="rank" x="40" y="384">5</text>
   <text class="row provider" x="80" y="384">Browserbase</text>
-  <text class="row total" x="240" y="384">62.5</text>
-  <text class="row total medium" x="360" y="384">2.43/s</text>
-  <text class="row" x="500" y="384">4.12s</text>
-  <text class="row" x="640" y="384">5.34s</text>
-  <text class="row" x="780" y="384">372ms</text>
-  <text class="row" x="920" y="384">0.29s</text>
-  <text class="row" x="1040" y="384">4.78s</text>
-  <text class="row status" x="1180" y="384">100/100</text>
+  <text class="row total" x="240" y="384">62.7</text>
+  <text class="row total medium" x="360" y="384">2.90/s</text>
+  <text class="row" x="500" y="384">3.45s</text>
+  <text class="row" x="640" y="384">4.99s</text>
+  <text class="row" x="780" y="384">252ms</text>
+  <text class="row" x="920" y="384">0.22s</text>
+  <text class="row" x="1040" y="384">3.95s</text>
+  <text class="row status" x="1180" y="384">96/100</text>
   <line class="divider" x1="24" y1="398" x2="1256" y2="398"/>
 
   <!-- Row 6 -->
   <text class="rank" x="40" y="428">6</text>
   <text class="row provider" x="80" y="428">Steel</text>
-  <text class="row total" x="240" y="428">56.5</text>
-  <text class="row total slow" x="360" y="428">1.74/s</text>
-  <text class="row" x="500" y="428">5.76s</text>
-  <text class="row" x="640" y="428">7.96s</text>
-  <text class="row" x="780" y="428">650ms</text>
-  <text class="row" x="920" y="428">0.26s</text>
-  <text class="row" x="1040" y="428">7.25s</text>
-  <text class="row status" x="1180" y="428">100/100</text>
+  <text class="row total" x="240" y="428">51.4</text>
+  <text class="row total slow" x="360" y="428">1.66/s</text>
+  <text class="row" x="500" y="428">6.02s</text>
+  <text class="row" x="640" y="428">11.65s</text>
+  <text class="row" x="780" y="428">625ms</text>
+  <text class="row" x="920" y="428">0.45s</text>
+  <text class="row" x="1040" y="428">10.08s</text>
+  <text class="row status" x="1180" y="428">96/100</text>
   <line class="divider" x1="24" y1="442" x2="1256" y2="442"/>
 
   <!-- Row 7 -->
   <text class="rank" x="40" y="472">7</text>
   <text class="row provider" x="80" y="472">Notte</text>
-  <text class="row total" x="240" y="472">50.1</text>
-  <text class="row total slow" x="360" y="472">1.18/s</text>
-  <text class="row" x="500" y="472">8.47s</text>
-  <text class="row" x="640" y="472">10.41s</text>
-  <text class="row" x="780" y="472">1161ms</text>
-  <text class="row" x="920" y="472">0.18s</text>
-  <text class="row" x="1040" y="472">9.45s</text>
-  <text class="row status" x="1180" y="472">100/100</text>
+  <text class="row total" x="240" y="472">22.6</text>
+  <text class="row total slow" x="360" y="472">0.48/s</text>
+  <text class="row" x="500" y="472">20.49s</text>
+  <text class="row" x="640" y="472">31.25s</text>
+  <text class="row" x="780" y="472">2498ms</text>
+  <text class="row" x="920" y="472">0.39s</text>
+  <text class="row" x="1040" y="472">22.89s</text>
+  <text class="row status" x="1180" y="472">96/100</text>
 
   <!-- Timestamp -->
-  <text class="timestamp" x="1256" y="532" text-anchor="end">Last updated: Jul 24, 2026, 04:23 AM UTC</text>
+  <text class="timestamp" x="1256" y="532" text-anchor="end">Last updated: Jul 31, 2026, 01:44 PM UTC</text>
 
   <!-- Footnote -->
   <text class="timestamp" x="24" y="546">Each session runs 10 sequential actions (navigate, wait, screenshot, textContent, click, goBack) on Wikipedia. Higher APS is better.</text>
