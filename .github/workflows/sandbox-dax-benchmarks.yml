@@ -4,8 +4,10 @@ on:
   pull_request:
     paths:
       - 'src/sandbox/dax.ts'
+      - 'src/sandbox/providers.ts'
       - 'src/run.ts'
       - 'src/merge-results.ts'
+      - 'scripts/dax-benchmark.sh'
       - 'package.json'
       - '.github/workflows/sandbox-dax-benchmarks.yml'
   schedule:
@@ -57,6 +59,7 @@ jobs:
           # - isorun
           # - lightning
           # - modal
+          # - namespace
           # - northflank
           # - opencomputer
           # - runloop
@@ -106,12 +109,14 @@ jobs:
           LIGHTNING_INSTANCE_TYPE: cpu-8
           MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
           MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+          NSC_TOKEN: ${{ secrets.NSC_TOKEN }}
           NORTHFLANK_TOKEN: ${{ secrets.NORTHFLANK_TOKEN }}
           NORTHFLANK_PROJECT_ID: ${{ secrets.NORTHFLANK_PROJECT_ID }}
           OPENCOMPUTER_API_KEY: ${{ secrets.OPENCOMPUTER_API_KEY }}
           OPENCOMPUTER_API_URL: ${{ secrets.OPENCOMPUTER_API_URL }}
           RUNLOOP_API_KEY: ${{ secrets.RUNLOOP_API_KEY }}
           SANDBOX0_TOKEN: ${{ secrets.SANDBOX0_TOKEN }}
+          SPRITES_TOKEN: ${{ secrets.SPRITES_TOKEN }}
           SUPERSERVE_API_KEY: ${{ secrets.SUPERSERVE_API_KEY }}
           TENKI_API_KEY: ${{ secrets.TENKI_API_KEY }}
           TENSORLAKE_API_KEY: ${{ secrets.TENSORLAKE_API_KEY }}
