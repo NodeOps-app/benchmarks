@@ -87,7 +87,11 @@ export class BenchmarkReporter {
         processKey: cfg.processKey,
       });
       return assignment ? new BenchmarkReporter(client, cfg, assignment) : null;
-    } catch {
+    } catch (error) {
+      console.warn(
+        `[benchsdk] failed to claim worker for ${cfg.benchmarkSlug}/${cfg.participantSlug}: ` +
+          `${error instanceof Error ? error.message : String(error)}`,
+      );
       return null;
     }
   }
@@ -169,7 +173,13 @@ export class BenchmarkReporter {
       contentType: input.contentType,
       metadata: input.metadata,
       body: input.body,
-    }).catch(() => null);
+    }).catch((error) => {
+      console.warn(
+        `[benchsdk] failed to upload ${input.kind} artifact for worker ${this.assignment.workerId}: ` +
+          `${error instanceof Error ? error.message : String(error)}`,
+      );
+      return null;
+    });
   }
 
   flush(isFinal = false): Promise<void> {

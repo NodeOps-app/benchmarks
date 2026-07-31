@@ -6,10 +6,13 @@ import type { AIGatewayProviderConfig, AIGatewayWireFormat, PhaseProbeResult } f
 
 const RECEIPT_HEADERS = ['x-vercel-id', 'cf-ray', 'x-request-id', 'request-id', 'anthropic-request-id'];
 
-// Matches OpenAI's `delta.content` and Anthropic's `delta.text` fields alike,
-// so we can timestamp the first content token without fully parsing every SSE
-// event on the hot path.
-const CONTENT_RE = /"(?:content|text)"\s*:\s*"[^"]/;
+// Matches OpenAI's `delta.content`, Anthropic's `delta.text`, and the
+// Responses API's flat `"delta":"…"` string alike, so we can timestamp the
+// first content token without fully parsing every SSE event on the hot path.
+// Safe to share: in the OpenAI/Anthropic formats "delta" is always an object
+// (`"delta":{…}`), never followed directly by a quote, so the added
+// alternative can't false-match those.
+const CONTENT_RE = /"(?:content|text|delta)"\s*:\s*"[^"]/;
 
 function now(): number {
   return performance.now();
@@ -24,6 +27,18 @@ function buildRequestBody(config: AIGatewayProviderConfig, prompt: string, maxTo
       temperature: 0,
       stream: true,
       stream_options: { include_usage: true },
+      ...config.extraBody,
+    });
+  }
+  if (config.wireFormat === 'responses') {
+    // OpenAI Responses API shape: flat `input` string instead of a `messages`
+    // array, `max_output_tokens` instead of `max_tokens`.
+    return JSON.stringify({
+      model: config.model,
+      input: prompt,
+      max_output_tokens: maxTokens,
+      temperature: 0,
+      stream: true,
       ...config.extraBody,
     });
   }
@@ -46,12 +61,16 @@ function extractOutputTokens(wireFormat: AIGatewayWireFormat, buf: string): numb
     const m = [...buf.matchAll(/"usage"\s*:\s*\{[^}]*"completion_tokens"\s*:\s*(\d+)/g)];
     return m.length > 0 ? Number(m[m.length - 1][1]) : undefined;
   }
-  // Anthropic streams cumulative usage on message_start/message_delta events;
-  // the last "output_tokens" seen in the buffer is the most up to date. Scoped
-  // to inside the "usage" object (allowing one level of nested {} for fields
-  // like usage.server_tool_use) so a gateway that echoes an unrelated
-  // "output_tokens" elsewhere — e.g. Concentrate's sibling `cost.breakdown[…]
-  // .output_tokens` dollar amount — can't be mistaken for the real count.
+  // Anthropic and the Responses API both stream cumulative usage under a
+  // "usage" object keyed by "output_tokens" (Anthropic: message_start/
+  // message_delta; Responses: response.completed's `response.usage`) — same
+  // shared extraction path. The last "output_tokens" seen in the buffer is
+  // the most up to date. Scoped to inside the "usage" object (allowing one
+  // level of nested {} for fields like usage.server_tool_use) so a gateway
+  // that echoes an unrelated "output_tokens" elsewhere — e.g. Concentrate's
+  // sibling `cost.breakdown[…].output_tokens` dollar amount, present on both
+  // its /messages and /responses endpoints — can't be mistaken for the real
+  // count.
   const matches = [...buf.matchAll(/"usage"\s*:\s*\{(?:[^{}]|\{[^{}]*\})*?"output_tokens"\s*:\s*(\d+)/g)];
   return matches.length > 0 ? Number(matches[matches.length - 1][1]) : undefined;
 }

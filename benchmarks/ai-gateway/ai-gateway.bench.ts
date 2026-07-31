@@ -107,8 +107,13 @@ async function aiGatewayTask(ctx: TaskContext<AIGatewayProviderConfig>): Promise
   const steps = phaseSteps(result);
 
   if (result.error) {
+    ctx.log(`${ctx.participant.name} ${result.mode} probe failed: ${result.error}`, probeData(result));
     throw new TaskError(result.error, { code: 'probe_failed', data: probeData(result), steps });
   }
+  ctx.log(
+    `${ctx.participant.name} ${result.mode} probe: ttfb=${result.ttfbMs}ms ttft=${result.ttftMs}ms`,
+    probeData(result),
+  );
   return {
     data: probeData(result),
     steps,

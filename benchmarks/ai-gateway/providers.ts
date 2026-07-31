@@ -43,20 +43,24 @@ export const providers: AIGatewayProviderConfig[] = [
     // serve via Bedrock/Vertex/its own "claudeaws" credential. `providerOptions
     // .gateway.order: ['anthropic']` sets Anthropic as first choice while
     // still allowing fallback to those other providers if Anthropic itself
-    // fails, on the REST/OpenAI-compatible path (the same field the AI SDK
-    // exposes as `providerOptions.gateway`, just inlined in the raw request
-    // body here since this benchmark doesn't use the SDK). Confirmed live: a
-    // streamed response carries `resolvedProvider` inside
-    // `choices[0].delta.provider_metadata.gateway.routing` on its final
-    // chunk (alongside usage) — extracted below into `resolvedProvider` for
-    // the same visibility-over-silence reason as OpenRouter above. See
-    // https://vercel.com/docs/ai-gateway/models-and-providers/provider-filtering-and-ordering.
+    // fails. Unlike OpenRouter, Vercel also exposes a genuine native Anthropic
+    // Messages API passthrough (`/v1/messages`, spec-identical per Vercel's
+    // own docs) — confirmed live to still honor `providerOptions.gateway.order`
+    // on this path, so we use it instead of the OpenAI-compatible
+    // `/v1/chat/completions` to avoid the request/response translation that
+    // path implies (same rationale as Cloudflare/Pydantic below). Confirmed
+    // live: a streamed response carries `resolvedProvider` inside the final
+    // `message_delta` event's `provider_metadata.gateway.routing` (alongside
+    // usage) — extracted below into `resolvedProvider` for the same
+    // visibility-over-silence reason as OpenRouter above. See
+    // https://vercel.com/docs/ai-gateway/sdks-and-apis/anthropic-messages-api
+    // and https://vercel.com/docs/ai-gateway/models-and-providers/provider-filtering-and-ordering.
     name: 'vercel-ai-gateway',
     requiredEnvVars: ['VERCEL_AI_GATEWAY_API_KEY'],
-    wireFormat: 'openai',
+    wireFormat: 'anthropic',
     model: 'anthropic/claude-haiku-4.5',
     host: 'ai-gateway.vercel.sh',
-    path: '/v1/chat/completions',
+    path: '/v1/messages',
     buildHeaders: () => ({
       Authorization: `Bearer ${process.env.VERCEL_AI_GATEWAY_API_KEY}`,
     }),
@@ -84,15 +88,21 @@ export const providers: AIGatewayProviderConfig[] = [
     // `anthropic/` here is LLM Gateway's provider-pinning syntax (provider/model),
     // so requests route to Anthropic itself — the same underlying model and
     // deployment as the other participants, addressed in this gateway's own
-    // catalog naming convention.
+    // catalog naming convention. LLM Gateway also exposes a native Anthropic
+    // Messages API passthrough (`/v1/messages`, listed alongside
+    // `/v1/chat/completions` in their own API reference) — confirmed live
+    // with a genuine Anthropic-shaped streamed response, so we use that
+    // instead of the OpenAI-compatible route to avoid the translation layer
+    // (same rationale as Cloudflare/Pydantic/Vercel).
     name: 'llmgateway',
     requiredEnvVars: ['LLM_GATEWAY_API_KEY'],
-    wireFormat: 'openai',
+    wireFormat: 'anthropic',
     model: 'anthropic/claude-haiku-4-5',
     host: 'api.llmgateway.io',
-    path: '/v1/chat/completions',
+    path: '/v1/messages',
     buildHeaders: () => ({
       Authorization: `Bearer ${process.env.LLM_GATEWAY_API_KEY}`,
+      'anthropic-version': '2023-06-01',
     }),
   },
   {
@@ -119,26 +129,31 @@ export const providers: AIGatewayProviderConfig[] = [
     }),
   },
   {
-    // Concentrate AI exposes an Anthropic-Messages-API-compatible endpoint
-    // (`/v1/messages/`, confirmed against its published OpenAPI spec at
-    // concentrate.ai/docs/api-reference/openapi.json) alongside a separate
-    // OpenAI-compatible `/v1/chat/completions/`. We use the Anthropic-shaped
-    // one so this sits in the same wireFormat group as Cloudflare/Pydantic/
-    // anthropic-direct. `anthropic/` is this gateway's provider-prefix syntax
-    // (same idea as llmgateway's pinning above) to route to Anthropic itself
-    // rather than Azure or Bedrock, which Concentrate's own "model fortress"
-    // catalog also lists as routing options for this model
+    // Concentrate AI exposes three endpoints: an Anthropic-Messages-compatible
+    // `/v1/messages/`, an OpenAI-Chat-Completions-compatible
+    // `/v1/chat/completions/`, and `/v1/responses/` — their own first-party,
+    // stable API (titled "Responses API" in their published OpenAPI spec at
+    // concentrate.ai/docs/api-reference/openapi.json), implementing OpenAI's
+    // Responses API shape. Concentrate has confirmed directly that
+    // `/v1/messages/` is a beta compatibility shim, not their production
+    // surface — it's also where we found the output_tokens/cost.breakdown
+    // field-collision bug (see phase-probe.ts), which reproduces identically
+    // on `/v1/responses/` too (same `cost.breakdown[…].output_tokens` dollar
+    // field, confirmed live), so this benchmark's usage-scoped token
+    // extraction still applies. `anthropic/` is this gateway's provider-prefix
+    // syntax (same idea as llmgateway's pinning above) to route to Anthropic
+    // itself rather than Azure or Bedrock, which Concentrate's own "model
+    // fortress" catalog also lists as routing options for this model
     // (anthropic/claude-haiku-4-5, azure/claude-haiku-4-5,
     // bedrock/claude-haiku-4-5).
     name: 'concentrate-ai-gateway',
     requiredEnvVars: ['CONCENTRATE_AI_GATEWAY_API_KEY'],
-    wireFormat: 'anthropic',
+    wireFormat: 'responses',
     model: 'anthropic/claude-haiku-4-5-20251001',
     host: 'api.concentrate.ai',
-    path: '/v1/messages/',
+    path: '/v1/responses/',
     buildHeaders: () => ({
       Authorization: `Bearer ${process.env.CONCENTRATE_AI_GATEWAY_API_KEY}`,
-      'anthropic-version': '2023-06-01',
     }),
   },
   {
