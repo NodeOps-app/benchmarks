@@ -2778,493 +2778,533 @@
       "iterations": [
         {
           "mode": "cold",
-          "dnsMs": 21.32,
-          "tcpMs": 1.2,
-          "tlsMs": 5.4,
-          "ttfbMs": 1096.4,
-          "ttftMs": 1096.51,
-          "coldE2eMs": 1124.42,
-          "outputTokens": 0,
+          "dnsMs": 120.64,
+          "tcpMs": 1.83,
+          "tlsMs": 5,
+          "ttfbMs": 709.23,
+          "ttftMs": 709.34,
+          "coldE2eMs": 836.81,
+          "outputTokens": 89,
+          "outputTokensPerSec": 89.38,
           "receipts": {
-            "cf-ray": "a23d13b52ff0abc2-IAD"
+            "cf-ray": "a23f24b37d492d76-IAD"
           }
         },
         {
           "mode": "cold",
-          "dnsMs": 2.2,
-          "tcpMs": 2.09,
-          "tlsMs": 6.58,
-          "ttfbMs": 749.42,
-          "ttftMs": 749.73,
-          "coldE2eMs": 760.6,
-          "outputTokens": 0,
-          "receipts": {
-            "cf-ray": "a23d1407ad77f598-IAD"
-          }
-        },
-        {
-          "mode": "cold",
-          "dnsMs": 2.5,
-          "tcpMs": 1.41,
-          "tlsMs": 9.09,
-          "ttfbMs": 848.89,
-          "ttftMs": 848.99,
-          "coldE2eMs": 861.99,
-          "outputTokens": 0,
-          "receipts": {
-            "cf-ray": "a23d146ca9c90cef-IAD"
-          }
-        },
-        {
-          "mode": "cold",
-          "dnsMs": 1.04,
-          "tcpMs": 1.09,
-          "tlsMs": 5.98,
-          "ttfbMs": 883.28,
-          "ttftMs": 883.39,
-          "coldE2eMs": 891.49,
-          "outputTokens": 0,
-          "receipts": {
-            "cf-ray": "a23d14baabc97ce5-IAD"
-          }
-        },
-        {
-          "mode": "cold",
-          "dnsMs": 0.77,
-          "tcpMs": 1.17,
-          "tlsMs": 6.25,
-          "ttfbMs": 703.29,
-          "ttftMs": 703.36,
-          "coldE2eMs": 711.55,
-          "outputTokens": 0,
-          "receipts": {
-            "cf-ray": "a23d150f6f15c3b9-IAD"
-          }
-        },
-        {
-          "mode": "cold",
-          "dnsMs": 0.7,
-          "tcpMs": 1.09,
-          "tlsMs": 6.27,
-          "ttfbMs": 889.24,
-          "ttftMs": 889.31,
-          "coldE2eMs": 897.37,
-          "outputTokens": 0,
-          "receipts": {
-            "cf-ray": "a23d157a7e5e0fed-IAD"
-          }
-        },
-        {
-          "mode": "cold",
-          "dnsMs": 0.84,
-          "tcpMs": 0.91,
-          "tlsMs": 4.55,
-          "ttfbMs": 830.21,
-          "ttftMs": 830.29,
-          "coldE2eMs": 836.59,
-          "outputTokens": 0,
-          "receipts": {
-            "cf-ray": "a23d15c9ef22d6e3-IAD"
-          }
-        },
-        {
-          "mode": "cold",
-          "dnsMs": 0.75,
+          "dnsMs": 0.96,
           "tcpMs": 1.27,
-          "tlsMs": 5.47,
-          "ttfbMs": 712.29,
-          "ttftMs": 712.37,
-          "coldE2eMs": 719.86,
-          "outputTokens": 0,
+          "tlsMs": 5.49,
+          "ttfbMs": 979.52,
+          "ttftMs": 984.69,
+          "coldE2eMs": 992.4,
+          "outputTokens": 80,
+          "outputTokensPerSec": 83.17,
           "receipts": {
-            "cf-ray": "a23d1629db36aa85-IAD"
+            "cf-ray": "a23f24fd081f9388-IAD"
           }
         },
         {
           "mode": "cold",
-          "dnsMs": 0.78,
-          "tcpMs": 0.89,
-          "tlsMs": 5.02,
-          "ttfbMs": 659.19,
-          "ttftMs": 659.25,
-          "coldE2eMs": 665.94,
-          "outputTokens": 0,
+          "dnsMs": 0.94,
+          "tcpMs": 1.62,
+          "tlsMs": 5.7,
+          "ttfbMs": 790.86,
+          "ttftMs": 791.03,
+          "coldE2eMs": 799.29,
+          "outputTokens": 89,
+          "outputTokensPerSec": 89.78,
           "receipts": {
-            "cf-ray": "a23d167509d0f2e9-IAD"
+            "cf-ray": "a23f25486d4f1f57-IAD"
           }
         },
         {
           "mode": "cold",
-          "dnsMs": 0.76,
-          "tcpMs": 1.1,
-          "tlsMs": 6.79,
-          "ttfbMs": 734.4,
-          "ttftMs": 734.47,
-          "coldE2eMs": 743.12,
-          "outputTokens": 0,
+          "dnsMs": 0.93,
+          "tcpMs": 1.33,
+          "tlsMs": 5.25,
+          "ttfbMs": 756.27,
+          "ttftMs": 756.54,
+          "coldE2eMs": 764.05,
+          "outputTokens": 76,
+          "outputTokensPerSec": 84.44,
           "receipts": {
-            "cf-ray": "a23d16d229a52024-IAD"
+            "cf-ray": "a23f258f8d83fa80-IAD"
           }
         },
         {
           "mode": "cold",
-          "dnsMs": 0.83,
-          "tcpMs": 0.95,
-          "tlsMs": 6.59,
-          "ttfbMs": 725.21,
-          "ttftMs": 725.3,
-          "coldE2eMs": 733.68,
-          "outputTokens": 0,
+          "dnsMs": 0.93,
+          "tcpMs": 1.49,
+          "tlsMs": 5.89,
+          "ttfbMs": 744.86,
+          "ttftMs": 744.96,
+          "coldE2eMs": 753.28,
+          "outputTokens": 82,
+          "outputTokensPerSec": 93.88,
           "receipts": {
-            "cf-ray": "a23d17292d64884f-IAD"
+            "cf-ray": "a23f25dadfa7ca91-IAD"
           }
         },
         {
           "mode": "cold",
-          "dnsMs": 0.79,
-          "tcpMs": 1.29,
-          "tlsMs": 5.4,
-          "ttfbMs": 770.66,
-          "ttftMs": 770.72,
-          "coldE2eMs": 778.2,
-          "outputTokens": 0,
+          "dnsMs": 5.26,
+          "tcpMs": 1.24,
+          "tlsMs": 8.5,
+          "ttfbMs": 820.26,
+          "ttftMs": 820.37,
+          "coldE2eMs": 835.37,
+          "outputTokens": 89,
+          "outputTokensPerSec": 90.75,
           "receipts": {
-            "cf-ray": "a23d17722e3c4cad-IAD"
+            "cf-ray": "a23f262c98fc7ff1-IAD"
           }
         },
         {
           "mode": "cold",
-          "dnsMs": 1.15,
-          "tcpMs": 1.19,
-          "tlsMs": 7.1,
-          "ttfbMs": 909.31,
-          "ttftMs": 911.66,
-          "coldE2eMs": 921.09,
-          "outputTokens": 0,
+          "dnsMs": 0.95,
+          "tcpMs": 0.84,
+          "tlsMs": 5.35,
+          "ttfbMs": 865.41,
+          "ttftMs": 866.32,
+          "coldE2eMs": 873.46,
+          "outputTokens": 81,
+          "outputTokensPerSec": 94.05,
           "receipts": {
-            "cf-ray": "a23d17dc6d9081bd-IAD"
-          }
-        },
-        {
-          "mode": "cold",
-          "dnsMs": 0.75,
-          "tcpMs": 0.88,
-          "tlsMs": 9.29,
-          "ttfbMs": 2360.44,
-          "ttftMs": 2360.5,
-          "coldE2eMs": 2371.42,
-          "outputTokens": 0,
-          "receipts": {
-            "cf-ray": "a23d183b5c0a6fa3-IAD"
-          }
-        },
-        {
-          "mode": "cold",
-          "dnsMs": 0.86,
-          "tcpMs": 0.98,
-          "tlsMs": 4.52,
-          "ttfbMs": 2251,
-          "ttftMs": 2263.44,
-          "coldE2eMs": 2269.79,
-          "outputTokens": 0,
-          "receipts": {
-            "cf-ray": "a23d1897de11c9ad-IAD"
-          }
-        },
-        {
-          "mode": "cold",
-          "dnsMs": 0.75,
-          "tcpMs": 0.99,
-          "tlsMs": 5.26,
-          "ttfbMs": 3254.34,
-          "ttftMs": 3263.22,
-          "coldE2eMs": 3270.21,
-          "outputTokens": 0,
-          "receipts": {
-            "cf-ray": "a23d191d8bf2a153-IAD"
-          }
-        },
-        {
-          "mode": "cold",
-          "dnsMs": 0.78,
-          "tcpMs": 0.94,
-          "tlsMs": 5.11,
-          "ttfbMs": 913.35,
-          "ttftMs": 913.41,
-          "coldE2eMs": 920.24,
-          "outputTokens": 0,
-          "receipts": {
-            "cf-ray": "a23d199d3d25d648-IAD"
-          }
-        },
-        {
-          "mode": "cold",
-          "dnsMs": 0.68,
-          "tcpMs": 0.82,
-          "tlsMs": 4.65,
-          "ttfbMs": 808.16,
-          "ttftMs": 808.26,
-          "coldE2eMs": 814.41,
-          "outputTokens": 0,
-          "receipts": {
-            "cf-ray": "a23d19ed8954e5f6-IAD"
+            "cf-ray": "a23f267e7f2cd67c-IAD"
           }
         },
         {
           "mode": "cold",
           "dnsMs": 0.71,
-          "tcpMs": 1.21,
-          "tlsMs": 6.72,
-          "ttfbMs": 943.49,
-          "ttftMs": 946.14,
-          "coldE2eMs": 954.8,
-          "outputTokens": 0,
+          "tcpMs": 1.26,
+          "tlsMs": 5.47,
+          "ttfbMs": 622.16,
+          "ttftMs": 622.22,
+          "coldE2eMs": 629.66,
+          "outputTokens": 82,
+          "outputTokensPerSec": 99.25,
           "receipts": {
-            "cf-ray": "a23d1a3e6f2c390e-IAD"
+            "cf-ray": "a23f26cb2e1ecf0f-IAD"
+          }
+        },
+        {
+          "mode": "cold",
+          "dnsMs": 1.1,
+          "tcpMs": 1.37,
+          "tlsMs": 9.42,
+          "ttfbMs": 610.17,
+          "ttftMs": 610.25,
+          "coldE2eMs": 622.14,
+          "outputTokens": 80,
+          "outputTokensPerSec": 82.87,
+          "receipts": {
+            "cf-ray": "a23f272218c02337-IAD"
+          }
+        },
+        {
+          "mode": "cold",
+          "dnsMs": 0.77,
+          "tcpMs": 1.23,
+          "tlsMs": 5.93,
+          "ttfbMs": 897.15,
+          "ttftMs": 897.22,
+          "coldE2eMs": 905.16,
+          "outputTokens": 76,
+          "outputTokensPerSec": 94.01,
+          "receipts": {
+            "cf-ray": "a23f27707d745a5d-IAD"
+          }
+        },
+        {
+          "mode": "cold",
+          "dnsMs": 0.7,
+          "tcpMs": 0.89,
+          "tlsMs": 4.81,
+          "ttfbMs": 1249.56,
+          "ttftMs": 1249.63,
+          "coldE2eMs": 1256.03,
+          "outputTokens": 80,
+          "outputTokensPerSec": 88.23,
+          "receipts": {
+            "cf-ray": "a23f27bcaef6dab8-IAD"
           }
         },
         {
           "mode": "cold",
           "dnsMs": 0.78,
-          "tcpMs": 0.84,
-          "tlsMs": 5.74,
-          "ttfbMs": 835.73,
-          "ttftMs": 835.79,
-          "coldE2eMs": 843.16,
-          "outputTokens": 0,
+          "tcpMs": 1.06,
+          "tlsMs": 4.36,
+          "ttfbMs": 787.77,
+          "ttftMs": 787.87,
+          "coldE2eMs": 794.07,
+          "outputTokens": 82,
+          "outputTokensPerSec": 98.62,
           "receipts": {
-            "cf-ray": "a23d1a8d880ed63c-IAD"
+            "cf-ray": "a23f2816c94cd6d0-IAD"
+          }
+        },
+        {
+          "mode": "cold",
+          "dnsMs": 1.03,
+          "tcpMs": 1.01,
+          "tlsMs": 8.01,
+          "ttfbMs": 786.98,
+          "ttftMs": 787.05,
+          "coldE2eMs": 797.1,
+          "outputTokens": 76,
+          "outputTokensPerSec": 91.31,
+          "receipts": {
+            "cf-ray": "a23f28608ff681ed-IAD"
+          }
+        },
+        {
+          "mode": "cold",
+          "dnsMs": 1.21,
+          "tcpMs": 1.5,
+          "tlsMs": 16.41,
+          "ttfbMs": 821.73,
+          "ttftMs": 821.82,
+          "coldE2eMs": 840.93,
+          "outputTokens": 80,
+          "outputTokensPerSec": 84.06,
+          "receipts": {
+            "cf-ray": "a23f28a57fec8230-IAD"
+          }
+        },
+        {
+          "mode": "cold",
+          "dnsMs": 1.59,
+          "tcpMs": 1.76,
+          "tlsMs": 5.83,
+          "ttfbMs": 1614.88,
+          "ttftMs": 1646.68,
+          "coldE2eMs": 1655.87,
+          "outputTokens": 81,
+          "outputTokensPerSec": 105.16,
+          "receipts": {
+            "cf-ray": "a23f2900491a74e2-IAD"
+          }
+        },
+        {
+          "mode": "cold",
+          "dnsMs": 0.87,
+          "tcpMs": 1.8,
+          "tlsMs": 6.76,
+          "ttfbMs": 1072.42,
+          "ttftMs": 1072.5,
+          "coldE2eMs": 1081.93,
+          "outputTokens": 81,
+          "outputTokensPerSec": 93.62,
+          "receipts": {
+            "cf-ray": "a23f295caba5feee-IAD"
+          }
+        },
+        {
+          "mode": "cold",
+          "dnsMs": 0.79,
+          "tcpMs": 1.35,
+          "tlsMs": 4.16,
+          "ttfbMs": 608.95,
+          "ttftMs": 609.02,
+          "coldE2eMs": 615.32,
+          "outputTokens": 80,
+          "outputTokensPerSec": 82.81,
+          "receipts": {
+            "cf-ray": "a23f29c0eaf6f27c-IAD"
+          }
+        },
+        {
+          "mode": "cold",
+          "dnsMs": 0.97,
+          "tcpMs": 1.53,
+          "tlsMs": 4.58,
+          "ttfbMs": 858.3,
+          "ttftMs": 878.28,
+          "coldE2eMs": 885.36,
+          "outputTokens": 81,
+          "outputTokensPerSec": 107.26,
+          "receipts": {
+            "cf-ray": "a23f2a13e8e4d4c1-IAD"
+          }
+        },
+        {
+          "mode": "cold",
+          "dnsMs": 1.32,
+          "tcpMs": 1.36,
+          "tlsMs": 5.73,
+          "ttfbMs": 955.7,
+          "ttftMs": 955.77,
+          "coldE2eMs": 964.18,
+          "outputTokens": 80,
+          "outputTokensPerSec": 82.27,
+          "receipts": {
+            "cf-ray": "a23f2a5dbc26d6a0-IAD"
+          }
+        },
+        {
+          "mode": "cold",
+          "dnsMs": 0.99,
+          "tcpMs": 0.93,
+          "tlsMs": 4.06,
+          "ttfbMs": 1480.87,
+          "ttftMs": 1480.95,
+          "coldE2eMs": 1486.93,
+          "outputTokens": 82,
+          "outputTokensPerSec": 107.01,
+          "receipts": {
+            "cf-ray": "a23f2aa9ab068e97-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 1625.34,
-          "ttftMs": 1644.18,
-          "outputTokens": 0,
+          "ttfbMs": 650.03,
+          "ttftMs": 650.68,
+          "outputTokens": 81,
+          "outputTokensPerSec": 103.91,
           "receipts": {
-            "cf-ray": "a23d1b21fca3d6d5-IAD"
+            "cf-ray": "a23f2b3f9d3ee091-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 642.59,
-          "ttftMs": 642.66,
-          "outputTokens": 0,
+          "ttfbMs": 556.22,
+          "ttftMs": 556.32,
+          "outputTokens": 76,
+          "outputTokensPerSec": 91.81,
           "receipts": {
-            "cf-ray": "a23d1bcd78dda568-IAD"
+            "cf-ray": "a23f2bee79ba3895-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 668.38,
-          "ttftMs": 668.43,
-          "outputTokens": 0,
+          "ttfbMs": 984.35,
+          "ttftMs": 984.45,
+          "outputTokens": 80,
+          "outputTokensPerSec": 83.37,
           "receipts": {
-            "cf-ray": "a23d1c739ae505ee-IAD"
+            "cf-ray": "a23f2c801ab8b114-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 990.88,
-          "ttftMs": 990.93,
-          "outputTokens": 0,
+          "ttfbMs": 603.97,
+          "ttftMs": 604.06,
+          "outputTokens": 91,
+          "outputTokensPerSec": 93.39,
           "receipts": {
-            "cf-ray": "a23d1d12285b147c-IAD"
+            "cf-ray": "a23f2d137d057a77-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 775.1,
-          "ttftMs": 775.18,
-          "outputTokens": 0,
+          "ttfbMs": 600.91,
+          "ttftMs": 601,
+          "outputTokens": 80,
+          "outputTokensPerSec": 83.07,
           "receipts": {
-            "cf-ray": "a23d1dbf1c38e600-IAD"
+            "cf-ray": "a23f2da8bcfb6d4d-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 608.67,
-          "ttftMs": 608.81,
-          "outputTokens": 0,
+          "ttfbMs": 618.24,
+          "ttftMs": 618.33,
+          "outputTokens": 80,
+          "outputTokensPerSec": 82.48,
           "receipts": {
-            "cf-ray": "a23d1e65896059af-IAD"
+            "cf-ray": "a23f2e37ea497048-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 703.41,
-          "ttftMs": 703.53,
-          "outputTokens": 0,
+          "ttfbMs": 621.07,
+          "ttftMs": 621.17,
+          "outputTokens": 80,
+          "outputTokensPerSec": 75.07,
           "receipts": {
-            "cf-ray": "a23d1f077d685629-IAD"
+            "cf-ray": "a23f2efe4b80d643-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 698.59,
-          "ttftMs": 698.68,
-          "outputTokens": 0,
+          "ttfbMs": 571.96,
+          "ttftMs": 572.05,
+          "outputTokens": 89,
+          "outputTokensPerSec": 87.52,
           "receipts": {
-            "cf-ray": "a23d1fabbdd8898c-IAD"
+            "cf-ray": "a23f2f95c9c70fed-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 1821.54,
-          "ttftMs": 1968.17,
-          "outputTokens": 0,
+          "ttfbMs": 632.81,
+          "ttftMs": 632.9,
+          "outputTokens": 76,
+          "outputTokensPerSec": 95.02,
           "receipts": {
-            "cf-ray": "a23d204cea554b00-IAD"
+            "cf-ray": "a23f3028ed1905e4-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 617.74,
-          "ttftMs": 617.83,
-          "outputTokens": 0,
+          "ttfbMs": 579.95,
+          "ttftMs": 580.02,
+          "outputTokens": 89,
+          "outputTokensPerSec": 90.35,
           "receipts": {
-            "cf-ray": "a23d21045a5f9951-IAD"
+            "cf-ray": "a23f30bd4e20731a-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 1088.77,
-          "ttftMs": 1094.19,
-          "outputTokens": 0,
+          "ttfbMs": 655.71,
+          "ttftMs": 655.8,
+          "outputTokens": 80,
+          "outputTokensPerSec": 83.39,
           "receipts": {
-            "cf-ray": "a23d21a41ea1e762-IAD"
+            "cf-ray": "a23f3160490a588a-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 998.25,
-          "ttftMs": 998.35,
-          "outputTokens": 0,
+          "ttfbMs": 617.44,
+          "ttftMs": 617.53,
+          "outputTokens": 82,
+          "outputTokensPerSec": 105.58,
           "receipts": {
-            "cf-ray": "a23d2243198cf697-IAD"
+            "cf-ray": "a23f31fb7b7812ce-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 1628.12,
-          "ttftMs": 1725.31,
-          "outputTokens": 0,
+          "ttfbMs": 585.73,
+          "ttftMs": 585.84,
+          "outputTokens": 89,
+          "outputTokensPerSec": 90.58,
           "receipts": {
-            "cf-ray": "a23d22fbca7a744b-IAD"
+            "cf-ray": "a23f32936f112ade-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 610.78,
-          "ttftMs": 610.87,
-          "outputTokens": 0,
+          "ttfbMs": 1130.72,
+          "ttftMs": 1130.82,
+          "outputTokens": 80,
+          "outputTokensPerSec": 81.55,
           "receipts": {
-            "cf-ray": "a23d23d6cf52e600-IAD"
+            "cf-ray": "a23f331cecbd150b-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 683.1,
-          "ttftMs": 684.65,
-          "outputTokens": 0,
+          "ttfbMs": 580.23,
+          "ttftMs": 580.33,
+          "outputTokens": 79,
+          "outputTokensPerSec": 53.02,
           "receipts": {
-            "cf-ray": "a23d24a0d894609d-IAD"
+            "cf-ray": "a23f33c63fe47ca7-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 599.43,
-          "ttftMs": 599.53,
-          "outputTokens": 0,
+          "ttfbMs": 604.63,
+          "ttftMs": 605.05,
+          "outputTokens": 80,
+          "outputTokensPerSec": 79.99,
           "receipts": {
-            "cf-ray": "a23d2542ae0f3151-IAD"
+            "cf-ray": "a23f34664c619388-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 7092.2,
-          "ttftMs": 7115.01,
-          "outputTokens": 0,
+          "ttfbMs": 858.68,
+          "ttftMs": 858.78,
+          "outputTokens": 82,
+          "outputTokensPerSec": 142.04,
           "receipts": {
-            "cf-ray": "a23d25de9c752d85-IAD"
+            "cf-ray": "a23f34ff280112f0-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 926.73,
-          "ttftMs": 926.86,
-          "outputTokens": 0,
+          "ttfbMs": 611.31,
+          "ttftMs": 611.4,
+          "outputTokens": 81,
+          "outputTokensPerSec": 100.2,
           "receipts": {
-            "cf-ray": "a23d26dc3c585648-IAD"
+            "cf-ray": "a23f3591a8590814-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 673.15,
-          "ttftMs": 673.35,
-          "outputTokens": 0,
+          "ttfbMs": 637.4,
+          "ttftMs": 637.49,
+          "outputTokens": 84,
+          "outputTokensPerSec": 85.32,
           "receipts": {
-            "cf-ray": "a23d277cefb414f4-IAD"
+            "cf-ray": "a23f362d79208544-IAD"
           }
         },
         {
           "mode": "warm",
-          "ttfbMs": 806.44,
-          "ttftMs": 806.53,
-          "outputTokens": 0,
+          "ttfbMs": 599.64,
+          "ttftMs": 599.73,
+          "outputTokens": 82,
+          "outputTokensPerSec": 102.35,
           "receipts": {
-            "cf-ray": "a23d28324b32b268-IAD"
+            "cf-ray": "a23f36be6da96b8a-IAD"
           }
         }
       ],
       "summary": {
         "dnsMs": {
-          "median": 0.78,
-          "p95": 2.5,
-          "p99": 2.5
+          "median": 0.96,
+          "p95": 5.26,
+          "p99": 5.26
         },
         "tcpMs": {
-          "median": 1.09,
-          "p95": 1.41,
-          "p99": 1.41
+          "median": 1.34,
+          "p95": 1.8,
+          "p99": 1.8
         },
         "tlsMs": {
-          "median": 5.86,
-          "p95": 9.09,
-          "p99": 9.09
+          "median": 5.59,
+          "p95": 9.42,
+          "p99": 9.42
         },
         "coldTtfbMs": {
-          "median": 842.31,
-          "p95": 2360.44,
-          "p99": 2360.44
+          "median": 821,
+          "p95": 1480.87,
+          "p99": 1480.87
         },
         "coldTtftMs": {
-          "median": 842.39,
-          "p95": 2360.5,
-          "p99": 2360.5
+          "median": 821.09,
+          "p95": 1480.95,
+          "p99": 1480.95
         },
         "coldE2eMs": {
-          "median": 852.57,
-          "p95": 2371.42,
-          "p99": 2371.42
+          "median": 838.87,
+          "p95": 1486.93,
+          "p99": 1486.93
         },
         "warmTtfbMs": {
-          "median": 739.25,
-          "p95": 1821.54,
-          "p99": 1821.54
+          "median": 614.38,
+          "p95": 984.35,
+          "p99": 984.35
         },
         "warmTtftMs": {
-          "median": 739.35,
-          "p95": 1968.17,
-          "p99": 1968.17
+          "median": 614.47,
+          "p95": 984.45,
+          "p99": 984.45
         },
         "outputTokensPerSec": {
-          "median": 0,
-          "p95": 0,
-          "p99": 0
+          "median": 90.47,
+          "p95": 105.58,
+          "p99": 107.01
         }
       },
-      "compositeScore": 84.36,
+      "compositeScore": 90.35,
       "successRate": 1
     },
     {
