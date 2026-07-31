@@ -56,35 +56,35 @@
 
   <!-- Row 1 -->
   <text class="rank rank-1" x="40" y="208">1</text>
-  <text class="row provider" x="80" y="208">Tigris</text>
+  <text class="row provider" x="80" y="208">Tensorlake</text>
   <text class="row metric" x="280" y="208">99.7</text>
-  <text class="row metric fast" x="400" y="208">0.12s</text>
-  <text class="row" x="590" y="208">0.17s</text>
-  <text class="row" x="780" y="208">0.22s</text>
-  <text class="row" x="940" y="208">0.20s</text>
+  <text class="row metric fast" x="400" y="208">0.03s</text>
+  <text class="row" x="590" y="208">0.28s</text>
+  <text class="row" x="780" y="208">0.31s</text>
+  <text class="row" x="940" y="208">0.09s</text>
   <text class="row status" x="1090" y="208">100/100</text>
   <line class="divider" x1="24" y1="222" x2="1176" y2="222"/>
 
   <!-- Row 2 -->
   <text class="rank rank-2" x="40" y="252">2</text>
-  <text class="row provider" x="80" y="252">Azure Blob Storage</text>
-  <text class="row metric" x="280" y="252">87.8</text>
-  <text class="row metric fast" x="400" y="252">0.94s</text>
-  <text class="row" x="590" y="252">0.91s</text>
-  <text class="row" x="780" y="252">0.87s</text>
-  <text class="row" x="940" y="252">0.02s</text>
-  <text class="row status" x="1090" y="252">89/100</text>
+  <text class="row provider" x="80" y="252">Tigris</text>
+  <text class="row metric" x="280" y="252">99.5</text>
+  <text class="row metric fast" x="400" y="252">0.23s</text>
+  <text class="row" x="590" y="252">0.31s</text>
+  <text class="row" x="780" y="252">0.55s</text>
+  <text class="row" x="940" y="252">0.42s</text>
+  <text class="row status" x="1090" y="252">100/100</text>
   <line class="divider" x1="24" y1="266" x2="1176" y2="266"/>
 
   <!-- Row 3 -->
   <text class="rank rank-3" x="40" y="296">3</text>
-  <text class="row provider" x="80" y="296">Cloudflare R2</text>
-  <text class="row metric" x="280" y="296">67.8</text>
-  <text class="row metric medium" x="400" y="296">2.91s</text>
-  <text class="row" x="590" y="296">3.11s</text>
-  <text class="row" x="780" y="296">2.79s</text>
-  <text class="row" x="940" y="296">0.09s</text>
-  <text class="row status" x="1090" y="296">71/100</text>
+  <text class="row provider" x="80" y="296">Azure Blob Storage</text>
+  <text class="row metric" x="280" y="296">98.3</text>
+  <text class="row metric fast" x="400" y="296">0.99s</text>
+  <text class="row" x="590" y="296">0.97s</text>
+  <text class="row" x="780" y="296">1.98s</text>
+  <text class="row" x="940" y="296">0.02s</text>
+  <text class="row status" x="1090" y="296">100/100</text>
   <line class="divider" x1="24" y1="310" x2="1176" y2="310"/>
 
   <!-- Row 4 -->
@@ -98,7 +98,7 @@
   <text class="row status" x="1090" y="340">0/100</text>
 
   <!-- Timestamp -->
-  <text class="timestamp" x="1176" y="400" text-anchor="end">Last updated: Jul 24, 2026, 08:09 AM UTC</text>
+  <text class="timestamp" x="1176" y="400" text-anchor="end">Last updated: Jul 31, 2026, 02:28 PM UTC</text>
 
   <!-- Footnote -->
   <text class="timestamp" x="24" y="414">Measures snapshot creation and fork provisioning (from snapshot and from live). Lower time is better.</text>
