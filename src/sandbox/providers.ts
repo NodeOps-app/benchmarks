@@ -14,14 +14,16 @@ import { isorun } from '@computesdk/isorun';
 // import { lelantos } from '@computesdk/lelantos';
 import { lightning } from '@computesdk/lightning';
 import { modal } from '@computesdk/modal';
-// import { namespace } from '@computesdk/namespace';
+import { namespace } from '@computesdk/namespace';
 import { northflank } from '@computesdk/northflank';
+import { opencomputer } from '@computesdk/opencomputer';
 // import { quilt } from '@computesdk/quilt';
 // import { railway } from '@computesdk/railway';
 import { runloop } from '@computesdk/runloop';
+import { sandbox0 } from '@computesdk/sandbox0';
 import { sprites } from '@computesdk/sprites';
 import { superserve } from '@computesdk/superserve';
-// import { tenki } from '@computesdk/tenki';
+import { tenki } from '@computesdk/tenki';
 import { tensorlake } from '@computesdk/tensorlake'
 import { upstash } from '@computesdk/upstash';
 import { vercel } from '@computesdk/vercel';
@@ -45,7 +47,11 @@ export const providers: ProviderConfig[] = [
     // Activated in daily + PR benchmarks once BEAM_TOKEN / BEAM_WORKSPACE_ID secrets landed.
     name: 'beam',
     requiredEnvVars: ['BEAM_TOKEN', 'BEAM_WORKSPACE_ID'],
-    createCompute: () => beam({ token: process.env.BEAM_TOKEN!, workspaceId: process.env.BEAM_WORKSPACE_ID! }),
+    createCompute: () => beam({
+      token: process.env.BEAM_TOKEN!,
+      workspaceId: process.env.BEAM_WORKSPACE_ID!,
+      gatewayUrl: process.env.BEAM_GATEWAY_URL,
+    }),
     sandboxOptions: { name: 'computesdk-benchmarks', runtime: 'node' },
   },
   {
@@ -84,7 +90,7 @@ export const providers: ProviderConfig[] = [
     name: 'daytona',
     requiredEnvVars: ['DAYTONA_API_KEY'],
     createCompute: () => daytona({ apiKey: process.env.DAYTONA_API_KEY! }),
-    sandboxOptions: { autoStopInterval: 15, autoDeleteInterval: 0 },
+    sandboxOptions: { autoStopInterval: 15, autoDeleteInterval: 0, image: 'node:22' },
   },
   {
     name: 'declaw',
@@ -95,6 +101,7 @@ export const providers: ProviderConfig[] = [
     name: 'e2b',
     requiredEnvVars: ['E2B_API_KEY'],
     createCompute: () => e2b({ apiKey: process.env.E2B_API_KEY! }),
+    sandboxOptions: { templateId: 'base-8cpu-16gb', timeout: 600_000 },
   },
   {
     name: 'hopx',
@@ -115,19 +122,40 @@ export const providers: ProviderConfig[] = [
   {
     name: 'lightning',
     requiredEnvVars: ['LIGHTNING_API_KEY'],
-    createCompute: () => lightning({ apiKey: process.env.LIGHTNING_API_KEY! }),
+    // Lightning sizes sandboxes via `instanceType` on the provider factory (the SDK
+    // ignores an instanceType passed to sandbox.create()), so it can't be sized through
+    // DAX_RESOURCE_OPTIONS like most providers. The dax workflow sets
+    // LIGHTNING_INSTANCE_TYPE=cpu-8 for the standardized 8 vCPU / 16 GiB profile;
+    // it defaults to cpu-1 (the SDK default) everywhere else.
+    createCompute: () => lightning({
+      apiKey: process.env.LIGHTNING_API_KEY!,
+      instanceType: process.env.LIGHTNING_INSTANCE_TYPE || 'cpu-1',
+    }),
   },
   {
     name: 'modal',
     requiredEnvVars: ['MODAL_TOKEN_ID', 'MODAL_TOKEN_SECRET'],
     createCompute: () => modal({ tokenId: process.env.MODAL_TOKEN_ID!, tokenSecret: process.env.MODAL_TOKEN_SECRET!, scalableSandboxes: true }),
   },
-  // {
-  //   name: 'namespace',
-  //   requiredEnvVars: ['NSC_TOKEN'],
-  //   createCompute: () => namespace({ token: process.env.NSC_TOKEN! }),
-  //   sandboxOptions: { image: 'node:22' },
-  // },
+  {
+    name: 'namespace',
+    requiredEnvVars: ['NSC_TOKEN'],
+    createCompute: () =>
+      namespace({
+        token: process.env.NSC_TOKEN!,
+        virtualCpu: 8,
+        memoryMegabytes: 16384,
+      }),
+  },
+  {
+    name: 'opencomputer',
+    requiredEnvVars: ['OPENCOMPUTER_API_KEY', 'OPENCOMPUTER_API_URL'],
+    createCompute: () => opencomputer({
+      apiKey: process.env.OPENCOMPUTER_API_KEY!,
+      apiUrl: process.env.OPENCOMPUTER_API_URL!,
+    }),
+    sandboxOptions: { timeout: 600_000 },
+  },
   {
     name: 'northflank',
     requiredEnvVars: ['NORTHFLANK_TOKEN', 'NORTHFLANK_PROJECT_ID'],
@@ -148,6 +176,11 @@ export const providers: ProviderConfig[] = [
   //   createCompute: () => railway({ token: process.env.RAILWAY_API_TOKEN!, environmentId: process.env.RAILWAY_ENVIRONMENT_ID! }),
   // },
   {
+    name: 'sandbox0',
+    requiredEnvVars: ['SANDBOX0_TOKEN'],
+    createCompute: () => sandbox0({ token: process.env.SANDBOX0_TOKEN! }),
+  },
+  {
     name: 'runloop',
     requiredEnvVars: ['RUNLOOP_API_KEY'],
     createCompute: () => runloop({ apiKey: process.env.RUNLOOP_API_KEY! }),
@@ -164,11 +197,11 @@ export const providers: ProviderConfig[] = [
     // Default template (superserve/base) has no Node; the `node -v` readiness probe needs it.
     sandboxOptions: { templateId: 'superserve/node-22' },
   },
-  // {
-  //   name: 'tenki',
-  //   requiredEnvVars: ['TENKI_API_KEY'],
-  //   createCompute: () => tenki({ apiKey: process.env.TENKI_API_KEY! }),
-  // },
+  {
+    name: 'tenki',
+    requiredEnvVars: ['TENKI_API_KEY'],
+    createCompute: () => tenki({ apiKey: process.env.TENKI_API_KEY! }),
+  },
   {
     name: 'tensorlake',
     requiredEnvVars: ['TENSORLAKE_API_KEY'],

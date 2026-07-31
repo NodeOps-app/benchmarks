@@ -18,6 +18,7 @@ const BENCH_SCRIPT_PATH = path.resolve(import.meta.dirname, '../../scripts/dax-b
 // Note: E2B sets CPU/memory at template build time, not at sandbox creation.
 const DAX_RESOURCE_OPTIONS: Record<string, Record<string, any>> = {
   modal:        { cpu: 4, cpuLimit: 4, memoryMiB: 16384 }, // Modal: 1 core = 2 vCPUs, so 4 cores = 8 vCPUs
+  tenki:        { cpuCores: 8, memoryMb: 16384, diskSizeGb: 20 }, // default disk cannot hold the OpenCode install
   tensorlake:   { cpus: 8, memoryMb: 16384 },
   isorun:       { vcpus: 8, memMiB: 16384 },
   runloop:      { launch_parameters: { resource_size_request: 'CUSTOM_SIZE', custom_cpu_cores: 8, custom_gb_memory: 16 } },
@@ -25,11 +26,14 @@ const DAX_RESOURCE_OPTIONS: Record<string, Record<string, any>> = {
   vercel:       { resources: { vcpus: 8 } },               // no memory control
   blaxel:       { memory: 16384 },                          // CPU derived: cores = memory_MB / 2048 = 8
   beam:         { cpu: 8, memory: 16384 },                   // cpu = cores, memory = MiB
+  codesandbox:  { vmTier: 'Small' },                       // Small = 8 CPU, 16 GiB
   daytona:      { resources: { cpu: 8, memory: 16 } },     // memory in GiB; requires image-based creation (see providers.ts)
-  northflank:   { deploymentPlan: process.env.NORTHFLANK_DEPLOYMENT_PLAN || 'nf-compute-50' },  // resolved by scripts/find-northflank-plan.ts
+  northflank:   { deploymentPlan: process.env.NORTHFLANK_DEPLOYMENT_PLAN || 'nf-compute-50', ephemeralStorageSize: 5120 },  // 5 GiB ephemeral storage
   declaw:       { templateId: 'node-large' },              // node-large template: 8 vCPU / 16 GiB RAM / 8 GiB disk
-  superserve:   { vcpu: 8, memoryMib: 16384 },               // vcpu = cores, memoryMib = MiB; overrides template defaults
+  superserve:   { templateId: 'node22-8cpu-16gb' },           // 8 vCPU / 16 GiB template built in the pre-step
   createos:     { shape: 's-8vcpu-16gb', ephemeralDiskMb: 61440 }, // 8 vCPU, 16 GiB RAM, 60 GiB disk
+  opencomputer: { cpuCount: 4, memoryMB: 16384, timeout: 600_000 },
+  sandbox0:    { memory: 16384 },  // Sandbox0 exposes only `memory`
 };
 
 function getSandboxOptionsWithResources(providerName: string, baseOptions?: Record<string, any>): Record<string, any> {
