@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1120" height="516" viewBox="0 0 1120 516">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1120" height="560" viewBox="0 0 1120 560">
   <defs>
     <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#f6f8fa;stop-opacity:1" />
@@ -28,7 +28,7 @@
   </style>
 
   <!-- Background -->
-  <rect class="bg" width="1120" height="516"/>
+  <rect class="bg" width="1120" height="560"/>
 
   <!-- Logo -->
   <g transform="translate(24, 24)">
@@ -59,91 +59,105 @@
 
   <!-- Row 1 -->
   <text class="rank rank-1" x="30" y="208">1</text>
-  <text class="row provider" x="65" y="208">Cloudflare AI Gateway</text>
-  <text class="row total" x="250" y="208">90.0</text>
-  <text class="row total fast" x="320" y="208">657ms</text>
+  <text class="row provider" x="65" y="208">Anthropic (direct)</text>
+  <text class="row total" x="250" y="208">91.1</text>
+  <text class="row total fast" x="320" y="208">583ms</text>
   <text class="row" x="430" y="208">1ms</text>
   <text class="row" x="505" y="208">1ms</text>
-  <text class="row" x="580" y="208">6ms</text>
-  <text class="row" x="655" y="208">649ms</text>
-  <text class="row" x="760" y="208">624ms</text>
-  <text class="row" x="880" y="208">88.2</text>
-  <text class="row status" x="1000" y="208">20/20</text>
+  <text class="row" x="580" y="208">3ms</text>
+  <text class="row" x="655" y="208">575ms</text>
+  <text class="row" x="760" y="208">575ms</text>
+  <text class="row" x="880" y="208">88.5</text>
+  <text class="row status" x="1000" y="208">40/40</text>
   <line class="divider" x1="24" y1="222" x2="1096" y2="222"/>
 
   <!-- Row 2 -->
   <text class="rank rank-2" x="30" y="252">2</text>
-  <text class="row provider" x="65" y="252">Pydantic AI Gateway</text>
-  <text class="row total" x="250" y="252">89.8</text>
-  <text class="row total fast" x="320" y="252">727ms</text>
+  <text class="row provider" x="65" y="252">Cloudflare AI Gateway</text>
+  <text class="row total" x="250" y="252">89.9</text>
+  <text class="row total fast" x="320" y="252">686ms</text>
   <text class="row" x="430" y="252">1ms</text>
-  <text class="row" x="505" y="252">2ms</text>
-  <text class="row" x="580" y="252">5ms</text>
-  <text class="row" x="655" y="252">720ms</text>
-  <text class="row" x="760" y="252">583ms</text>
-  <text class="row" x="880" y="252">85.7</text>
-  <text class="row status" x="1000" y="252">20/20</text>
+  <text class="row" x="505" y="252">1ms</text>
+  <text class="row" x="580" y="252">35ms</text>
+  <text class="row" x="655" y="252">646ms</text>
+  <text class="row" x="760" y="252">597ms</text>
+  <text class="row" x="880" y="252">85.2</text>
+  <text class="row status" x="1000" y="252">40/40</text>
   <line class="divider" x1="24" y1="266" x2="1096" y2="266"/>
 
   <!-- Row 3 -->
   <text class="rank rank-3" x="30" y="296">3</text>
-  <text class="row provider" x="65" y="296">Anthropic (direct)</text>
-  <text class="row total" x="250" y="296">89.3</text>
-  <text class="row total fast" x="320" y="296">821ms</text>
+  <text class="row provider" x="65" y="296">LLM Gateway</text>
+  <text class="row total" x="250" y="296">89.9</text>
+  <text class="row total fast" x="320" y="296">759ms</text>
   <text class="row" x="430" y="296">1ms</text>
-  <text class="row" x="505" y="296">1ms</text>
-  <text class="row" x="580" y="296">3ms</text>
-  <text class="row" x="655" y="296">815ms</text>
-  <text class="row" x="760" y="296">521ms</text>
-  <text class="row" x="880" y="296">87.7</text>
-  <text class="row status" x="1000" y="296">20/20</text>
+  <text class="row" x="505" y="296">2ms</text>
+  <text class="row" x="580" y="296">5ms</text>
+  <text class="row" x="655" y="296">739ms</text>
+  <text class="row" x="760" y="296">743ms</text>
+  <text class="row" x="880" y="296">85.0</text>
+  <text class="row status" x="1000" y="296">40/40</text>
   <line class="divider" x1="24" y1="310" x2="1096" y2="310"/>
 
   <!-- Row 4 -->
   <text class="rank" x="30" y="340">4</text>
-  <text class="row provider" x="65" y="340">OpenRouter</text>
-  <text class="row total" x="250" y="340">89.2</text>
-  <text class="row total fast" x="320" y="340">941ms</text>
-  <text class="row" x="430" y="340">1ms</text>
-  <text class="row" x="505" y="340">1ms</text>
-  <text class="row" x="580" y="340">4ms</text>
-  <text class="row" x="655" y="340">935ms</text>
-  <text class="row" x="760" y="340">785ms</text>
-  <text class="row" x="880" y="340">100.8</text>
-  <text class="row status" x="1000" y="340">20/20</text>
+  <text class="row provider" x="65" y="340">Vercel AI Gateway</text>
+  <text class="row total" x="250" y="340">89.5</text>
+  <text class="row total fast" x="320" y="340">753ms</text>
+  <text class="row" x="430" y="340">5ms</text>
+  <text class="row" x="505" y="340">6ms</text>
+  <text class="row" x="580" y="340">21ms</text>
+  <text class="row" x="655" y="340">732ms</text>
+  <text class="row" x="760" y="340">671ms</text>
+  <text class="row" x="880" y="340">89.8</text>
+  <text class="row status" x="1000" y="340">40/40</text>
   <line class="divider" x1="24" y1="354" x2="1096" y2="354"/>
 
   <!-- Row 5 -->
   <text class="rank" x="30" y="384">5</text>
-  <text class="row provider" x="65" y="384">Vercel AI Gateway</text>
-  <text class="row total" x="250" y="384">88.8</text>
-  <text class="row total fast" x="320" y="384">831ms</text>
+  <text class="row provider" x="65" y="384">Pydantic AI Gateway</text>
+  <text class="row total" x="250" y="384">89.4</text>
+  <text class="row total fast" x="320" y="384">765ms</text>
   <text class="row" x="430" y="384">1ms</text>
-  <text class="row" x="505" y="384">6ms</text>
-  <text class="row" x="580" y="384">20ms</text>
-  <text class="row" x="655" y="384">812ms</text>
-  <text class="row" x="760" y="384">739ms</text>
-  <text class="row" x="880" y="384">88.2</text>
-  <text class="row status" x="1000" y="384">20/20</text>
+  <text class="row" x="505" y="384">2ms</text>
+  <text class="row" x="580" y="384">5ms</text>
+  <text class="row" x="655" y="384">758ms</text>
+  <text class="row" x="760" y="384">708ms</text>
+  <text class="row" x="880" y="384">86.8</text>
+  <text class="row status" x="1000" y="384">40/40</text>
   <line class="divider" x1="24" y1="398" x2="1096" y2="398"/>
 
   <!-- Row 6 -->
   <text class="rank" x="30" y="428">6</text>
-  <text class="row provider" x="65" y="428">LLM Gateway</text>
-  <text class="row total" x="250" y="428">88.5</text>
-  <text class="row total fast" x="320" y="428">718ms</text>
+  <text class="row provider" x="65" y="428">OpenRouter</text>
+  <text class="row total" x="250" y="428">88.6</text>
+  <text class="row total fast" x="320" y="428">699ms</text>
   <text class="row" x="430" y="428">1ms</text>
   <text class="row" x="505" y="428">1ms</text>
-  <text class="row" x="580" y="428">5ms</text>
-  <text class="row" x="655" y="428">711ms</text>
-  <text class="row" x="760" y="428">602ms</text>
-  <text class="row" x="880" y="428">89.5</text>
-  <text class="row status" x="1000" y="428">20/20</text>
+  <text class="row" x="580" y="428">4ms</text>
+  <text class="row" x="655" y="428">694ms</text>
+  <text class="row" x="760" y="428">617ms</text>
+  <text class="row" x="880" y="428">87.0</text>
+  <text class="row status" x="1000" y="428">40/40</text>
+  <line class="divider" x1="24" y1="442" x2="1096" y2="442"/>
+
+  <!-- Row 7 -->
+  <text class="rank" x="30" y="472">7</text>
+  <text class="row provider" x="65" y="472">Concentrate AI</text>
+  <text class="row total" x="250" y="472">84.4</text>
+  <text class="row total fast" x="320" y="472">853ms</text>
+  <text class="row" x="430" y="472">1ms</text>
+  <text class="row" x="505" y="472">1ms</text>
+  <text class="row" x="580" y="472">6ms</text>
+  <text class="row" x="655" y="472">842ms</text>
+  <text class="row" x="760" y="472">739ms</text>
+  <text class="row" x="880" y="472">0.0</text>
+  <text class="row status" x="1000" y="472">40/40</text>
 
   <!-- Timestamp -->
-  <text class="timestamp" x="1096" y="488" text-anchor="end">Last updated: Jul 24, 2026, 06:58 AM UTC</text>
+  <text class="timestamp" x="1096" y="532" text-anchor="end">Last updated: Jul 31, 2026, 02:05 PM UTC</text>
 
   <!-- Footnote -->
-  <text class="timestamp" x="24" y="502">Cold E2E = DNS + TCP + TLS + TTFT (fresh connection). Warm TTFT = TTFT on a reused connection. All latency/throughput values are medians across iterations. Lower is better (higher for Tokens/sec).</text>
+  <text class="timestamp" x="24" y="546">Cold E2E = DNS + TCP + TLS + TTFT (fresh connection). Warm TTFT = TTFT on a reused connection. All latency/throughput values are medians across iterations. Lower is better (higher for Tokens/sec).</text>
 
 </svg>
