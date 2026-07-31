@@ -13,11 +13,13 @@ function scaffold(targetDir: string, projectName: string): void {
     private: true,
     type: 'module',
     scripts: {
-      bench: 'tsx bench.ts',
+      // `bench run` loads the *.bench.ts module; run it under tsx so the
+      // TypeScript benchmark file can be imported without a build step.
+      bench: 'tsx node_modules/@benchsdk/runner/dist/bin.js run bench.ts',
       typecheck: 'tsc --noEmit',
     },
     dependencies: {
-      '@benchsdk/client': '^0.2.0',
+      '@benchsdk/runner': '^0.1.0',
     },
     devDependencies: {
       tsx: '^4.22.4',
@@ -49,39 +51,40 @@ function scaffold(targetDir: string, projectName: string): void {
     `${JSON.stringify(tsconfigJson, null, 2)}\n`,
   );
 
-  const benchTs = `import { defineStep, defineTask, defineWorker } from '@benchsdk/client';
+  const benchTs = `import { defineBenchmarkConfig, defineTask } from '@benchsdk/runner';
 
-const worker = defineWorker({
-  benchmarkSlug: process.env.BENCHMARK_SLUG ?? 'scale',
-  runId: process.env.BENCHMARK_RUN_ID!,
-  participantSlug: process.env.BENCHMARK_PARTICIPANT_SLUG ?? 'local',
-  processKind: 'container',
-  processKey: process.env.HOSTNAME ?? 'local',
+// A benchmark file declares two things and nothing else:
+//   - config: identity + orchestration knobs + the participants to run against
+//   - task:   the workload for ONE iteration
+// Run it with \`pnpm bench\` (CLI flags like --iterations / --concurrency
+// override the config knobs). No imperative entrypoint needed.
+export const config = defineBenchmarkConfig({
+  benchmarkSlug: process.env.BENCHMARK_SLUG ?? 'example',
+  benchmarkName: 'Example benchmark',
+  iterations: 10,
   concurrency: 1,
-  task: defineTask('example.lifecycle', [
-    defineStep('start', async ({ assignment }) => {
-      console.log(\`Worker \${assignment.workerId} starting task \${assignment.taskRange.start}\`);
-    }),
-    defineStep('work', async () => {
-      // Replace with your benchmark logic
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }),
-    defineStep('done', async () => {
-      console.log('Task complete');
-    }),
-  ]),
+  participants: [{ name: 'local', requiredEnvVars: [] }],
 });
 
-await worker.run();
+export const task = defineTask(async ({ taskIndex, step, measure, log }) => {
+  log(\`running task \${taskIndex}\`);
+  // Declare named steps with \`step(...)\`; values flow between them via
+  // closures and each step is recorded on the platform with its own timing.
+  await step('work', async () => {
+    // Replace with your benchmark logic.
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  });
+  // \`measure(...)\` attaches metrics to the current step (or the task).
+  measure({ ok: true });
+});
 `;
 
   fs.writeFileSync(path.join(targetDir, 'bench.ts'), benchTs);
 
   const envExample = `# Copy to .env and fill in your values
-COMPUTESDK_ADMIN_API_KEY=
-BENCHMARK_SLUG=scale
-BENCHMARK_RUN_ID=
-BENCHMARK_PARTICIPANT_SLUG=local
+BENCHMARKS_PLATFORM_URL=
+BENCHMARKS_PLATFORM_API_KEY=
+BENCHMARK_SLUG=example
 `;
 
   fs.writeFileSync(path.join(targetDir, '.env.example'), envExample);

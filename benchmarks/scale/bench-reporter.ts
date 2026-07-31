@@ -2,14 +2,14 @@
  * Thin reporting layer over the platform-orchestrated `@computesdk/bench`
  * client (v0.1.7+).
  *
- * Why the low-level client and not `defineWorker`/`defineStep`: the scale burst
+ * Why the low-level client and not a higher-level task runner: the scale burst
  * is a *two-phase, barriered* lifecycle (create + readiness for all N, then a
- * coordinated liveness probe + destroy for the survivors — see runner.ts). The
- * SDK's `defineStep` model runs an independent create→…→destroy chain per task
- * index with no cross-task barrier, and its `readiness: "poll"` gate would
- * deadlock here because failed sandboxes never reach the barrier step (active
- * concurrency can never equal the target). So the coordinator keeps owning the
- * burst (BurstLifecycle) and uses this reporter purely to:
+ * coordinated liveness probe + destroy for the survivors — see runner.ts). A
+ * per-task-index step chain runs an independent create→…→destroy per task with
+ * no cross-task barrier, and a `readiness: "poll"` gate would deadlock here
+ * because failed sandboxes never reach the barrier step (active concurrency can
+ * never equal the target). So the coordinator keeps owning the burst
+ * (BurstLifecycle) and uses this reporter purely to:
  *   - claim one platform worker assignment per VM,
  *   - stream per-sandbox results as `task_results` batches,
  *   - heartbeat progress + in-flight concurrency, and

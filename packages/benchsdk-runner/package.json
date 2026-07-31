@@ -1,9 +1,9 @@
 {
-  "name": "@benchsdk/cli",
+  "name": "@benchsdk/runner",
   "version": "0.1.0",
   "private": false,
   "type": "module",
-  "description": "Benchmark runner framework: logging, step helpers, and declarative config for @benchsdk/client",
+  "description": "Benchmark framework: task + step + config primitives and the local orchestrator that drives @benchsdk/client",
   "author": "Garrison",
   "license": "MIT",
   "main": "./dist/index.cjs",
@@ -15,6 +15,9 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     }
+  },
+  "bin": {
+    "bench": "./dist/bin.cjs"
   },
   "files": [
     "dist",
@@ -34,13 +37,12 @@
     "benchmark",
     "computesdk",
     "benchsdk",
-    "cli",
     "runner"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/computesdk/benchmarks.git",
-    "directory": "packages/benchsdk-cli"
+    "directory": "packages/benchsdk-runner"
   },
   "homepage": "https://www.computesdk.com",
   "bugs": {

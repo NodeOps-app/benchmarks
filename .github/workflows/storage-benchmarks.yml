@@ -60,6 +60,7 @@ jobs:
           - vercel-blob
           - gcs
           - azure-blob
+          - tensorlake
         file_size: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.file_size != '' && fromJson(format('["{0}"]', github.event.inputs.file_size))) || (github.event_name == 'push' && fromJson('["1MB"]')) || fromJson('["1MB","4MB","10MB","16MB"]') }}
     steps:
       - uses: actions/checkout@v4
@@ -79,10 +80,10 @@ jobs:
         run: rm -rf results/storage/
       - name: Run storage benchmark
         run: |
-          . benchmarks/scripts/load-vault-secrets.sh '^(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AWS_REGION|S3_BUCKET|R2_ACCESS_KEY_ID|R2_SECRET_ACCESS_KEY|R2_BUCKET|R2_ACCOUNT_ID|TIGRIS_STORAGE_ACCESS_KEY_ID|TIGRIS_STORAGE_SECRET_ACCESS_KEY|TIGRIS_STORAGE_BUCKET|BLOB_READ_WRITE_TOKEN|VERCEL_BLOB_BUCKET|GCS_PROJECT_ID|GCS_BUCKET|GCS_CLIENT_EMAIL|GCS_PRIVATE_KEY|AZURE_ACCOUNT_NAME|AZURE_ACCOUNT_KEY|AZURE_CONTAINER|COMPUTESDK_ADMIN_API_KEY)'
+          . benchmarks/scripts/load-vault-secrets.sh '^(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AWS_REGION|S3_BUCKET|R2_ACCESS_KEY_ID|R2_SECRET_ACCESS_KEY|R2_BUCKET|R2_ACCOUNT_ID|TIGRIS_STORAGE_ACCESS_KEY_ID|TIGRIS_STORAGE_SECRET_ACCESS_KEY|TIGRIS_STORAGE_BUCKET|BLOB_READ_WRITE_TOKEN|VERCEL_BLOB_BUCKET|GCS_PROJECT_ID|GCS_BUCKET|GCS_CLIENT_EMAIL|GCS_PRIVATE_KEY|AZURE_ACCOUNT_NAME|AZURE_ACCOUNT_KEY|AZURE_CONTAINER|TENSORLAKE_API_KEY|TENSORLAKE_API_URL|TENSORLAKE_ORGANIZATION_ID|TENSORLAKE_PROJECT_ID|TENSORLAKE_FILESYSTEM|COMPUTESDK_ADMIN_API_KEY|BENCHMARKS_PLATFORM_API_KEY)'
 
           FILE_SIZE="${{ matrix.file_size }}"
-          npx tsx benchmarks/storage/storage.bench.ts \
+          npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/storage/storage.bench.ts \
             --provider ${{ matrix.provider }} \
             --file-size $FILE_SIZE \
             --concurrency ${{ (github.event_name == 'schedule' && '16') || (github.event_name == 'push' && '8') || github.event.inputs.storage_concurrency || '1' }} \
@@ -256,7 +257,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add package.json package-lock.json storage_*.svg results/storage/
+          git add package.json pnpm-lock.yaml storage_*.svg results/storage/
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "chore: update storage benchmark results [skip ci]"
 
@@ -269,7 +270,7 @@ jobs:
             # is followed by a push — otherwise the final iteration's rebase
             # would be wasted and a resolvable non-fast-forward could still fail.
             git fetch origin "${branch}"
-            git rebase "origin/${branch}" || { git rebase --abort; exit 1; }
+            git rebase --autostash "origin/${branch}" || { git rebase --abort; exit 1; }
             if git push origin "HEAD:${branch}"; then
               echo "Pushed on attempt ${attempt}"
               exit 0

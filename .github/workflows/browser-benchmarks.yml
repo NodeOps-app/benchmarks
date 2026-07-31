@@ -65,9 +65,9 @@ jobs:
         run: rm -rf results/browser/
       - name: Run browser benchmark
         run: |
-          . benchmarks/scripts/load-vault-secrets.sh '^(BROWSERBASE_API_KEY|BROWSERBASE_PROJECT_ID|BROWSER_USE_API_KEY|HYPERBROWSER_API_KEY|KERNEL_API_KEY|NOTTE_API_KEY|STEEL_API_KEY|TILION_API_KEY|TILION_BASE_URL|COMPUTESDK_ADMIN_API_KEY)'
+          . benchmarks/scripts/load-vault-secrets.sh '^(BROWSERBASE_API_KEY|BROWSERBASE_PROJECT_ID|BROWSER_USE_API_KEY|HYPERBROWSER_API_KEY|KERNEL_API_KEY|NOTTE_API_KEY|STEEL_API_KEY|TILION_API_KEY|TILION_BASE_URL|COMPUTESDK_ADMIN_API_KEY|BENCHMARKS_PLATFORM_API_KEY)'
 
-          npx tsx benchmarks/browser/browser.bench.ts \
+          npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/browser/browser.bench.ts \
             --provider ${{ matrix.provider }} \
             --iterations ${{ github.event_name == 'push' && '10' || github.event.inputs.iterations || '100' }}
       - name: Upload results
@@ -223,7 +223,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add package.json package-lock.json browser.svg results/browser/
+          git add package.json pnpm-lock.yaml browser.svg results/browser/
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "chore: update browser benchmark results [skip ci]"
 
@@ -236,7 +236,7 @@ jobs:
             # is followed by a push — otherwise the final iteration's rebase
             # would be wasted and a resolvable non-fast-forward could still fail.
             git fetch origin "${branch}"
-            git rebase "origin/${branch}" || { git rebase --abort; exit 1; }
+            git rebase --autostash "origin/${branch}" || { git rebase --abort; exit 1; }
             if git push origin "HEAD:${branch}"; then
               echo "Pushed on attempt ${attempt}"
               exit 0

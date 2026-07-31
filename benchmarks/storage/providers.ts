@@ -5,6 +5,7 @@ import { tigris } from '@storagesdk/adapters/tigris';
 import { vercel } from '@storagesdk/adapters/vercel';
 import { gcs } from '@storagesdk/adapters/gcs';
 import { azure } from '@storagesdk/adapters/azure';
+import { tensorlake } from '@storagesdk/adapters/tensorlake';
 import type { StorageProviderConfig } from './types.js';
 
 /**
@@ -186,6 +187,28 @@ export const storageProviders: StorageProviderConfig[] = [
         }),
       }),
     },
+  },
+  {
+    name: 'tensorlake',
+    requiredEnvVars: [
+      'TENSORLAKE_API_KEY',
+      'TENSORLAKE_ORGANIZATION_ID',
+      'TENSORLAKE_PROJECT_ID',
+      'TENSORLAKE_FILESYSTEM',
+    ],
+    bucket: process.env.TENSORLAKE_FILESYSTEM!,
+    createStorage: () => new Storage({
+      adapter: tensorlake({
+        apiKey: process.env.TENSORLAKE_API_KEY!,
+        organizationId: process.env.TENSORLAKE_ORGANIZATION_ID!,
+        projectId: process.env.TENSORLAKE_PROJECT_ID!,
+        filesystem: process.env.TENSORLAKE_FILESYSTEM!,
+        ...(process.env.TENSORLAKE_API_URL
+          ? { apiUrl: process.env.TENSORLAKE_API_URL }
+          : {}),
+      }),
+    }),
+    fileSizes: [1 * 1024 * 1024, 4 * 1024 * 1024, 10 * 1024 * 1024, 16 * 1024 * 1024],
   },
   //
   // add providers above

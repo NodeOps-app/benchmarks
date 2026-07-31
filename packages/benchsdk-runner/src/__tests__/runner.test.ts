@@ -20,7 +20,7 @@ vi.mock('@benchsdk/client', () => ({
 }));
 
 import { parseCliArgs, mergeConfig, runBenchmark } from '../runner';
-import { TaskError } from '../bench-config';
+import { TaskError, defineTask } from '../bench-config';
 import { NoAvailableParticipantsError } from '../no-available-participants';
 import type { BenchmarkConfig } from '../bench-config';
 import type { TaskResultRecord } from '@benchsdk/client';
@@ -47,6 +47,18 @@ describe('parseCliArgs', () => {
   it('parses --group-by', () => {
     expect(parseCliArgs(['--group-by', 'round'])).toEqual({ groupBy: 'round' });
     expect(parseCliArgs(['--group-by=participant'])).toEqual({ groupBy: 'participant' });
+  });
+
+  it('parses --slug and --name', () => {
+    expect(parseCliArgs(['--slug', 'sandbox-burst-local'])).toEqual({ slug: 'sandbox-burst-local' });
+    expect(parseCliArgs(['--slug=sandbox-tti-local'])).toEqual({ slug: 'sandbox-tti-local' });
+    expect(parseCliArgs(['--name', 'Sandbox burst TTI'])).toEqual({ name: 'Sandbox burst TTI' });
+    expect(() => parseCliArgs(['--name', ' '])).toThrow('--name');
+  });
+
+  it('throws on a non-slug --slug', () => {
+    expect(() => parseCliArgs(['--slug', 'Sandbox TTI'])).toThrow('--slug');
+    expect(() => parseCliArgs(['--slug', ''])).toThrow('--slug');
   });
 
   it('throws on invalid --group-by', () => {
@@ -84,7 +96,7 @@ describe('mergeConfig', () => {
     iterations: 100,
     concurrency: 1,
     staggerDelayMs: 0,
-    task: async () => ({}),
+    participants: [],
   };
 
   it('uses config defaults when no CLI args', () => {
@@ -102,17 +114,17 @@ describe('mergeConfig', () => {
   });
 
   it('falls back to knob defaults of 1/1/0/participant when neither config nor CLI set them', () => {
-    const bare: BenchmarkConfig = { benchmarkSlug: 's', benchmarkName: 'n', task: async () => ({}) };
+    const bare: BenchmarkConfig = { benchmarkSlug: 's', benchmarkName: 'n', participants: [] };
     expect(mergeConfig(bare, {})).toEqual({ iterations: 1, concurrency: 1, staggerDelayMs: 0, groupBy: 'participant', providers: undefined });
   });
 
   it('uses config.groupBy when CLI does not set it', () => {
-    const rr: BenchmarkConfig = { benchmarkSlug: 's', benchmarkName: 'n', groupBy: 'round', task: async () => ({}) };
+    const rr: BenchmarkConfig = { benchmarkSlug: 's', benchmarkName: 'n', groupBy: 'round', participants: [] };
     expect(mergeConfig(rr, {}).groupBy).toBe('round');
   });
 
   it('falls back to config.defaultProviders when --provider is not passed', () => {
-    const withDefaults: BenchmarkConfig = { benchmarkSlug: 's', benchmarkName: 'n', defaultProviders: ['e2b'], task: async () => ({}) };
+    const withDefaults: BenchmarkConfig = { benchmarkSlug: 's', benchmarkName: 'n', defaultProviders: ['e2b'], participants: [] };
     expect(mergeConfig(withDefaults, {}).providers).toEqual(['e2b']);
     expect(mergeConfig(withDefaults, { providers: ['modal'] }).providers).toEqual(['modal']);
   });
@@ -123,7 +135,7 @@ describe('mergeConfig', () => {
       benchmarkSlug: 's',
       benchmarkName: 'n',
       phases: [{ name: 'cold', iterations: 3 }, { name: 'warm', iterations: 2 }],
-      task: async () => ({}),
+      participants: [],
     };
     expect(mergeConfig(phased, {}).iterations).toBe(5);
     expect(mergeConfig(phased, { iterations: 99 }).iterations).toBe(5);
@@ -166,9 +178,20 @@ describe('runBenchmark', () => {
         const assignment = { workerId: 'w1', taskRange: { start, end: start + total - 1, count: total } };
         const records: any[] = [];
         for (let ti = start; ti < start + total; ti++) {
-          const data = await opts.task({ taskIndex: ti, assignment, step: async (_n: string, fn: any) => fn() });
-          calls.taskData.push(data);
-          const rec = { taskIndex: ti, status: 'success', data: data ?? {} };
+          // Mirror the real client worker: `measure` merges into the record's
+          // data alongside whatever the task returns.
+          const measures: Record<string, unknown> = {};
+          const ctx = {
+            taskIndex: ti,
+            assignment,
+            step: async (_n: string, fn: any) => fn(),
+            measure: (d: Record<string, unknown>) => Object.assign(measures, d),
+            log: () => {},
+          };
+          const returned = await opts.task(ctx);
+          calls.taskData.push(returned);
+          const data = { ...measures, ...(returned ?? {}) };
+          const rec = { taskIndex: ti, status: 'success', data };
           opts.onResult?.(rec);
           records.push(rec);
         }
@@ -192,10 +215,10 @@ describe('runBenchmark', () => {
       benchmarkKind: 'sandbox',
       iterations: 3,
       concurrency: 1,
-      task,
+      participants,
     };
 
-    const outcome = await runBenchmark(config, participants, []);
+    const outcome = await runBenchmark(config, defineTask(task), []);
 
     expect(outcome.runId).toBe('run-1');
     expect(outcome.participants.map((p) => p.participant)).toEqual(['e2b', 'modal']);
@@ -208,10 +231,31 @@ describe('runBenchmark', () => {
     expect(calls.planWorkers).toHaveLength(2);
     expect(calls.runWorker).toHaveLength(2);
     expect(calls.runWorker[0].concurrency).toBe(1);
-    // The runner's task wrapper forwards participant/taskIndex/phase/step to config.task.
-    expect(task).toHaveBeenCalledWith(expect.objectContaining({ participant: participants[0], taskIndex: 0 }));
-    // Uniform TaskResult: the wrapper returns the task's `data` payload to the platform worker.
+    // The runner's task wrapper forwards participant/taskIndex/phase + the
+    // client-owned step/measure/log onto config.task.
+    expect(task).toHaveBeenCalledWith(
+      expect.objectContaining({ participant: participants[0], taskIndex: 0, step: expect.any(Function), measure: expect.any(Function), log: expect.any(Function) }),
+    );
+    // The wrapper returns the task's `data` payload to the platform worker.
     expect(calls.taskData[0]).toEqual({ ttiMs: 42 });
+  });
+
+  it('calls config.onComplete once with the run outcome', async () => {
+    const onComplete = vi.fn();
+    const config: BenchmarkConfig<typeof participants[number]> = {
+      benchmarkSlug: 's',
+      benchmarkName: 'n',
+      iterations: 2,
+      concurrency: 1,
+      participants: [participants[0]],
+      onComplete,
+    };
+
+    const outcome = await runBenchmark(config, defineTask(async () => ({})), []);
+
+    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(onComplete).toHaveBeenCalledWith(outcome);
+    expect(outcome.config).toMatchObject({ iterations: 2, concurrency: 1 });
   });
 
   it('applies CLI overrides over config', async () => {
@@ -220,14 +264,34 @@ describe('runBenchmark', () => {
       benchmarkName: 'n',
       iterations: 100,
       concurrency: 1,
-      task: async () => ({}),
+      participants,
     };
 
-    await runBenchmark(config, participants, ['--iterations', '5', '--concurrency', '5', '--provider', 'e2b']);
+    await runBenchmark(config, defineTask(async () => ({})), ['--iterations', '5', '--concurrency', '5', '--provider', 'e2b']);
 
     expect(calls.createRun[0][1]).toMatchObject({ totalTasks: 5, participants: ['e2b'] });
     expect(calls.runWorker).toHaveLength(1);
     expect(calls.runWorker[0].concurrency).toBe(5);
+  });
+
+  it('reports under --slug/--name instead of the config slug and name', async () => {
+    const config: BenchmarkConfig<typeof participants[number]> = {
+      benchmarkSlug: 'sandbox-tti-local',
+      benchmarkName: 'Sandbox TTI',
+      iterations: 1,
+      participants: [participants[0]],
+    };
+
+    await runBenchmark(config, defineTask(async () => ({})), [
+      '--slug',
+      'sandbox-burst-local',
+      '--name',
+      'Sandbox burst TTI',
+    ]);
+
+    expect(calls.upsertBenchmark[0][0]).toBe('sandbox-burst-local');
+    expect(calls.upsertBenchmark[0][1]).toMatchObject({ name: 'Sandbox burst TTI' });
+    expect(calls.createRun[0][0]).toBe('sandbox-burst-local');
   });
 
   it('throws NoAvailableParticipantsError, listing the skips, when no participant has its env vars set', async () => {
@@ -235,8 +299,8 @@ describe('runBenchmark', () => {
     delete process.env.MODAL_TOKEN;
 
     const err = await runBenchmark(
-      { benchmarkSlug: 's', benchmarkName: 'n', task: async () => ({}) },
-      participants,
+      { benchmarkSlug: 's', benchmarkName: 'n', participants },
+      defineTask(async () => ({})),
       [],
     ).catch((e: unknown) => e);
 
@@ -248,27 +312,28 @@ describe('runBenchmark', () => {
     expect(createBenchmarkClient).not.toHaveBeenCalled();
   });
 
-  it('participant mode: tags data.phase from the schedule', async () => {
+  it('participant mode: tags data.phase from the schedule via measure', async () => {
     const seenPhases: (string | undefined)[] = [];
     const task = vi.fn(async (ctx: any) => {
       seenPhases.push(ctx.phase);
       return { data: { i: ctx.taskIndex } };
     });
 
-    await runBenchmark(
+    const outcome = await runBenchmark(
       {
         benchmarkSlug: 's',
         benchmarkName: 'n',
         phases: [{ name: 'cold', iterations: 2 }, { name: 'warm', iterations: 1 }],
-        task,
+        participants: [participants[0]],
       },
-      [participants[0]],
+      defineTask(task),
       [],
     );
 
     expect(calls.createRun[0][1].totalTasks).toBe(3);
     expect(seenPhases).toEqual(['cold', 'cold', 'warm']);
-    expect(calls.taskData).toEqual([
+    // Phase now rides the measure channel, so it lands on the record data.
+    expect(outcome.participants[0].records.map((r) => r.data)).toEqual([
       { i: 0, phase: 'cold' },
       { i: 1, phase: 'cold' },
       { i: 2, phase: 'warm' },
@@ -295,8 +360,8 @@ describe('runBenchmark', () => {
     });
 
     const outcome = await runBenchmark(
-      { benchmarkSlug: 'ai-gateway-local', benchmarkName: 'AI GW', iterations: 2, groupBy: 'round', task },
-      participants,
+      { benchmarkSlug: 'ai-gateway-local', benchmarkName: 'AI GW', iterations: 2, groupBy: 'round', participants },
+      defineTask(task),
       [],
     );
 
@@ -322,6 +387,58 @@ describe('runBenchmark', () => {
     expect(calls.planWorkers[0][3]).toMatchObject({ workerCount: 1, targetConcurrency: 2 });
   });
 
+  it('groupBy round: a task with no explicit steps records a single implicit "task" step', async () => {
+    const recorded: TaskResultRecord[] = [];
+    reporterClaim.mockImplementation(async () => ({
+      taskIndexStart: 0,
+      recordResult: (r: TaskResultRecord) => recorded.push(r),
+      uploadArtifact: async () => ({}),
+      setProgress: () => {},
+      heartbeat: async () => {},
+      finish: async () => {},
+    }));
+
+    const task = vi.fn(async (ctx: any) => { ctx.measure({ bytes: 10 }); });
+
+    await runBenchmark(
+      { benchmarkSlug: 's', benchmarkName: 'n', iterations: 1, groupBy: 'round', participants: [participants[0]] },
+      defineTask(task),
+      [],
+    );
+
+    expect(recorded[0].steps).toHaveLength(1);
+    expect(recorded[0].steps?.[0]).toMatchObject({ name: 'task', status: 'success', data: { bytes: 10 } });
+    // Task-level measure also folds into the record data.
+    expect(recorded[0].data).toEqual({ bytes: 10 });
+  });
+
+  it('groupBy round: measure inside a step attaches to that step, not the task', async () => {
+    const recorded: TaskResultRecord[] = [];
+    reporterClaim.mockImplementation(async () => ({
+      taskIndexStart: 0,
+      recordResult: (r: TaskResultRecord) => recorded.push(r),
+      uploadArtifact: async () => ({}),
+      setProgress: () => {},
+      heartbeat: async () => {},
+      finish: async () => {},
+    }));
+
+    const task = vi.fn(async (ctx: any) => {
+      await ctx.step('probe', () => { ctx.measure({ ops: 5 }); });
+    });
+
+    await runBenchmark(
+      { benchmarkSlug: 's', benchmarkName: 'n', iterations: 1, groupBy: 'round', participants: [participants[0]] },
+      defineTask(task),
+      [],
+    );
+
+    const probe = recorded[0].steps?.find((s) => s.name === 'probe');
+    expect(probe?.data).toEqual({ ops: 5 });
+    // No task-level measure was made, so the record carries no data.
+    expect(recorded[0].data).toBeUndefined();
+  });
+
   it('groupBy round with phases: tags each record with its phase in order', async () => {
     const recorded: Record<string, TaskResultRecord[]> = { e2b: [] };
     reporterClaim.mockImplementation(async (cfg: any) => ({
@@ -341,9 +458,9 @@ describe('runBenchmark', () => {
         benchmarkName: 'n',
         phases: [{ name: 'cold', iterations: 2 }, { name: 'warm', iterations: 1 }],
         groupBy: 'round',
-        task,
+        participants: [participants[0]],
       },
-      [participants[0]],
+      defineTask(task),
       [],
     );
 
@@ -373,8 +490,8 @@ describe('runBenchmark', () => {
     });
 
     await runBenchmark(
-      { benchmarkSlug: 's', benchmarkName: 'n', iterations: 3, groupBy: 'round', task },
-      [participants[0]],
+      { benchmarkSlug: 's', benchmarkName: 'n', iterations: 3, groupBy: 'round', participants: [participants[0]] },
+      defineTask(task),
       [],
     );
 
@@ -399,9 +516,9 @@ describe('runBenchmark', () => {
         benchmarkSlug: 's',
         benchmarkName: 'n',
         phases: [{ name: 'cold', iterations: 2 }, { name: 'warm', iterations: 1 }],
-        task,
+        participants: [participants[0]],
       },
-      [participants[0]],
+      defineTask(task),
       [],
     );
 
@@ -424,8 +541,8 @@ describe('runBenchmark', () => {
     });
 
     await runBenchmark(
-      { benchmarkSlug: 's', benchmarkName: 'n', iterations: 3, staggerDelayMs: 50, task },
-      [participants[0]],
+      { benchmarkSlug: 's', benchmarkName: 'n', iterations: 3, staggerDelayMs: 50, participants: [participants[0]] },
+      defineTask(task),
       [],
     );
 
@@ -458,9 +575,9 @@ describe('runBenchmark', () => {
         benchmarkName: 'n',
         phases: [{ name: 'cold', iterations: 2 }, { name: 'warm', iterations: 1 }],
         groupBy: 'round',
-        task,
+        participants: [participants[0]],
       },
-      [participants[0]],
+      defineTask(task),
       [],
     );
 
@@ -490,8 +607,8 @@ describe('runBenchmark', () => {
     };
 
     await runBenchmark(
-      { benchmarkSlug: 's', benchmarkName: 'n', iterations: 1, groupBy: 'round', task },
-      [participants[0]],
+      { benchmarkSlug: 's', benchmarkName: 'n', iterations: 1, groupBy: 'round', participants: [participants[0]] },
+      defineTask(task),
       [],
     );
 

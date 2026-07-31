@@ -46,13 +46,13 @@ jobs:
       - name: Build packages
         run: |
           pnpm --filter @benchsdk/client run build
-          pnpm --filter @benchsdk/cli run build
+          pnpm --filter @benchsdk/runner run build
           pnpm --filter create-bench run build
 
       - name: Test
         run: |
           pnpm --filter @benchsdk/client run test
-          pnpm --filter @benchsdk/cli run test
+          pnpm --filter @benchsdk/runner run test
           pnpm --filter create-bench run test
 
       - name: Create Release Pull Request or Publish to npm
