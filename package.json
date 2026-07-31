@@ -132,7 +132,7 @@
     "@computesdk/sprites": "^0.1.14",
     "@computesdk/steel": "^0.2.6",
     "@computesdk/superserve": "^0.2.1",
-    "@computesdk/tenki": "^0.1.2",
+    "@computesdk/tenki": "^0.1.3",
     "@computesdk/tensorlake": "^0.1.9",
     "@computesdk/tilion": "^0.1.0",
     "@computesdk/upstash": "^0.3.9",
