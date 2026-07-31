@@ -131,8 +131,8 @@ if (phases.length === 0) {
 }
 
 export const config = defineBenchmarkConfig({
-  benchmarkSlug: 'ai-gateway-local',
-  benchmarkName: 'AI Gateway Benchmark - Local',
+  benchmarkSlug: 'ai-gateway',
+  benchmarkName: 'AI Gateway Benchmark',
   benchmarkKind: 'ai-gateway',
   phases,
   groupBy: 'round',

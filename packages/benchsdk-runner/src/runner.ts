@@ -206,15 +206,15 @@ function buildSchedule<T extends BaseParticipant>(
   return Array.from({ length: iterations }, () => ({ phase: undefined, task }));
 }
 
-type OnResult = (record: TaskResultRecord, meta: { iterations: number }) => void;
+type OnResult = (record: TaskResultRecord, meta: { iterations: number; participant: string }) => void;
 
-function defaultOnResult(record: TaskResultRecord, meta: { iterations: number }): void {
+function defaultOnResult(record: TaskResultRecord, meta: { iterations: number; participant: string }): void {
   const n = record.taskIndex + 1;
   if (record.status === 'success') {
     const data = record.data && Object.keys(record.data).length > 0 ? ` ${JSON.stringify(record.data)}` : '';
-    console.log(`  Task ${n}/${meta.iterations}: success${data}`);
+    console.log(`  [${meta.participant}] Task ${n}/${meta.iterations}: success${data}`);
   } else {
-    console.log(`  Task ${n}/${meta.iterations}: FAILED — ${record.errorCode ?? 'unknown error'}`);
+    console.log(`  [${meta.participant}] Task ${n}/${meta.iterations}: FAILED — ${record.errorCode ?? 'unknown error'}`);
   }
 }
 
@@ -368,7 +368,7 @@ async function runGroupedByParticipant<T extends BaseParticipant>(
         if (slot.phase) ctx.measure({ phase: slot.phase });
         return taskResult?.data;
       },
-      onResult: (record) => onResult(record, { iterations: schedule.length }),
+      onResult: (record) => onResult(record, { iterations: schedule.length, participant: participant.name }),
     });
 
     if (!result.assignment) {
@@ -458,7 +458,7 @@ async function runGroupedByRound<T extends BaseParticipant>(
         logBuffer,
       );
       if (record.status !== 'success') failed.set(participant.name, true);
-      onResult(record, { iterations: schedule.length });
+      onResult(record, { iterations: schedule.length, participant: participant.name });
       reporter?.recordResult(record);
       if (!recordsByParticipant.has(participant.name)) {
         recordsByParticipant.set(participant.name, []);

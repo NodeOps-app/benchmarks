@@ -47,8 +47,12 @@ function extractOutputTokens(wireFormat: AIGatewayWireFormat, buf: string): numb
     return m.length > 0 ? Number(m[m.length - 1][1]) : undefined;
   }
   // Anthropic streams cumulative usage on message_start/message_delta events;
-  // the last "output_tokens" seen in the buffer is the most up to date.
-  const matches = [...buf.matchAll(/"output_tokens"\s*:\s*(\d+)/g)];
+  // the last "output_tokens" seen in the buffer is the most up to date. Scoped
+  // to inside the "usage" object (allowing one level of nested {} for fields
+  // like usage.server_tool_use) so a gateway that echoes an unrelated
+  // "output_tokens" elsewhere — e.g. Concentrate's sibling `cost.breakdown[…]
+  // .output_tokens` dollar amount — can't be mistaken for the real count.
+  const matches = [...buf.matchAll(/"usage"\s*:\s*\{(?:[^{}]|\{[^{}]*\})*?"output_tokens"\s*:\s*(\d+)/g)];
   return matches.length > 0 ? Number(matches[matches.length - 1][1]) : undefined;
 }
 
