@@ -22,6 +22,7 @@ import { opencomputer } from '@computesdk/opencomputer';
 // import { railway } from '@computesdk/railway';
 import { runloop } from '@computesdk/runloop';
 import { sandbox0 } from '@computesdk/sandbox0';
+import { sail } from '@computesdk/sail';
 import { sprites } from '@computesdk/sprites';
 import { superserve } from '@computesdk/superserve';
 import { tenki } from '@computesdk/tenki';
@@ -197,6 +198,11 @@ export const providers: ProviderConfig[] = [
     // DAX overrides memory to 16 GiB while preserving this hard TTL.
     // Outlive the 10-minute DAX timeout without leaving a zombie sandbox if cleanup cannot run.
     sandboxOptions: { memory: 128, hardTtl: 900 },
+  },
+  {
+    name: 'sail',
+    requiredEnvVars: ['SAIL_API_KEY'],
+    createCompute: () => sail({ apiKey: process.env.SAIL_API_KEY! }),
   },
   {
     name: 'sprites',
