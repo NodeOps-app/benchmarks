@@ -28,7 +28,11 @@ export interface BenchmarkRun {
   benchmarkId: string;
   name?: string | null;
   status: BenchmarkRunStatus | string;
+  /** Idempotency key: runs created with the same key (per org + benchmark) are the same run. */
+  runKey?: string | null;
   totalTasks: number;
+  /** The run declared no size: `totalTasks` is the sum of what its participants declare. */
+  participantSized?: boolean;
   workerCount: number;
   config?: JsonObject;
   createdAt?: string;
@@ -116,8 +120,14 @@ export interface UpdateBenchmarkInput {
 
 export interface CreateRunInput {
   name?: string;
-  totalTasks: number;
-  workerCount: number;
+  /**
+   * Idempotency key for get-or-create: sibling callers passing the same key
+   * (per org + benchmark) converge on one run instead of each opening its own.
+   */
+  runKey?: string;
+  /** Omit to open a participant-sized run: each participant declares its own size when it registers. */
+  totalTasks?: number;
+  workerCount?: number;
   participants?: string[];
   config?: JsonObject;
 }

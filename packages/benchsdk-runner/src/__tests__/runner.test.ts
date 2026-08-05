@@ -49,15 +49,23 @@ describe('parseCliArgs', () => {
     expect(parseCliArgs(['--group-by=participant'])).toEqual({ groupBy: 'participant' });
   });
 
-  it('parses --slug and --name', () => {
-    expect(parseCliArgs(['--slug', 'sandbox-burst-local'])).toEqual({ slug: 'sandbox-burst-local' });
-    expect(parseCliArgs(['--slug=sandbox-tti-local'])).toEqual({ slug: 'sandbox-tti-local' });
+  it('parses --benchmark (and its --slug alias) and --name', () => {
+    expect(parseCliArgs(['--benchmark', 'sandbox-burst-local'])).toEqual({ benchmark: 'sandbox-burst-local' });
+    expect(parseCliArgs(['--benchmark=sandbox-tti-local'])).toEqual({ benchmark: 'sandbox-tti-local' });
+    expect(parseCliArgs(['--slug', 'sandbox-burst-local'])).toEqual({ benchmark: 'sandbox-burst-local' });
     expect(parseCliArgs(['--name', 'Sandbox burst TTI'])).toEqual({ name: 'Sandbox burst TTI' });
     expect(() => parseCliArgs(['--name', ' '])).toThrow('--name');
   });
 
-  it('throws on a non-slug --slug', () => {
-    expect(() => parseCliArgs(['--slug', 'Sandbox TTI'])).toThrow('--slug');
+  it('parses --shape and --run-key', () => {
+    expect(parseCliArgs(['--shape', 'burst'])).toEqual({ shape: 'burst' });
+    expect(parseCliArgs(['--run-key=ci-123'])).toEqual({ runKey: 'ci-123' });
+    expect(() => parseCliArgs(['--shape', ''])).toThrow('--shape');
+    expect(() => parseCliArgs(['--run-key', ''])).toThrow('--run-key');
+  });
+
+  it('throws on a non-slug --benchmark', () => {
+    expect(() => parseCliArgs(['--benchmark', 'Sandbox TTI'])).toThrow('--benchmark');
     expect(() => parseCliArgs(['--slug', ''])).toThrow('--slug');
   });
 
@@ -164,14 +172,19 @@ describe('runBenchmark', () => {
     process.env.E2B_API_KEY = 'x';
     process.env.MODAL_TOKEN = 'y';
     process.env.BENCHMARKS_PLATFORM_API_KEY = 'test-key';
-    calls = { upsertBenchmark: [], createRun: [], planWorkers: [], runWorker: [], taskData: [] };
+    calls = { upsertBenchmark: [], createRun: [], planWorkers: [], upsertParticipant: [], getRun: [], runWorker: [], taskData: [] };
     fakeClient = {
       upsertBenchmark: vi.fn(async (...a: any[]) => { calls.upsertBenchmark.push(a); return {}; }),
       createRun: vi.fn(async (...a: any[]) => { calls.createRun.push(a); return { run: { id: 'run-1' }, participants: [] }; }),
       planWorkers: vi.fn(async (...a: any[]) => { calls.planWorkers.push(a); return []; }),
+      upsertParticipant: vi.fn(async (...a: any[]) => { calls.upsertParticipant.push(a); return {}; }),
+      getRun: vi.fn(async (slug: string, runId: string) => {
+        calls.getRun.push([slug, runId]);
+        return { id: runId, totalTasks: 3, participantSized: runId === 'run-open' };
+      }),
       runWorker: vi.fn(async (opts: any) => {
         calls.runWorker.push(opts);
-        const total = calls.createRun[0]?.[1]?.totalTasks ?? 1;
+        const total = calls.createRun[0]?.[1]?.totalTasks ?? calls.upsertParticipant[0]?.[3]?.totalTasks ?? 1;
         // The platform hands out globally-indexed task ranges; `taskRangeStart`
         // lets a test exercise a worker whose range doesn't start at 0.
         const start = taskRangeStart;
@@ -292,6 +305,84 @@ describe('runBenchmark', () => {
     expect(calls.upsertBenchmark[0][0]).toBe('sandbox-burst-local');
     expect(calls.upsertBenchmark[0][1]).toMatchObject({ name: 'Sandbox burst TTI' });
     expect(calls.createRun[0][0]).toBe('sandbox-burst-local');
+  });
+
+  it('shares a run by --run-key: get-or-creates it keyed, then registers only its own participant', async () => {
+    const config: BenchmarkConfig<typeof participants[number]> = {
+      benchmarkSlug: 'sandbox-tti-local',
+      benchmarkName: 'Sandbox TTI',
+      iterations: 2,
+      participants: [participants[0]],
+    };
+
+    const outcome = await runBenchmark(config, defineTask(async () => ({})), ['--run-key', 'ci-123', '--provider', 'e2b']);
+
+    // The benchmark is still materialized from the file identity.
+    expect(calls.upsertBenchmark[0][0]).toBe('sandbox-tti-local');
+    // One keyed get-or-create, carrying the key and no size/participant list.
+    expect(calls.createRun).toHaveLength(1);
+    expect(calls.createRun[0][1]).toMatchObject({ runKey: 'ci-123' });
+    expect(calls.createRun[0][1].totalTasks).toBeUndefined();
+    expect(calls.createRun[0][1].participants).toBeUndefined();
+    // Registers only the provider it runs, sized to its own iteration count.
+    expect(calls.upsertParticipant[0].slice(0, 3)).toEqual(['sandbox-tti-local', 'run-1', 'e2b']);
+    expect(calls.upsertParticipant[0][3]).toMatchObject({ totalTasks: 2 });
+    expect(calls.runWorker[0]).toMatchObject({ runId: 'run-1' });
+    expect(outcome.runId).toBe('run-1');
+    expect(outcome.participants[0].records).toHaveLength(2);
+  });
+
+  it('does not rename a benchmark it was merely retargeted at', async () => {
+    const config: BenchmarkConfig<typeof participants[number]> = {
+      benchmarkSlug: 'sandbox-tti-local',
+      benchmarkName: 'Sandbox TTI',
+      iterations: 1,
+      participants: [participants[0]],
+    };
+
+    await runBenchmark(config, defineTask(async () => ({})), ['--benchmark', 'sandbox-burst-local']);
+    expect(calls.upsertBenchmark).toEqual([]);
+
+    await runBenchmark(config, defineTask(async () => ({})), [
+      '--benchmark',
+      'sandbox-burst-local',
+      '--name',
+      'Sandbox burst TTI',
+    ]);
+    expect(calls.upsertBenchmark[0]).toEqual(['sandbox-burst-local', { name: 'Sandbox burst TTI' }]);
+  });
+
+  it('selects a declared shape by --shape, reporting under its slug and name', async () => {
+    const config: BenchmarkConfig<typeof participants[number]> = {
+      benchmarkSlug: 'sandbox-tti-local',
+      benchmarkName: 'Sandbox TTI',
+      iterations: 1,
+      participants: [participants[0]],
+      shapes: {
+        staggered: { slug: 'sandbox-staggered-local', name: 'Sandbox staggered TTI', staggerDelayMs: 200 },
+      },
+    };
+
+    const outcome = await runBenchmark(config, defineTask(async () => ({})), ['--shape', 'staggered']);
+
+    expect(calls.upsertBenchmark[0][0]).toBe('sandbox-staggered-local');
+    expect(calls.upsertBenchmark[0][1]).toMatchObject({ name: 'Sandbox staggered TTI' });
+    expect(calls.createRun[0][0]).toBe('sandbox-staggered-local');
+    // The shape's stable knob applies; scale knobs stay defaulted/overridable.
+    expect(outcome.config.staggerDelayMs).toBe(200);
+  });
+
+  it('rejects an unknown --shape, listing the declared ones', async () => {
+    const config: BenchmarkConfig<typeof participants[number]> = {
+      benchmarkSlug: 'sandbox-tti-local',
+      benchmarkName: 'Sandbox TTI',
+      participants: [participants[0]],
+      shapes: { burst: { slug: 'sandbox-burst-local' } },
+    };
+
+    await expect(
+      runBenchmark(config, defineTask(async () => ({})), ['--shape', 'nope']),
+    ).rejects.toThrow('Known shapes: burst');
   });
 
   it('throws NoAvailableParticipantsError, listing the skips, when no participant has its env vars set', async () => {

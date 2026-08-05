@@ -5,13 +5,19 @@ import { NoAvailableParticipantsError } from '../no-available-participants.js';
 const fixture = (name: string) => `src/__tests__/fixtures/${name}`;
 
 describe('runBenchmarkFile', () => {
-  it('rejects when the command is not `run`', async () => {
-    await expect(runBenchmarkFile([])).rejects.toThrow(/Usage: bench run/);
-    await expect(runBenchmarkFile(['nope', fixture('good.bench.ts')])).rejects.toThrow(/Usage: bench run/);
+  it('rejects retired imperative commands (there is no `create`)', async () => {
+    await expect(runBenchmarkFile(['create', 'benchmark', 'sandbox'])).rejects.toThrow(/Usage:/);
+    await expect(runBenchmarkFile(['create', 'run'])).rejects.toThrow(/Usage:/);
   });
 
-  it('rejects when no file is given', async () => {
-    await expect(runBenchmarkFile(['run'])).rejects.toThrow(/Usage: bench run/);
+  it('rejects when the command is not `run`', async () => {
+    await expect(runBenchmarkFile([])).rejects.toThrow(/Usage:/);
+    await expect(runBenchmarkFile(['nope', fixture('good.bench.ts')])).rejects.toThrow(/Usage:/);
+  });
+
+  it('rejects when no file is given, or a flag stands where the file should', async () => {
+    await expect(runBenchmarkFile(['run'])).rejects.toThrow(/Usage:/);
+    await expect(runBenchmarkFile(['run', '--shape', 'burst'])).rejects.toThrow(/Usage:/);
   });
 
   it('rejects a module that does not export a config', async () => {

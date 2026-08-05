@@ -85,6 +85,31 @@ describe('defineBenchmarkConfig', () => {
       defineBenchmarkConfig({ benchmarkSlug: 's', benchmarkName: 'n', participants, phases: [{ name: 'cold', iterations: 1 }, { name: 'cold', iterations: 1 }] }),
     ).toThrow('duplicate phase name');
   });
+
+  it('accepts a valid shapes map', () => {
+    const config = defineBenchmarkConfig({
+      benchmarkSlug: 's',
+      benchmarkName: 'n',
+      participants,
+      shapes: {
+        burst: { slug: 'sandbox-burst-local', name: 'Burst' },
+        staggered: { slug: 'sandbox-staggered-local', staggerDelayMs: 200 },
+      },
+    });
+    expect(config.shapes?.burst.slug).toBe('sandbox-burst-local');
+  });
+
+  it('rejects a shape without a lowercase slug', () => {
+    expect(() =>
+      defineBenchmarkConfig({ benchmarkSlug: 's', benchmarkName: 'n', participants, shapes: { burst: { slug: 'Burst' } } }),
+    ).toThrow('burst');
+  });
+
+  it('rejects a shape with a negative staggerDelayMs', () => {
+    expect(() =>
+      defineBenchmarkConfig({ benchmarkSlug: 's', benchmarkName: 'n', participants, shapes: { s: { slug: 'ok', staggerDelayMs: -1 } } }),
+    ).toThrow('staggerDelayMs');
+  });
 });
 
 describe('defineTask', () => {
