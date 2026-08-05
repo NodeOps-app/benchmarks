@@ -1,0 +1,304 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="1274" viewBox="0 0 1200 1274">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f6f8fa;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#fff;stop-opacity:1"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .bg { fill:#fff; }.table-header-bg { fill:#f6f8fa; }
+    .title { font:bold 28px Inter,Arial,sans-serif;fill:#24292f; }
+    .subtitle { font:14px Inter,Arial,sans-serif;fill:#57606a; }
+    .section { font:600 18px Inter,Arial,sans-serif;fill:#24292f; }
+    .small { font:11px Inter,Arial,sans-serif;fill:#57606a; }
+    .table-head { font:600 12px Inter,Arial,sans-serif;fill:#57606a;letter-spacing:.5px; }
+    .table-text { font:14px Inter,Arial,sans-serif;fill:#24292f; }
+    .table-name { font-weight:600;fill:#0969da; }.good { fill:#1a7f37; }
+    .warn { fill:#9a6700; }.bad { fill:#cf222e; }.line { stroke:#d0d7de;stroke-width:1; }
+  </style>
+  <rect class="bg" width="1200" height="1274"/>
+  <g transform="translate(24,24)">
+    <rect width="60" height="60" fill="#000"/>
+    <g transform="scale(0.035)"><path fill="#fff" d="M1036.26,1002.28h237.87l-.93,19.09c-8.38,110.32-49.81,198.3-123.82,262.07-73.09,63.31-170.84,95.43-290.48,95.43-130.81,0-235.55-44.69-311.43-133.6-74.48-87.98-112.65-209.48-112.65-361.23v-60.51c0-96.83,17.7-183.41,51.68-257.43,34.91-74.95,85.19-133.61,149.89-173.63,64.7-40.04,140.12-60.52,225.3-60.52,117.77,0,214.13,32.12,286.29,95.9,72.62,63.3,114.98,153.61,126.15,267.67l1.86,19.08h-238.34l-.93-15.83c-4.65-59.11-20.95-101.94-47.95-127.08-27-25.6-69.83-38.17-127.08-38.17-61.91,0-107.06,20.95-137.33,65.17-31.65,45.15-47.94,117.77-48.87,215.53v74.48c0,102.41,15.36,177.83,45.62,223.91,28.86,44.22,74.01,65.63,137.79,65.63,58.19,0,101.48-12.57,128.95-38.17,26.99-25.14,43.29-66.1,47.48-121.5l.93-16.3Z"/></g>
+  </g>
+  <text class="title" x="100" y="55">DAX Sandbox Benchmarks</text>
+  <text class="subtitle" x="100" y="78">Build and typecheck workload performance across sandbox providers</text>
+  <text class="section" x="24" y="136">Detailed Metrics</text>
+  <line class="line" x1="0" y1="150" x2="1200" y2="150"/>
+  <rect class="table-header-bg" x="0" y="172" width="1200" height="42"/>
+  <text class="table-head" x="40" y="198">PROVIDER</text>
+  <text class="table-head" x="220" y="198">PHASES</text>
+  <text class="table-head" x="300" y="198">SUCCESS</text>
+  <text class="table-head" x="390" y="198">TOTAL (MED)</text>
+  <text class="table-head" x="530" y="198">PREPARE</text>
+  <text class="table-head" x="640" y="198">BUN DL</text>
+  <text class="table-head" x="735" y="198">BUN UNPACK</text>
+  <text class="table-head" x="850" y="198">CLONE</text>
+  <text class="table-head" x="940" y="198">INSTALL</text>
+  <text class="table-head" x="1050" y="198">TYPECHECK</text>
+  <line class="line" x1="24" y1="256" x2="1176" y2="256"/>
+  <text class="table-text table-name" x="40" y="241">Namespace</text>
+  <text class="table-text" x="220" y="241">7/7</text>
+  <text class="table-text warn" x="300" y="241">67%</text>
+  <text class="table-text " x="390" y="241">35.50s</text>
+  <text class="table-text" x="530" y="241">2.68s</text>
+  <text class="table-text" x="640" y="241">0.18s</text>
+  <text class="table-text" x="735" y="241">0.42s</text>
+  <text class="table-text" x="850" y="241">1.17s</text>
+  <text class="table-text" x="940" y="241">7.60s</text>
+  <text class="table-text" x="1050" y="241">19.58s</text>
+  <line class="line" x1="24" y1="298" x2="1176" y2="298"/>
+  <text class="table-text table-name" x="40" y="283">Lightning</text>
+  <text class="table-text" x="220" y="283">7/7</text>
+  <text class="table-text good" x="300" y="283">100%</text>
+  <text class="table-text " x="390" y="283">41.56s</text>
+  <text class="table-text" x="530" y="283">4.97s</text>
+  <text class="table-text" x="640" y="283">0.52s</text>
+  <text class="table-text" x="735" y="283">0.62s</text>
+  <text class="table-text" x="850" y="283">2.68s</text>
+  <text class="table-text" x="940" y="283">11.94s</text>
+  <text class="table-text" x="1050" y="283">16.88s</text>
+  <line class="line" x1="24" y1="340" x2="1176" y2="340"/>
+  <text class="table-text table-name" x="40" y="325">Blaxel</text>
+  <text class="table-text" x="220" y="325">7/7</text>
+  <text class="table-text warn" x="300" y="325">33%</text>
+  <text class="table-text " x="390" y="325">44.39s</text>
+  <text class="table-text" x="530" y="325">2.18s</text>
+  <text class="table-text" x="640" y="325">0.34s</text>
+  <text class="table-text" x="735" y="325">0.62s</text>
+  <text class="table-text" x="850" y="325">2.19s</text>
+  <text class="table-text" x="940" y="325">11.74s</text>
+  <text class="table-text" x="1050" y="325">33.33s</text>
+  <line class="line" x1="24" y1="382" x2="1176" y2="382"/>
+  <text class="table-text table-name" x="40" y="367">Createos</text>
+  <text class="table-text" x="220" y="367">7/7</text>
+  <text class="table-text good" x="300" y="367">100%</text>
+  <text class="table-text " x="390" y="367">50.25s</text>
+  <text class="table-text" x="530" y="367">2.98s</text>
+  <text class="table-text" x="640" y="367">0.21s</text>
+  <text class="table-text" x="735" y="367">0.47s</text>
+  <text class="table-text" x="850" y="367">2.12s</text>
+  <text class="table-text" x="940" y="367">10.64s</text>
+  <text class="table-text" x="1050" y="367">26.62s</text>
+  <line class="line" x1="24" y1="424" x2="1176" y2="424"/>
+  <text class="table-text table-name" x="40" y="409">Upstash</text>
+  <text class="table-text" x="220" y="409">7/7</text>
+  <text class="table-text good" x="300" y="409">100%</text>
+  <text class="table-text " x="390" y="409">51.25s</text>
+  <text class="table-text" x="530" y="409">3.68s</text>
+  <text class="table-text" x="640" y="409">0.26s</text>
+  <text class="table-text" x="735" y="409">0.62s</text>
+  <text class="table-text" x="850" y="409">1.75s</text>
+  <text class="table-text" x="940" y="409">10.45s</text>
+  <text class="table-text" x="1050" y="409">25.11s</text>
+  <line class="line" x1="24" y1="466" x2="1176" y2="466"/>
+  <text class="table-text table-name" x="40" y="451">Tensorlake</text>
+  <text class="table-text" x="220" y="451">7/7</text>
+  <text class="table-text good" x="300" y="451">100%</text>
+  <text class="table-text " x="390" y="451">56.39s</text>
+  <text class="table-text" x="530" y="451">12.59s</text>
+  <text class="table-text" x="640" y="451">0.23s</text>
+  <text class="table-text" x="735" y="451">0.57s</text>
+  <text class="table-text" x="850" y="451">1.68s</text>
+  <text class="table-text" x="940" y="451">10.30s</text>
+  <text class="table-text" x="1050" y="451">27.59s</text>
+  <line class="line" x1="24" y1="508" x2="1176" y2="508"/>
+  <text class="table-text table-name" x="40" y="493">Tenki</text>
+  <text class="table-text" x="220" y="493">7/7</text>
+  <text class="table-text good" x="300" y="493">100%</text>
+  <text class="table-text " x="390" y="493">66.26s</text>
+  <text class="table-text" x="530" y="493">3.89s</text>
+  <text class="table-text" x="640" y="493">0.68s</text>
+  <text class="table-text" x="735" y="493">0.62s</text>
+  <text class="table-text" x="850" y="493">4.17s</text>
+  <text class="table-text" x="940" y="493">15.55s</text>
+  <text class="table-text" x="1050" y="493">36.86s</text>
+  <line class="line" x1="24" y1="550" x2="1176" y2="550"/>
+  <text class="table-text table-name" x="40" y="535">Daytona</text>
+  <text class="table-text" x="220" y="535">7/7</text>
+  <text class="table-text good" x="300" y="535">100%</text>
+  <text class="table-text " x="390" y="535">70.43s</text>
+  <text class="table-text" x="530" y="535">2.82s</text>
+  <text class="table-text" x="640" y="535">0.31s</text>
+  <text class="table-text" x="735" y="535">0.56s</text>
+  <text class="table-text" x="850" y="535">3.94s</text>
+  <text class="table-text" x="940" y="535">13.75s</text>
+  <text class="table-text" x="1050" y="535">37.25s</text>
+  <line class="line" x1="24" y1="592" x2="1176" y2="592"/>
+  <text class="table-text table-name" x="40" y="577">E2B</text>
+  <text class="table-text" x="220" y="577">7/7</text>
+  <text class="table-text good" x="300" y="577">100%</text>
+  <text class="table-text " x="390" y="577">78.13s</text>
+  <text class="table-text" x="530" y="577">8.09s</text>
+  <text class="table-text" x="640" y="577">0.51s</text>
+  <text class="table-text" x="735" y="577">0.75s</text>
+  <text class="table-text" x="850" y="577">2.92s</text>
+  <text class="table-text" x="940" y="577">18.17s</text>
+  <text class="table-text" x="1050" y="577">41.15s</text>
+  <line class="line" x1="24" y1="634" x2="1176" y2="634"/>
+  <text class="table-text table-name" x="40" y="619">Vercel</text>
+  <text class="table-text" x="220" y="619">7/7</text>
+  <text class="table-text good" x="300" y="619">100%</text>
+  <text class="table-text " x="390" y="619">80.13s</text>
+  <text class="table-text" x="530" y="619">17.17s</text>
+  <text class="table-text" x="640" y="619">0.17s</text>
+  <text class="table-text" x="735" y="619">0.68s</text>
+  <text class="table-text" x="850" y="619">2.27s</text>
+  <text class="table-text" x="940" y="619">11.86s</text>
+  <text class="table-text" x="1050" y="619">42.38s</text>
+  <line class="line" x1="24" y1="676" x2="1176" y2="676"/>
+  <text class="table-text table-name" x="40" y="661">Superserve</text>
+  <text class="table-text" x="220" y="661">7/7</text>
+  <text class="table-text good" x="300" y="661">100%</text>
+  <text class="table-text " x="390" y="661">88.19s</text>
+  <text class="table-text" x="530" y="661">4.51s</text>
+  <text class="table-text" x="640" y="661">0.30s</text>
+  <text class="table-text" x="735" y="661">0.57s</text>
+  <text class="table-text" x="850" y="661">4.41s</text>
+  <text class="table-text" x="940" y="661">15.64s</text>
+  <text class="table-text" x="1050" y="661">59.94s</text>
+  <line class="line" x1="24" y1="718" x2="1176" y2="718"/>
+  <text class="table-text table-name" x="40" y="703">Isorun</text>
+  <text class="table-text" x="220" y="703">7/7</text>
+  <text class="table-text warn" x="300" y="703">67%</text>
+  <text class="table-text " x="390" y="703">94.34s</text>
+  <text class="table-text" x="530" y="703">0.98s</text>
+  <text class="table-text" x="640" y="703">0.35s</text>
+  <text class="table-text" x="735" y="703">0.54s</text>
+  <text class="table-text" x="850" y="703">1.50s</text>
+  <text class="table-text" x="940" y="703">10.97s</text>
+  <text class="table-text" x="1050" y="703">27.39s</text>
+  <line class="line" x1="24" y1="760" x2="1176" y2="760"/>
+  <text class="table-text table-name" x="40" y="745">Modal</text>
+  <text class="table-text" x="220" y="745">7/7</text>
+  <text class="table-text good" x="300" y="745">100%</text>
+  <text class="table-text " x="390" y="745">99.76s</text>
+  <text class="table-text" x="530" y="745">4.03s</text>
+  <text class="table-text" x="640" y="745">0.35s</text>
+  <text class="table-text" x="735" y="745">0.70s</text>
+  <text class="table-text" x="850" y="745">2.40s</text>
+  <text class="table-text" x="940" y="745">15.62s</text>
+  <text class="table-text" x="1050" y="745">69.42s</text>
+  <line class="line" x1="24" y1="802" x2="1176" y2="802"/>
+  <text class="table-text table-name" x="40" y="787">Declaw</text>
+  <text class="table-text" x="220" y="787">7/7</text>
+  <text class="table-text warn" x="300" y="787">67%</text>
+  <text class="table-text " x="390" y="787">179.48s</text>
+  <text class="table-text" x="530" y="787">5.97s</text>
+  <text class="table-text" x="640" y="787">0.66s</text>
+  <text class="table-text" x="735" y="787">0.66s</text>
+  <text class="table-text" x="850" y="787">4.55s</text>
+  <text class="table-text" x="940" y="787">15.14s</text>
+  <text class="table-text" x="1050" y="787">139.80s</text>
+  <line class="line" x1="24" y1="844" x2="1176" y2="844"/>
+  <text class="table-text table-name" x="40" y="829">Sandbox0</text>
+  <text class="table-text" x="220" y="829">7/7</text>
+  <text class="table-text good" x="300" y="829">100%</text>
+  <text class="table-text " x="390" y="829">183.00s</text>
+  <text class="table-text" x="530" y="829">3.81s</text>
+  <text class="table-text" x="640" y="829">1.12s</text>
+  <text class="table-text" x="735" y="829">0.68s</text>
+  <text class="table-text" x="850" y="829">7.62s</text>
+  <text class="table-text" x="940" y="829">73.26s</text>
+  <text class="table-text" x="1050" y="829">79.58s</text>
+  <line class="line" x1="24" y1="886" x2="1176" y2="886"/>
+  <text class="table-text table-name" x="40" y="871">Opencomputer</text>
+  <text class="table-text" x="220" y="871">6/7</text>
+  <text class="table-text bad" x="300" y="871">0%</text>
+  <text class="table-text bad" x="390" y="871">Failed</text>
+  <text class="table-text" x="530" y="871">—</text>
+  <text class="table-text" x="640" y="871">—</text>
+  <text class="table-text" x="735" y="871">—</text>
+  <text class="table-text" x="850" y="871">—</text>
+  <text class="table-text" x="940" y="871">—</text>
+  <text class="table-text" x="1050" y="871">—</text>
+  <line class="line" x1="24" y1="928" x2="1176" y2="928"/>
+  <text class="table-text table-name" x="40" y="913">Archil</text>
+  <text class="table-text" x="220" y="913">6/7</text>
+  <text class="table-text bad" x="300" y="913">0%</text>
+  <text class="table-text bad" x="390" y="913">Failed</text>
+  <text class="table-text" x="530" y="913">—</text>
+  <text class="table-text" x="640" y="913">—</text>
+  <text class="table-text" x="735" y="913">—</text>
+  <text class="table-text" x="850" y="913">—</text>
+  <text class="table-text" x="940" y="913">—</text>
+  <text class="table-text" x="1050" y="913">—</text>
+  <line class="line" x1="24" y1="970" x2="1176" y2="970"/>
+  <text class="table-text table-name" x="40" y="955">Runloop</text>
+  <text class="table-text" x="220" y="955">2/7</text>
+  <text class="table-text good" x="300" y="955">100%</text>
+  <text class="table-text " x="390" y="955">85.04s</text>
+  <text class="table-text" x="530" y="955">—</text>
+  <text class="table-text" x="640" y="955">—</text>
+  <text class="table-text" x="735" y="955">—</text>
+  <text class="table-text" x="850" y="955">—</text>
+  <text class="table-text" x="940" y="955">19.77s</text>
+  <text class="table-text" x="1050" y="955">37.04s</text>
+  <line class="line" x1="24" y1="1012" x2="1176" y2="1012"/>
+  <text class="table-text table-name" x="40" y="997">Cloud Run</text>
+  <text class="table-text" x="220" y="997">2/7</text>
+  <text class="table-text bad" x="300" y="997">0%</text>
+  <text class="table-text bad" x="390" y="997">Failed</text>
+  <text class="table-text" x="530" y="997">—</text>
+  <text class="table-text" x="640" y="997">—</text>
+  <text class="table-text" x="735" y="997">—</text>
+  <text class="table-text" x="850" y="997">—</text>
+  <text class="table-text" x="940" y="997">—</text>
+  <text class="table-text" x="1050" y="997">—</text>
+  <line class="line" x1="24" y1="1054" x2="1176" y2="1054"/>
+  <text class="table-text table-name" x="40" y="1039">Beam</text>
+  <text class="table-text" x="220" y="1039">0/7</text>
+  <text class="table-text bad" x="300" y="1039">0%</text>
+  <text class="table-text bad" x="390" y="1039">Failed</text>
+  <text class="table-text" x="530" y="1039">—</text>
+  <text class="table-text" x="640" y="1039">—</text>
+  <text class="table-text" x="735" y="1039">—</text>
+  <text class="table-text" x="850" y="1039">—</text>
+  <text class="table-text" x="940" y="1039">—</text>
+  <text class="table-text" x="1050" y="1039">—</text>
+  <line class="line" x1="24" y1="1096" x2="1176" y2="1096"/>
+  <text class="table-text table-name" x="40" y="1081">Cloudflare</text>
+  <text class="table-text" x="220" y="1081">0/7</text>
+  <text class="table-text bad" x="300" y="1081">0%</text>
+  <text class="table-text bad" x="390" y="1081">Failed</text>
+  <text class="table-text" x="530" y="1081">—</text>
+  <text class="table-text" x="640" y="1081">—</text>
+  <text class="table-text" x="735" y="1081">—</text>
+  <text class="table-text" x="850" y="1081">—</text>
+  <text class="table-text" x="940" y="1081">—</text>
+  <text class="table-text" x="1050" y="1081">—</text>
+  <line class="line" x1="24" y1="1138" x2="1176" y2="1138"/>
+  <text class="table-text table-name" x="40" y="1123">Codesandbox</text>
+  <text class="table-text" x="220" y="1123">0/7</text>
+  <text class="table-text bad" x="300" y="1123">0%</text>
+  <text class="table-text bad" x="390" y="1123">Failed</text>
+  <text class="table-text" x="530" y="1123">—</text>
+  <text class="table-text" x="640" y="1123">—</text>
+  <text class="table-text" x="735" y="1123">—</text>
+  <text class="table-text" x="850" y="1123">—</text>
+  <text class="table-text" x="940" y="1123">—</text>
+  <text class="table-text" x="1050" y="1123">—</text>
+  <line class="line" x1="24" y1="1180" x2="1176" y2="1180"/>
+  <text class="table-text table-name" x="40" y="1165">Hopx</text>
+  <text class="table-text" x="220" y="1165">0/7</text>
+  <text class="table-text bad" x="300" y="1165">0%</text>
+  <text class="table-text bad" x="390" y="1165">Failed</text>
+  <text class="table-text" x="530" y="1165">—</text>
+  <text class="table-text" x="640" y="1165">—</text>
+  <text class="table-text" x="735" y="1165">—</text>
+  <text class="table-text" x="850" y="1165">—</text>
+  <text class="table-text" x="940" y="1165">—</text>
+  <text class="table-text" x="1050" y="1165">—</text>
+  <line class="line" x1="24" y1="1222" x2="1176" y2="1222"/>
+  <text class="table-text table-name" x="40" y="1207">Northflank</text>
+  <text class="table-text" x="220" y="1207">0/7</text>
+  <text class="table-text bad" x="300" y="1207">0%</text>
+  <text class="table-text bad" x="390" y="1207">Failed</text>
+  <text class="table-text" x="530" y="1207">—</text>
+  <text class="table-text" x="640" y="1207">—</text>
+  <text class="table-text" x="735" y="1207">—</text>
+  <text class="table-text" x="850" y="1207">—</text>
+  <text class="table-text" x="940" y="1207">—</text>
+  <text class="table-text" x="1050" y="1207">—</text>
+  <text class="small" x="24" y="1256">DAX phases: prepare, Bun download, Bun unpack, clone, install, and typecheck. Lower duration is better.</text>
+</svg>

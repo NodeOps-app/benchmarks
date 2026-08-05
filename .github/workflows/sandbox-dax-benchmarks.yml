@@ -8,6 +8,8 @@ on:
       - 'benchmarks/sandbox/providers.ts'
       - 'benchmarks/src/merge-results.ts'
       - 'benchmarks/scripts/dax-benchmark.sh'
+      - 'benchmarks/sandbox/generate-dax-svg.ts'
+      - 'dax.svg'
       - 'package.json'
       - '.github/workflows/sandbox-dax-benchmarks.yml'
   schedule:
@@ -149,6 +151,13 @@ jobs:
           pattern: results-*
       - name: Merge results
         run: npx tsx benchmarks/src/merge-results.ts --input artifacts
+      - name: Generate DAX SVG
+        run: |
+          if [ -f results/sandbox-dax/latest.json ]; then
+            pnpm run generate-dax-svg
+          else
+            echo "No DAX results found; skipping chart"
+          fi
       - name: Ingest results to platform
         if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         continue-on-error: true
@@ -248,7 +257,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add results/sandbox-dax/
+          git add results/sandbox-dax/ dax.svg
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "chore: update dax benchmark results [skip ci]"
 

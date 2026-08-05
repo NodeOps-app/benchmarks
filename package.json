@@ -76,6 +76,7 @@
     "generate-svg:sequential": "tsx benchmarks/sandbox/generate-svg.ts --mode sequential",
     "generate-svg:staggered": "tsx benchmarks/sandbox/generate-svg.ts --mode staggered",
     "generate-svg:burst": "tsx benchmarks/sandbox/generate-svg.ts --mode burst",
+    "generate-dax-svg": "tsx benchmarks/sandbox/generate-dax-svg.ts",
     "generate-storage-svg": "tsx benchmarks/storage/generate-svg.ts",
     "generate-snapshot-fork-svg": "tsx benchmarks/storage/generate-snapshot-fork-svg.ts",
     "generate-browser-svg": "tsx benchmarks/browser/generate-svg.ts",
