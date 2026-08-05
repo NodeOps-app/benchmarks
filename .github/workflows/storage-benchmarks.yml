@@ -84,11 +84,16 @@ jobs:
           . benchmarks/scripts/load-vault-secrets.sh '^(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AWS_REGION|S3_BUCKET|R2_ACCESS_KEY_ID|R2_SECRET_ACCESS_KEY|R2_BUCKET|R2_ACCOUNT_ID|TIGRIS_STORAGE_ACCESS_KEY_ID|TIGRIS_STORAGE_SECRET_ACCESS_KEY|TIGRIS_STORAGE_BUCKET|BLOB_READ_WRITE_TOKEN|VERCEL_BLOB_BUCKET|GCS_PROJECT_ID|GCS_BUCKET|GCS_CLIENT_EMAIL|GCS_PRIVATE_KEY|AZURE_ACCOUNT_NAME|AZURE_ACCOUNT_KEY|AZURE_CONTAINER|TENSORLAKE_API_KEY|TENSORLAKE_API_URL|TENSORLAKE_ORGANIZATION_ID|TENSORLAKE_PROJECT_ID|TENSORLAKE_FILESYSTEM|ARCHIL_S3_ACCESS_KEY_ID|ARCHIL_S3_SECRET_ACCESS_KEY|ARCHIL_BUCKET|ARCHIL_REGION|ARCHIL_BRANCH|COMPUTESDK_ADMIN_API_KEY|BENCHMARKS_PLATFORM_API_KEY)'
 
           FILE_SIZE="${{ matrix.file_size }}"
+          # Matrix jobs for the same file size share one platform run (the benchmark
+          # slug is size-independent, so the size is part of the key). The attempt
+          # number is included so re-runs do not rejoin completed runs.
+          RUN_KEY="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${FILE_SIZE}"
           npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/storage/storage.bench.ts \
             --provider ${{ matrix.provider }} \
             --file-size $FILE_SIZE \
             --concurrency ${{ (github.event_name == 'schedule' && '16') || (github.event_name == 'push' && '8') || github.event.inputs.storage_concurrency || '1' }} \
-            --iterations ${{ (github.event_name == 'schedule' && '110') || (github.event_name == 'push' && '10') || github.event.inputs.iterations || '100' }}
+            --iterations ${{ (github.event_name == 'schedule' && '110') || (github.event_name == 'push' && '10') || github.event.inputs.iterations || '100' }} \
+            --run-key "$RUN_KEY"
       - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4
