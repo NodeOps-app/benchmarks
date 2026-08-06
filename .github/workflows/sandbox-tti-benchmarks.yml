@@ -9,7 +9,7 @@ on:
       - 'benchmarks/src/merge-results.ts'
       - 'package.json'
   schedule:
-    - cron: '0 0 * * 5' # Weekly on Friday at midnight UTC
+    - cron: '0 13 * * 5' # Weekly on Friday at 1pm UTC (8am CDT)
   workflow_dispatch:
     inputs:
       iterations:
