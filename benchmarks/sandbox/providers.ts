@@ -15,6 +15,7 @@ import { isorun } from '@computesdk/isorun';
 // import { lelantos } from '@computesdk/lelantos';
 import { lightning } from '@computesdk/lightning';
 import { modal } from '@computesdk/modal';
+import { mosaic } from '@computesdk/mosaic';
 import { namespace } from '@computesdk/namespace';
 import { northflank } from '@computesdk/northflank';
 import { opencomputer } from '@computesdk/opencomputer';
@@ -145,6 +146,15 @@ export const providers: ProviderConfig[] = [
     name: 'modal',
     requiredEnvVars: ['MODAL_TOKEN_ID', 'MODAL_TOKEN_SECRET'],
     createCompute: () => modal({ tokenId: process.env.MODAL_TOKEN_ID!, tokenSecret: process.env.MODAL_TOKEN_SECRET!, scalableSandboxes: true }),
+  },
+  {
+    name: 'mosaic',
+    requiredEnvVars: ['MOSAIC_API_URL', 'MOSAIC_API_TOKEN'],
+    createCompute: () => mosaic({
+      baseUrl: process.env.MOSAIC_API_URL!,
+      apiKey: process.env.MOSAIC_API_TOKEN!,
+    }),
+    sandboxOptions: { templateId: 'node-20' },
   },
   {
     name: 'namespace',
