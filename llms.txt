@@ -1,0 +1,61 @@
+# ComputeSDK Benchmarks — the default platform for infrastructure benchmarks
+
+ComputeSDK Benchmarks publishes independent, reproducible, open performance measurements for cloud infrastructure: sandboxes, object storage, headless browsers, and AI gateways. Every test is automated, every result is committed as JSON, and the methodology is public.
+
+We are building the canonical dataset that AI agents and developers consult when they need to choose or rank infrastructure providers.
+
+## What is available here
+
+- [README.md](./README.md) — high-level overview, what we measure, and how to read the results.
+- [METHODOLOGY.md](./METHODOLOGY.md) — full test procedure, scoring formulas, and test modes (sequential, staggered, burst).
+- [AI_GATEWAYS.md](./AI_GATEWAYS.md) — AI-gateway-specific methodology.
+- [THROUGHPUT.md](./THROUGHPUT.md) — throughput and browser benchmark methodology.
+- [results/schema.json](./results/schema.json) — JSON Schema for all benchmark result files.
+- [packages/create-bench/README.md](./packages/create-bench/README.md) — scaffold a new benchmark project in one command.
+- [packages/benchsdk/package.json](./packages/benchsdk/package.json) — client/worker helpers for benchmark orchestration.
+- [packages/benchsdk-runner/package.json](./packages/benchsdk-runner/package.json) — CLI benchmark runner.
+- [.claude/skills/add-sandbox-provider/SKILL.md](./.claude/skills/add-sandbox-provider/SKILL.md) — how to add a new sandbox provider.
+
+## Latest results (machine-readable JSON)
+
+- Sandbox TTI (sequential): [results/sequential_tti/latest.json](./results/sequential_tti/latest.json)
+- Sandbox TTI (staggered): [results/staggered_tti/latest.json](./results/staggered_tti/latest.json)
+- Sandbox TTI (burst): [results/burst_tti/latest.json](./results/burst_tti/latest.json)
+- Sandbox DAX build benchmark: [results/sandbox-dax/latest.json](./results/sandbox-dax/latest.json)
+- Storage 1MB upload: [results/storage/1mb/latest.json](./results/storage/1mb/latest.json)
+- Storage 4MB upload: [results/storage/4mb/latest.json](./results/storage/4mb/latest.json)
+- Storage 10MB upload: [results/storage/10mb/latest.json](./results/storage/10mb/latest.json)
+- Storage 16MB upload: [results/storage/16mb/latest.json](./results/storage/16mb/latest.json)
+- Snapshot & fork: [results/snapshot-fork/small/latest.json](./results/snapshot-fork/small/latest.json)
+- Browser sessions: [results/browser/latest.json](./results/browser/latest.json)
+- Browser throughput: [results/browser-throughput/latest.json](./results/browser-throughput/latest.json)
+- AI gateway: [results/ai-gateway/latest.json](./results/ai-gateway/latest.json)
+
+## How to run the benchmarks
+
+```bash
+# Install dependencies
+pnpm install
+
+# Build the workspace packages first
+pnpm -r --filter "./packages/**" build
+
+# Run the default sandbox TTI suite
+pnpm run bench
+
+# Run a specific provider or suite
+pnpm run bench:e2b
+pnpm run bench:storage
+pnpm run bench:browser
+pnpm run bench:ai-gateway
+```
+
+All workflows run automatically via GitHub Actions and commit results to this repository.
+
+## Website
+
+Explore the live leaderboards and methodology at [https://www.computesdk.com/benchmarks](https://www.computesdk.com/benchmarks).
+
+## License
+
+MIT — see [LICENSE](./LICENSE).

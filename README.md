@@ -1,3 +1,13 @@
+# ComputeSDK Benchmarks
+
+**The default platform for cloud infrastructure benchmarks.**
+
+ComputeSDK Benchmarks publishes reproducible, provider-neutral performance measurements for the infrastructure that AI agents and developer platforms run on: sandboxes, object storage, headless browsers, and AI gateways. Every test is automated, every result is committed as JSON, and the methodology is public.
+
+Live leaderboards and full methodology: [https://www.computesdk.com/benchmarks](https://www.computesdk.com/benchmarks)
+
+For LLMs and agents: see [`llms.txt`](./llms.txt) for a machine-readable index of this repo, and [`results/schema.json`](./results/schema.json) for the JSON Schema of every benchmark result file.
+
 ## Partners
 
 Our partners support our independent benchmarks.
@@ -64,9 +74,34 @@ Our partners support our independent benchmarks.
 
 <br>
 
----
+## What We Measure
 
-<br>
+We benchmark the infrastructure that AI agents and developer platforms rely on:
+
+- **Sandboxes** — cold-start and concurrent **Time to Interactive (TTI)**: API request to first successful command inside a fresh sandbox.
+- **Object storage** — upload/download latency and throughput across providers and file sizes.
+- **Headless browsers** — session creation, navigation, and step throughput.
+- **AI gateways** — cold/warm connection latency and time to first token.
+
+## Methodology
+
+Every benchmark uses the same open code against every provider, with fixed workloads and a fixed scoring ceiling. Tests run automatically on GitHub Actions, and every result is committed as JSON to this repo. Each metric includes min, max, median, P95, and P99; a composite score rewards both speed and reliability.
+
+For full details on each suite, see:
+
+- [Sandbox TTI methodology →](./METHODOLOGY.md)
+- [Browser and throughput methodology →](./THROUGHPUT.md)
+- [AI gateway methodology →](./AI_GATEWAYS.md)
+
+## Transparency
+
+- 📖 **Open source** — All benchmark code is public
+- 📊 **Raw data** — Every result committed to repo as JSON
+- 🔁 **Reproducible** — Anyone can run the same tests
+- ⚙️ **Automated** — Daily at 5pm Pacific (00:00 UTC) via GitHub Actions on Namespace runners
+- 🛡️ **Independent** — Sponsors cannot influence results
+
+## Latest Benchmarks
 
 ### [Sequential TTI](#sequential-tti)
 
@@ -104,61 +139,6 @@ Our partners support our independent benchmarks.
 
 ![DAX Sandbox Builds](./dax.svg)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-
-**TTI (Time to Interactive)** = API call to first command execution. Lower is better.
-
-<br>
-
-## What We Measure
-
-**Daily: Time to Interactive (TTI)**
-
-```
-API Request → Provisioning → Boot → Ready → First Command
-└───────────────────── TTI ─────────────────────┘
-```
-
-Each benchmark creates a fresh sandbox, runs `node -v`, and records wall-clock time. 100 iterations per provider, every day, fully automated.
-
-**Powered by ComputeSDK** — We use [ComputeSDK](https://github.com/computesdk/computesdk), a multi-provider SDK, to test all sandbox providers with the same code. One API, multiple providers, fair comparison. Interested in multi-provider failover, sandbox packing, and warm pooling? [Check out ComputeSDK](https://github.com/computesdk/computesdk).
-
-**Sponsor-only tests coming soon:** Stress tests, warm starts, multi-region, and more. [See roadmap →](#roadmap)
-
-<br>
-
-## Methodology
-
-Each benchmark creates a fresh sandbox, runs `node -v`, and records wall-clock time. We run three test modes daily:
-
-**Sequential** — Sandboxes are created one at a time. Each is created, tested, and destroyed before the next begins. 100 iterations per provider. This is the baseline — isolated cold-start performance with no contention.
-
-**Staggered** — 100 sandboxes are launched per provider with a 200ms delay between each, gradually ramping up concurrent load. Reveals how TTI degrades under increasing pressure, queue depth effects, and rate limiting behavior.
-
-**Burst** — 100 sandboxes are created simultaneously with no delay between launches. Tests how providers handle sudden spikes — provisioning queue depth, rate limiting, and failure rates under peak demand.
-
-For each provider we report min, max, median, P95, P99, and average TTI, plus a **composite score** (0–100) that combines weighted timing metrics with success rate. Providers must be both fast *and* reliable to score well.
-
-### Composite Score
-
-Before computing timing statistics, the bottom 5% and top 5% of successful iterations are trimmed to reduce outlier influence from transient network issues or cold-start anomalies. Each timing metric is then scored against a fixed 10-second ceiling: `score = 100 × (1 − value / 10,000ms)`. A 200ms median scores 98; anything ≥10s scores 0. These individual scores are combined with weighted emphasis on median (60%), P95 (25%), and P99 (15%), then multiplied by the provider's success rate (0–1). A provider with 90% success has its score reduced by 10% — reliability is non-negotiable.
-
-All tests run on GitHub Actions at 00:00 UTC daily. Providers are tested using ComputeSDK — no gateway or proxy layer.
-
-[Full methodology →](./METHODOLOGY.md)
-
-<br>
-
-## Transparency
-
-- 📖 **Open source** — All benchmark code is public
-- 📊 **Raw data** — Every result committed to repo
-- 🔁 **Reproducible** — Anyone can run the same tests
-- ⚙️ **Automated** — Daily at 5pm Pacific (00:00 UTC) via GitHub Actions on Namespace runners
-- 🛡️ **Independent** — Sponsors cannot influence results
-
-<br>
-
 ## Roadmap
 
 - [x] computesdk.com/benchmarks
@@ -172,6 +152,8 @@ All tests run on GitHub Actions at 00:00 UTC daily. Providers are tested using C
 
 <br>
 
----
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
+**Powered by ComputeSDK** — We use [ComputeSDK](https://github.com/computesdk/computesdk), a multi-provider SDK, to test all sandbox providers with the same code. One API, multiple providers, fair comparison.
 
 MIT License
