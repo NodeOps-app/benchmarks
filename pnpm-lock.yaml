@@ -162,8 +162,8 @@ importers:
         specifier: ^7.21.0
         version: 7.21.0
       '@storagesdk/adapters':
-        specifier: ^0.10.0
-        version: 0.10.0(@aws-sdk/client-s3@3.1092.0)(@aws-sdk/lib-storage@3.1092.0(@aws-sdk/client-s3@3.1092.0))(@aws-sdk/s3-presigned-post@3.1092.0)(@aws-sdk/s3-request-presigner@3.1092.0)(@azure/storage-blob@12.33.0)(@google-cloud/storage@7.21.0)(@tigrisdata/storage@3.17.2)(@vercel/blob@2.6.1)(tensorlake@0.5.89(bufferutil@4.1.0)(utf-8-validate@6.0.6))
+        specifier: ^0.11.0
+        version: 0.11.0(@aws-sdk/client-s3@3.1092.0)(@aws-sdk/lib-storage@3.1092.0(@aws-sdk/client-s3@3.1092.0))(@aws-sdk/s3-presigned-post@3.1092.0)(@aws-sdk/s3-request-presigner@3.1092.0)(@azure/storage-blob@12.33.0)(@google-cloud/storage@7.21.0)(@tigrisdata/storage@3.17.2)(@vercel/blob@2.6.1)(tensorlake@0.5.89(bufferutil@4.1.0)(utf-8-validate@6.0.6))
       '@storagesdk/core':
         specifier: ^0.5.0
         version: 0.5.0
@@ -2190,8 +2190,8 @@ packages:
     resolution: {integrity: sha512-R8Rdn8Hy72KKcebgLiv8jQcQkXoLMOGGv5uI1/k0l+snqkOzQ1R0ChUBCxWMlBsFMekWjq0wRudIweFs7sKT5A==}
     engines: {node: '>=14.0.0'}
 
-  '@storagesdk/adapters@0.10.0':
-    resolution: {integrity: sha512-/742qc+DxY2nVFFMB+RI1NHnIC5hO+clE1Fu3F9nqnwuMp+tDehz6nPfaendAZZ4apgIdZ8EhGY2vQgRbRTjZQ==}
+  '@storagesdk/adapters@0.11.0':
+    resolution: {integrity: sha512-szYBO2Kj8BkItMeSFiFx134kXO4LgsI65i7EGqlZ0e6d9uRIVMT802ydvnTArqj9RlF1rgJyFKbLyPtgLZwAtQ==}
     engines: {node: '>=20'}
     peerDependencies:
       '@aws-sdk/client-s3': ^3.0.0
@@ -7921,7 +7921,7 @@ snapshots:
       '@smithy/util-buffer-from': 2.2.0
       tslib: 2.8.1
 
-  '@storagesdk/adapters@0.10.0(@aws-sdk/client-s3@3.1092.0)(@aws-sdk/lib-storage@3.1092.0(@aws-sdk/client-s3@3.1092.0))(@aws-sdk/s3-presigned-post@3.1092.0)(@aws-sdk/s3-request-presigner@3.1092.0)(@azure/storage-blob@12.33.0)(@google-cloud/storage@7.21.0)(@tigrisdata/storage@3.17.2)(@vercel/blob@2.6.1)(tensorlake@0.5.89(bufferutil@4.1.0)(utf-8-validate@6.0.6))':
+  '@storagesdk/adapters@0.11.0(@aws-sdk/client-s3@3.1092.0)(@aws-sdk/lib-storage@3.1092.0(@aws-sdk/client-s3@3.1092.0))(@aws-sdk/s3-presigned-post@3.1092.0)(@aws-sdk/s3-request-presigner@3.1092.0)(@azure/storage-blob@12.33.0)(@google-cloud/storage@7.21.0)(@tigrisdata/storage@3.17.2)(@vercel/blob@2.6.1)(tensorlake@0.5.89(bufferutil@4.1.0)(utf-8-validate@6.0.6))':
     dependencies:
       '@storagesdk/core': 0.5.0
     optionalDependencies:

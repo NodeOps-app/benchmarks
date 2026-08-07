@@ -7,6 +7,7 @@ import { gcs } from '@storagesdk/adapters/gcs';
 import { azure } from '@storagesdk/adapters/azure';
 import { tensorlake } from '@storagesdk/adapters/tensorlake';
 import { archil } from '@storagesdk/adapters/archil';
+import { neon } from '@storagesdk/adapters/neon';
 import type { StorageProviderConfig } from './types.js';
 
 /**
@@ -250,6 +251,41 @@ export const storageProviders: StorageProviderConfig[] = [
           accessKeyId: process.env.ARCHIL_S3_ACCESS_KEY_ID!,
           secretAccessKey: process.env.ARCHIL_S3_SECRET_ACCESS_KEY!,
           ...(process.env.ARCHIL_BRANCH ? { branch: process.env.ARCHIL_BRANCH } : {}),
+        }),
+      }),
+    },
+  },
+  {
+    name: 'neon',
+    requiredEnvVars: ['NEON_BUCKET', 'NEON_ENDPOINT', 'NEON_ACCESS_KEY_ID', 'NEON_SECRET_ACCESS_KEY'],
+    bucket: process.env.NEON_BUCKET!,
+    createStorage: () => new Storage({
+      adapter: neon({
+        bucket: process.env.NEON_BUCKET!,
+        endpoint: process.env.NEON_ENDPOINT!,
+        accessKeyId: process.env.NEON_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.NEON_SECRET_ACCESS_KEY!,
+        ...(process.env.NEON_REGION ? { region: process.env.NEON_REGION } : {}),
+      }),
+    }),
+    fileSizes: [1 * 1024 * 1024, 4 * 1024 * 1024, 10 * 1024 * 1024, 16 * 1024 * 1024],
+    // Neon Object Storage is S3-compatible and uses sibling buckets for
+    // snapshot/fork emulation. The same branch endpoint/credentials can be
+    // reused; set NEON_SNAPSHOT_* vars to point snapshot/fork operations at a
+    // dedicated bucket if the upload/download credential lacks bucket
+    // create/delete permission.
+    snapshotFork: {
+      requiredEnvVars: ['NEON_BUCKET', 'NEON_ENDPOINT', 'NEON_ACCESS_KEY_ID', 'NEON_SECRET_ACCESS_KEY'],
+      bucket: process.env.NEON_SNAPSHOT_BUCKET || process.env.NEON_BUCKET!,
+      createStorage: () => new Storage({
+        adapter: neon({
+          bucket: process.env.NEON_SNAPSHOT_BUCKET || process.env.NEON_BUCKET!,
+          endpoint: process.env.NEON_SNAPSHOT_ENDPOINT || process.env.NEON_ENDPOINT!,
+          accessKeyId: process.env.NEON_SNAPSHOT_ACCESS_KEY_ID || process.env.NEON_ACCESS_KEY_ID!,
+          secretAccessKey: process.env.NEON_SNAPSHOT_SECRET_ACCESS_KEY || process.env.NEON_SECRET_ACCESS_KEY!,
+          ...(process.env.NEON_SNAPSHOT_REGION || process.env.NEON_REGION
+            ? { region: process.env.NEON_SNAPSHOT_REGION || process.env.NEON_REGION }
+            : {}),
         }),
       }),
     },
