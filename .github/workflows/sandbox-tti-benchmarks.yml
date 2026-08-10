@@ -47,11 +47,13 @@ concurrency:
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
 
 jobs:
   bench:
     name: Bench ${{ matrix.provider }}
     runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
+    # runs-on: self-hosted
     timeout-minutes: 60
     env:
       # A single-provider dispatch still starts every matrix job; the ones that
@@ -103,6 +105,8 @@ jobs:
         with:
           node-version: 24
           cache: 'pnpm'
+      - uses: namespacelabs/nscloud-setup@v0
+        if: env.SHOULD_RUN == 'true'
       - name: Install dependencies
         if: env.SHOULD_RUN == 'true'
         run: |
@@ -157,6 +161,7 @@ jobs:
   collect:
     name: Collect Results
     runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
+    # runs-on: self-hosted
     needs: bench
     if: always()
     steps:
@@ -171,6 +176,7 @@ jobs:
         with:
           node-version: 24
           cache: 'pnpm'
+      - uses: namespacelabs/nscloud-setup@v0
       - name: Install dependencies
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then

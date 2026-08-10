@@ -37,11 +37,13 @@ concurrency:
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
 
 jobs:
   dax:
     name: Dax ${{ matrix.provider }}
     runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
+    # runs-on: self-hosted
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -81,6 +83,7 @@ jobs:
         with:
           node-version: 24
           cache: 'pnpm'
+      - uses: namespacelabs/nscloud-setup@v0
       - name: Install dependencies
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
@@ -131,6 +134,7 @@ jobs:
   collect:
     name: Collect Dax Results
     runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
+    # runs-on: self-hosted
     needs: dax
     if: always()
     steps:
@@ -142,6 +146,7 @@ jobs:
         with:
           node-version: 24
           cache: 'pnpm'
+      - uses: namespacelabs/nscloud-setup@v0
       - name: Install dependencies
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
