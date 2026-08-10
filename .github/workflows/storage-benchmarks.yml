@@ -48,7 +48,8 @@ permissions:
 jobs:
   bench:
     name: Bench ${{ matrix.provider }} ${{ matrix.file_size }}
-    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
+    # runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
+    runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
       fail-fast: false
