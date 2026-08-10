@@ -122,6 +122,9 @@ importers:
       '@computesdk/railway':
         specifier: ^2.0.1
         version: 2.0.1
+      '@computesdk/run-cloud':
+        specifier: ^1.0.1
+        version: 1.0.1(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       '@computesdk/runloop':
         specifier: ^1.3.54
         version: 1.3.54
@@ -719,6 +722,10 @@ packages:
   '@computesdk/railway@2.0.1':
     resolution: {integrity: sha512-nCAFrcHTZ0750bLv+DNr6MJ38hlu17toHiLOQAPoKQWzXw02mAmPOVIEMV/stLtG6JqSH6vSXuIPiFmDuFegUQ==}
     engines: {node: '>=22'}
+
+  '@computesdk/run-cloud@1.0.1':
+    resolution: {integrity: sha512-/bUYoMtoSWZ3tsBdWDhOzjZGUNG2mLVLDWlhdHNXGYckL1fKtj7xvcFVcH8Nggiqgi+WZQ6LY6YFs7adQke/uQ==}
+    engines: {node: '>=20'}
 
   '@computesdk/runloop@1.3.54':
     resolution: {integrity: sha512-FLzWyMJCaSuYNvDySJJuzDRZwE4eDZcZOdsK9wNBXH8AAU/GrUWmqlX8kMeSiHE6/PdGr6ZYk9TCO3YsjydDhQ==}
@@ -2068,6 +2075,10 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@run-cloud/sdk@0.15.0':
+    resolution: {integrity: sha512-E0RZ0fArFX32R88mOq5w4nmBb2LOz9UB1gGgOCVo3b08Ly90IuyTYarh4VonHj5b/UtP5WA0sorWYvvIVaPtKg==}
+    engines: {node: '>=20'}
+
   '@runloop/api-client@1.25.0':
     resolution: {integrity: sha512-I1LMbxrB4hqnkERLrnCoy+J0CeXv+3SbiaHDQZpw7UBRyvd817fs1JblP3i4Crr77xLToMsYqL3htCwxWZzlEA==}
 
@@ -2319,6 +2330,9 @@ packages:
 
   '@types/tough-cookie@4.0.5':
     resolution: {integrity: sha512-/Ad8+nIOV7Rl++6f1BdKxFSMgmoqEoYbHRpPcx3JEfv8VRsQe9Z4mCXeJBzxs7mbHY/XOZZuXlRNfhpVPbs6ZA==}
+
+  '@types/ws@8.18.1':
+    resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
 
   '@typespec/ts-http-runtime@0.3.7':
     resolution: {integrity: sha512-JVUD8X2tfDMWjcjLs4yVxxVrS8yR5vnh386GAXT9Qj79nBxxXSaHFQZg5FweLmT8HlPQ3kii6noUB+Z9RN7DvQ==}
@@ -6355,6 +6369,15 @@ snapshots:
       computesdk: 4.1.4
       railway: 3.5.10
 
+  '@computesdk/run-cloud@1.0.1(bufferutil@4.1.0)(utf-8-validate@6.0.6)':
+    dependencies:
+      '@computesdk/provider': 2.1.4
+      '@run-cloud/sdk': 0.15.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      computesdk: 4.1.4
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
   '@computesdk/runloop@1.3.54':
     dependencies:
       '@computesdk/provider': 2.1.4
@@ -7756,6 +7779,14 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.62.2':
     optional: true
 
+  '@run-cloud/sdk@0.15.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)':
+    dependencies:
+      '@types/ws': 8.18.1
+      ws: 8.21.1(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
   '@runloop/api-client@1.25.0':
     dependencies:
       '@types/node': 18.19.130
@@ -8046,6 +8077,10 @@ snapshots:
     optional: true
 
   '@types/tough-cookie@4.0.5': {}
+
+  '@types/ws@8.18.1':
+    dependencies:
+      '@types/node': 26.1.1
 
   '@typespec/ts-http-runtime@0.3.7':
     dependencies:

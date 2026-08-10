@@ -67,6 +67,9 @@
       "OPENCOMPUTER_API_KEY",
       "OPENCOMPUTER_API_URL"
     ],
+    "run-cloud": [
+      "RUN_CLOUD_API_KEY"
+    ],
     "runloop": [
       "RUNLOOP_API_KEY"
     ],

@@ -21,6 +21,7 @@ import { northflank } from '@computesdk/northflank';
 import { opencomputer } from '@computesdk/opencomputer';
 // import { quilt } from '@computesdk/quilt';
 // import { railway } from '@computesdk/railway';
+import { runCloud } from '@computesdk/run-cloud';
 import { runloop } from '@computesdk/runloop';
 import { sandbox0 } from '@computesdk/sandbox0';
 import { sail } from '@computesdk/sail';
@@ -199,6 +200,12 @@ export const providers: ProviderConfig[] = [
     name: 'runloop',
     requiredEnvVars: ['RUNLOOP_API_KEY'],
     createCompute: () => runloop({ apiKey: process.env.RUNLOOP_API_KEY! }),
+  },
+  {
+    name: 'run-cloud',
+    requiredEnvVars: ['RUN_CLOUD_API_KEY'],
+    createCompute: () => runCloud({ apiKey: process.env.RUN_CLOUD_API_KEY! }),
+    sandboxOptions: { templateId: 'runcloud/agent-base' },
   },
   {
     name: 'sandbox0',
