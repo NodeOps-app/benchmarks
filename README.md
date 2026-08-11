@@ -103,13 +103,7 @@ For full details on each suite, see:
 
 ## Latest Benchmarks
 
-### [Sequential TTI](#sequential-tti)
-
-![Sequential TTI](./sequential_tti.svg)
-
-### [Staggered TTI](#staggered-tti)
-
-![Staggered TTI](./staggered_tti.svg)
+> **Retired benchmarks:** The sequential and staggered sandbox TTI tests have been retired. Historic results are still accessible in the [`results/`](./results) directory under [`sequential_tti/`](./results/sequential_tti) and [`staggered_tti/`](./results/staggered_tti).
 
 ### [Burst TTI](#burst-tti)
 

@@ -258,7 +258,7 @@ results/
     └── latest.json → most recent
 ```
 
-Each test mode generates its own SVG visualization: `sequential_tti.svg`, `staggered_tti.svg`, `burst_tti.svg`.
+Active test modes generate an SVG visualization; the sequential and staggered TTI tests are retired, so only `burst_tti.svg` is currently generated. Historic results for the retired tests remain available in `results/sequential_tti/` and `results/staggered_tti/`.
 
 ### JSON Schema
 

@@ -321,8 +321,8 @@ function main() {
       process.exit(1);
     }
   } else {
-    // Generate SVGs for all modes that have results
-    const modes = ['sequential', 'staggered', 'burst'];
+    // Generate SVGs for all active modes that have results
+    const modes = ['burst'];
     let generated = 0;
     for (const mode of modes) {
       if (generateForMode(mode)) {
