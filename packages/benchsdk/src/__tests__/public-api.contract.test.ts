@@ -964,7 +964,7 @@ describe('runWorker lifecycle and task execution', () => {
     for (let i = 1; i < samples.length; i++) {
       expect(samples[i - 1].active).toBeGreaterThanOrEqual(samples[i].active);
     }
-    expect(calls.at(-1)!.url).toContain('/complete');
+    expect(calls.some((c) => c.url.includes('/complete'))).toBe(true);
   });
 
   it('VAL-SDK-055: fails the worker when any task fails', async () => {
@@ -975,8 +975,10 @@ describe('runWorker lifecycle and task execution', () => {
       task: async ({ step }) => { await step('create', () => { throw new TypeError('boom'); }, { readiness: 'internal' }); },
     });
     expect(result.records[0]).toMatchObject({ status: 'error', errorCode: 'TypeError' });
-    expect(calls.at(-1)!.url).toContain('/fail');
-    expect(calls.at(-1)!.body).toMatchObject({ errorMessage: 'One or more tasks failed' });
+    const failCall = calls.find((c) => c.url.includes('/fail'));
+    expect(failCall).toBeDefined();
+    expect(failCall!.url).toContain('/fail');
+    expect(failCall!.body).toMatchObject({ errorMessage: 'One or more tasks failed' });
   });
 
   it('VAL-SDK-056: completes the worker when all tasks succeed', async () => {

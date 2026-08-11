@@ -225,8 +225,9 @@ describe('createBenchmarkClient', () => {
     expect((eventCalls[1].body as any).records).toHaveLength(1);
     expect(eventCalls.map((entry) => (entry.body as any).sequenceNumber)).toEqual([0, 1]);
     expect(eventCalls.map((entry) => (entry.body as any).isFinal)).toEqual([false, true]);
-    expect(seen.at(-1)).toMatchObject({ method: 'POST' });
-    expect(seen.at(-1)?.url).toContain('/complete');
+    const completeCall = seen.find((entry) => entry.url.includes('/complete'));
+    expect(completeCall).toBeDefined();
+    expect(completeCall).toMatchObject({ method: 'POST' });
   });
 
   it('uses 1000 task results as the default worker batch size', async () => {
@@ -370,8 +371,9 @@ describe('createBenchmarkClient', () => {
       errorMessage: 'boom',
     });
     expect(result.records[0].steps).toMatchObject([{ name: 'create', status: 'error', errorCode: 'TypeError' }]);
-    expect(seen.at(-1)?.url).toContain('/fail');
-    expect(seen.at(-1)?.body).toMatchObject({ errorMessage: 'One or more tasks failed' });
+    const failCall = seen.find((entry) => entry.url.includes('/fail'));
+    expect(failCall?.url).toContain('/fail');
+    expect(failCall?.body).toMatchObject({ errorMessage: 'One or more tasks failed' });
   });
 
   it('runs a worker task with ordered steps', async () => {
@@ -508,6 +510,39 @@ describe('createBenchmarkClient', () => {
     const upload = seen.find((entry) => entry.url === 'https://upload.test');
     expect(upload?.method).toBe('PUT');
     expect(String((upload as any)?.body)).toContain('uploading {"n":1}');
+  });
+
+  it('uploads a worker log artifact with step entries even when the task never calls ctx.log', async () => {
+    const seen: Array<{ url: string; body: unknown; method?: string }> = [];
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      const body = init?.body && url.startsWith('https://platform.test/') ? JSON.parse(String(init.body)) : init?.body;
+      seen.push({ url, body, method: init?.method });
+      if (url.endsWith('/participants/e2b/workers/claim')) return jsonResponse({ assignment: assignment({ taskRange: { start: 0, end: 0, count: 1 } }) });
+      if (url.endsWith('/events')) return jsonResponse({ eventBatch: { id: 'batch_1' } }, 202);
+      if (url.endsWith('/workers/00000000-0000-4000-8000-000000000002/artifacts')) return jsonResponse({ artifactId: 'artifact_1', uploadUrl: 'https://upload.test' });
+      if (url === 'https://upload.test') return new Response(null, { status: 200 });
+      if (url.endsWith('/complete')) return jsonResponse({ worker: { id: 'worker_1' }, attempt: { id: 'attempt_1' } });
+      throw new Error(`unexpected request: ${url}`);
+    });
+
+    const client = createBenchmarkClient({ baseUrl: 'https://platform.test/api/v1', fetch: fetchMock as typeof fetch });
+    await client.runWorker({
+      benchmarkSlug: 'scale',
+      runId: '00000000-0000-4000-8000-000000000001',
+      participantSlug: 'e2b',
+      task: async ({ step }) => {
+        await step('create', () => undefined, { readiness: 'internal' });
+      },
+    });
+
+    const artifactPost = seen.find((entry) => entry.url.endsWith('/artifacts'));
+    expect(artifactPost?.body).toMatchObject({ kind: 'coordinator.log', name: 'worker.log', contentType: 'text/plain' });
+    const upload = seen.find((entry) => entry.url === 'https://upload.test');
+    expect(upload?.method).toBe('PUT');
+    const logBody = String((upload as any)?.body);
+    expect(logBody.length).toBeGreaterThan(0);
+    expect(logBody).toContain('[task 0] create');
   });
 
   it('waits for platform step readiness before running a step body', async () => {
