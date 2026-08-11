@@ -66,7 +66,18 @@ const DAX_RESOURCE_OPTIONS: Record<string, Record<string, any>> = {
   runloop:      { launch_parameters: { resource_size_request: 'CUSTOM_SIZE', custom_cpu_cores: 8, custom_gb_memory: 16 } },
   upstash:      { size: 'large' },                          // large = 8 cores, 16 GB
   vercel:       { resources: { vcpus: 8 } },               // no memory control
-  blaxel:       { memory: 16384 },                          // CPU derived: cores = memory_MB / 2048 = 8
+  blaxel:       {
+    memory: 16384,                                          // CPU derived: cores = memory_MB / 2048 = 8
+    timeout: 900_000,                                       // Server-side TTL backstop if client cleanup cannot run
+    volumes: [
+      {
+        name: 'dax-root',
+        type: 'ephemeral',
+        sizeMb: 8192,
+        mountPath: '/',                                     // Keep the writable root off RAM
+      },
+    ],
+  },
   beam:         { cpu: 8, memory: 16384 },                   // cpu = cores, memory = MiB
   codesandbox:  { vmTier: VMTier.Small },                  // Small = 8 CPU, 16 GiB
   daytona:      { resources: { cpu: 8, memory: 16 } },     // memory in GiB; requires image-based creation (see providers.ts)
