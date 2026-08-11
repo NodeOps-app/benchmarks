@@ -160,7 +160,8 @@ function usage(): string {
     `                         auto-reaps on finish.`,
     `  --machine-type <type>  Namespace machine type (default: ${MACHINE_TYPE_DEFAULT})`,
     '  --group-id <id>        Override the generated GROUP_ID',
-    '  --label <name>         Override the bench run label (default: scale.<provider>)',
+    '  --label <name>         Local coordinator log label (default: scale.<provider>);',
+    '                         the platform run name is always server-generated',
     '  --retries <n>          Re-launch failed shards up to n extra times (default: 0)',
     '  --help, -h             Print this help',
     '',
@@ -387,7 +388,6 @@ async function createPlatformRun(args: Args, perVm: number): Promise<string | nu
       config: { timeoutMs: BENCH_TIMEOUT_MS },
     });
     const { run } = await client.createRun(BENCHMARK_SLUG, {
-      name: args.label ?? `scale.${args.provider}`,
       totalTasks: args.total,
       workerCount: args.vms,
       participants: [args.provider],
@@ -399,7 +399,7 @@ async function createPlatformRun(args: Args, perVm: number): Promise<string | nu
       workerCount: args.vms,
       targetConcurrency: perVm,
     });
-    console.log(`  bench:      run ${run.id} (${args.vms} worker(s) planned for "${args.provider}")\n`);
+    console.log(`  bench:      run ${run.name} (${run.id}, ${args.vms} worker(s) planned for "${args.provider}")\n`);
     return run.id;
   } catch (err) {
     console.warn(`  bench:      run creation failed (${errMsg(err)}) — continuing Tigris-only\n`);

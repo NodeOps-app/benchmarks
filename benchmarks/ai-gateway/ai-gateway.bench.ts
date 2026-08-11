@@ -136,8 +136,8 @@ if (phases.length === 0) {
 }
 
 export const config = defineBenchmarkConfig({
-  benchmarkSlug: 'ai-gateway',
-  benchmarkName: 'AI Gateway Benchmark',
+  benchmarkSlug: 'ai-gateway-latency',
+  benchmarkName: 'AI Gateway Latency',
   benchmarkKind: 'ai-gateway',
   phases,
   groupBy: 'round',

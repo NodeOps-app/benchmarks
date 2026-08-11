@@ -31,7 +31,6 @@ describeIntegration('benchmark orchestrator integration', () => {
       ]));
 
       const { run, participants } = await client.createRun(slug, {
-        name: 'SDK integration smoke',
         totalTasks: 4,
         workerCount: 2,
         participants: [participantSlug],
@@ -39,12 +38,12 @@ describeIntegration('benchmark orchestrator integration', () => {
       });
 
       expect(run.id).toEqual(expect.any(String));
+      expect(run.name).toEqual(expect.any(String));
       expect(participants.some((participant) => participant.slug === participantSlug)).toBe(true);
       await expect(client.getRun(slug, run.id)).resolves.toMatchObject({ id: run.id });
       await expect(client.updateRun(slug, run.id, {
-        name: 'SDK integration smoke updated',
         config: { source: '@computesdk/bench', updated: true },
-      })).resolves.toMatchObject({ id: run.id, name: 'SDK integration smoke updated' });
+      })).resolves.toMatchObject({ id: run.id });
       await expect(client.listRuns(slug)).resolves.toEqual(expect.arrayContaining([
         expect.objectContaining({ id: run.id }),
       ]));

@@ -119,7 +119,6 @@ export interface UpdateBenchmarkInput {
 }
 
 export interface CreateRunInput {
-  name?: string;
   /**
    * Idempotency key for get-or-create: sibling callers passing the same key
    * (per org + benchmark) converge on one run instead of each opening its own.
@@ -133,7 +132,6 @@ export interface CreateRunInput {
 }
 
 export interface UpdateRunInput {
-  name?: string;
   status?: BenchmarkRunStatus;
   config?: JsonObject;
 }

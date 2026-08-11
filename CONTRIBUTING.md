@@ -75,20 +75,14 @@ cp benchmarks/.env.example benchmarks/.env
 ### Running Tests Locally
 
 ```bash
-# Run all three sandbox test modes (sequential → staggered → burst)
+# Run the sandbox TTI benchmark (burst shape; sequential/staggered retired)
 pnpm run bench
 
-# Run individual sandbox test modes
-pnpm run bench:sequential -- --iterations 10
-pnpm run bench:staggered -- --concurrency 10 --stagger-delay-ms 200
-pnpm run bench:burst -- --concurrency 10
-
-# Run a single provider (bench:* scripts forward flags; the bare `bench`
-# chain does not, so pass flags to the per-mode script instead)
-pnpm run bench:sequential -- --provider e2b
+# Run a single provider (bench:* scripts forward flags)
+pnpm run bench:e2b
 
 # Combine flags
-pnpm run bench:sequential -- --provider e2b --iterations 5
+pnpm run bench:e2b -- --iterations 5 --concurrency 5
 
 # Run browser benchmarks
 pnpm run bench:browser

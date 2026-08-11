@@ -41,8 +41,8 @@ const fileSizeBytes = FILE_SIZE_BYTES[fileSizeLabel];
 const testData = crypto.randomBytes(fileSizeBytes);
 
 export const config = defineBenchmarkConfig({
-  benchmarkSlug: 'storage-local',
-  benchmarkName: 'Storage (local)',
+  benchmarkSlug: 'storage-lifecycle',
+  benchmarkName: 'Storage Lifecycle',
   benchmarkKind: 'storage',
   iterations: 2,
   concurrency: 1,

@@ -21,8 +21,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const browserTimeoutMs = browserProviders.reduce((max, p) => Math.max(max, p.timeout ?? 120_000), 0) || 120_000;
 
 export const config = defineBenchmarkConfig({
-  benchmarkSlug: 'browser-local',
-  benchmarkName: 'Browser (local)',
+  benchmarkSlug: 'browser-lifecycle',
+  benchmarkName: 'Browser Lifecycle',
   benchmarkKind: 'browser',
   iterations: 2,
   concurrency: 1,

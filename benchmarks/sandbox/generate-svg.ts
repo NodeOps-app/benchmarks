@@ -299,8 +299,10 @@ function generateForMode(mode: string): boolean {
   fs.writeFileSync(svgPath, svg);
   console.log(`SVG written to ${svgPath}`);
 
-  // For sequential, also write the root results.svg for backward compat
-  if (mode === 'sequential') {
+  // results.svg predates the sequential/staggered/burst split (sequential was
+  // the only mode then); burst is now the only mode still actively run, so
+  // the root alias follows it instead of the retired, frozen sequential data.
+  if (mode === 'burst') {
     const rootSvgPath = path.join(ROOT, 'results.svg');
     fs.writeFileSync(rootSvgPath, svg);
     console.log(`SVG written to ${rootSvgPath} (backward compat)`);

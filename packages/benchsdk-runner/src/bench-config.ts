@@ -50,7 +50,7 @@ export type GroupBy = 'participant' | 'round';
  * override it.
  */
 export interface BenchmarkShape {
-  /** Platform slug this shape reports under (e.g. 'sandbox-burst-local'). */
+  /** Platform slug this shape reports under (e.g. 'sandbox-tti'). */
   slug: string;
   /** Display name shown on the platform; defaults to the slug. */
   name?: string;

@@ -30,8 +30,8 @@ const throughputTimeoutMs =
   throughputProviders.reduce((max, p) => Math.max(max, p.timeout ?? 120_000), 0) || 120_000;
 
 export const config = defineBenchmarkConfig({
-  benchmarkSlug: 'browser-throughput-local',
-  benchmarkName: 'Browser Throughput (local)',
+  benchmarkSlug: 'browser-throughput',
+  benchmarkName: 'Browser Throughput',
   benchmarkKind: 'browser',
   iterations: 2,
   groupBy: 'round',
