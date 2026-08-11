@@ -1,0 +1,196 @@
+name: Browser Concurrency Benchmark
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'benchmarks/browser/*concurrent*'
+      - 'benchmarks/browser/concurrent-*'
+      - 'benchmarks/src/util/**'
+      - 'benchmarks/src/merge-results.ts'
+      - 'package.json'
+  schedule:
+    - cron: '0 4 * * 1' # Weekly on Monday at 04:00 UTC (offset from other browser benchmarks)
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run without ingesting or committing results'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: browser-concurrent-benchmarks
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  setup:
+    name: Resolve target pages
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
+    permissions:
+      contents: read
+    outputs:
+      urls: ${{ steps.pick.outputs.urls }}
+    steps:
+      - name: Resolve one shared random article per round
+        id: pick
+        run: |
+          # Resolve one concrete article per round up front so every
+          # provider benchmarks against the same page in a given round.
+          # On push (smoke test) we only need 3; on schedule/dispatch we
+          # need up to 50 (max iterations at c1).
+          count=${{ github.event_name == 'push' && '3' || '50' }}
+          urls=()
+          for i in $(seq 1 "$count"); do
+            for attempt in 1 2 3 4 5; do
+              url=$(curl -sL -A 'ComputeSDK-Benchmark' -o /dev/null -w '%{url_effective}' \
+                'https://en.wikipedia.org/wiki/Special:Random')
+              if [ -z "$url" ] || [[ "$url" == *"Special:Random"* ]]; then
+                url='https://en.wikipedia.org/wiki/Special:Random'
+                break
+              fi
+              html=$(curl -sL -A 'ComputeSDK-Benchmark' "$url")
+              if echo "$html" | grep -qP 'href="(//en\.wikipedia\.org)?/wiki/[^"]*" *' \
+                 && echo "$html" | grep -oP 'href="[^"]*"' \
+                    | grep -qP '/wiki/[^:]*$'; then
+                break
+              fi
+            done
+            urls+=("$url")
+          done
+          {
+            echo "urls<<URLS_EOF"
+            printf '%s\n' "${urls[@]}"
+            echo "URLS_EOF"
+          } >> "$GITHUB_OUTPUT"
+          echo "Resolved ${#urls[@]} shared article URLs for all providers"
+
+  bench:
+    name: Bench ${{ matrix.provider }} at c${{ matrix.concurrency_level }}
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
+    permissions:
+      contents: read
+      id-token: write
+    needs: setup
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        provider:
+          - browserbase
+          - browseruse
+          - hyperbrowser
+          - kernel
+          - notte
+          - steel
+          - tilion
+        concurrency_level: [1, 5, 10, 25, 50]
+        include:
+          # Scale iterations inversely with concurrency so total sessions ≈ 50 per level
+          - concurrency_level: 1
+            iterations: 50
+          - concurrency_level: 5
+            iterations: 10
+          - concurrency_level: 10
+            iterations: 5
+          - concurrency_level: 25
+            iterations: 2
+          - concurrency_level: 50
+            iterations: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - uses: namespacelabs/nscloud-setup@v0
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Clear stale results from checkout
+        run: rm -rf results/browser-concurrent/
+      - name: Run browser concurrent benchmark
+        env:
+          THROUGHPUT_URLS: ${{ needs.setup.outputs.urls }}
+        run: |
+          . benchmarks/scripts/load-vault-secrets.sh '^(BROWSERBASE_API_KEY|BROWSERBASE_PROJECT_ID|BROWSER_USE_API_KEY|HYPERBROWSER_API_KEY|KERNEL_API_KEY|NOTTE_API_KEY|STEEL_API_KEY|TILION_API_KEY|TILION_BASE_URL|COMPUTESDK_ADMIN_API_KEY|BENCHMARKS_PLATFORM_API_KEY)'
+
+          RUN_KEY="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          # On push (smoke test) use 3 iterations regardless of concurrency
+          # level; on schedule/workflow_dispatch use the full matrix value.
+          ITERS=${{ github.event_name == 'push' && '3' || matrix.iterations }}
+          npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/browser/browser-concurrent.bench.ts \
+            --provider ${{ matrix.provider }} \
+            --concurrency-level ${{ matrix.concurrency_level }} \
+            --iterations "$ITERS" \
+            --run-key "$RUN_KEY"
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-concurrent-results-${{ matrix.provider }}-c${{ matrix.concurrency_level }}
+          path: results/browser-concurrent/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  collect:
+    name: Collect Results
+    runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
+    permissions:
+      contents: write
+      pull-requests: write
+    needs: bench
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - uses: namespacelabs/nscloud-setup@v0
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+          pattern: browser-concurrent-results-*
+      - name: Merge results
+        run: npx tsx benchmarks/src/merge-results.ts --input artifacts --mode browser-concurrent
+      - run: pnpm run generate-browser-concurrent-svg
+      - name: Upload SVG as artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-concurrent-benchmark-svg
+          path: |
+            browser-concurrent.svg
+            browser-concurrent-degradation.svg
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Commit and push
+        if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.event.inputs.dry_run != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add browser-concurrent.svg browser-concurrent-degradation.svg results/browser-concurrent/
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "chore: update browser concurrent benchmark results [skip ci]"
+
+          branch="${GITHUB_REF#refs/heads/}"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin "${branch}"
+            git rebase --autostash "origin/${branch}" || { git rebase --abort; exit 1; }
+            if git push origin "HEAD:${branch}"; then
+              echo "Pushed on attempt ${attempt}"
+              exit 0
+            fi
+            echo "Push rejected (attempt ${attempt}); will rebase and retry"
+          done
+          echo "Failed to push after multiple attempts" >&2
+          exit 1
