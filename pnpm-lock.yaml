@@ -102,8 +102,8 @@ importers:
         specifier: ^1.9.4
         version: 1.9.4
       '@computesdk/mosaic':
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.1.2
+        version: 0.1.2
       '@computesdk/namespace':
         specifier: ^1.6.14
         version: 1.6.14
@@ -697,8 +697,8 @@ packages:
   '@computesdk/modal@1.9.4':
     resolution: {integrity: sha512-MTxwhw+Ol/UaOJBpTfQmg1vo8s9rIhWZeCzcfG6LndwuQoq4CVWwjO+fGT9lB7wVBaddtbWaks3R7PI9GH+meg==}
 
-  '@computesdk/mosaic@0.1.1':
-    resolution: {integrity: sha512-c/yrpi6Bs7VZv2NOdRi2Avi2SIAcsHnKxh8i/ysydQgfmnekk2GgqdDp3JPTFEEwYy+HOEK9fR7uz3cOowUlfw==}
+  '@computesdk/mosaic@0.1.2':
+    resolution: {integrity: sha512-VZAZmtH+O/bj4GcjN9Z+FQwl5y1nstaPvh+562Jg87Fnp5NVeyknciWaI6gk4vgIUFQDDiHRoZ9B7W/X1OHN7w==}
 
   '@computesdk/namespace@1.6.14':
     resolution: {integrity: sha512-K0XSkDyDBlr0XJW+SXXNg0q/ksNTz+Dz5N8FI4z+mzOCQ9OlpsdSDpatAHzQa2AE/00OBCbhdYgOr4mm0dPEVQ==}
@@ -6317,7 +6317,7 @@ snapshots:
       computesdk: 4.1.4
       modal: 0.7.6
 
-  '@computesdk/mosaic@0.1.1':
+  '@computesdk/mosaic@0.1.2':
     dependencies:
       '@computesdk/provider': 2.1.4
       computesdk: 4.1.4
