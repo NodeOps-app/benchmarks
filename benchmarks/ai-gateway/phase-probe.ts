@@ -161,8 +161,13 @@ function sendAndMeasure(
 
 function tokensPerSecond(outcome: RawProbeOutcome): number | undefined {
   if (!outcome.outputTokens || outcome.outputTokens <= 0) return undefined;
-  const generationMs = Math.max(outcome.totalMs - outcome.ttftMs, 1);
-  return outcome.outputTokens / (generationMs / 1000);
+  // Measure throughput over the full wall-clock time from request start to
+  // stream end, including TTFT. Using only the window from the first token to
+  // the last token would let a gateway buffer the whole response and emit it
+  // in a single burst, inflating this number while the user still waits the
+  // full generation time.
+  const elapsedMs = Math.max(outcome.totalMs, 1);
+  return outcome.outputTokens / (elapsedMs / 1000);
 }
 
 /**

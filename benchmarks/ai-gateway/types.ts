@@ -63,6 +63,7 @@ export interface PhaseProbeResult {
   /** dns + tcp + tls + ttft: what a short-lived process pays end to end. Cold only. */
   coldE2eMs?: number;
   outputTokens?: number;
+  /** Output tokens per second over the full request wall-clock time (request start -> stream end). */
   outputTokensPerSec?: number;
   /**
    * Upstream provider that actually served this request, when the gateway's

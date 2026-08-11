@@ -19,7 +19,7 @@ For each gateway, every probe request is one of two kinds:
 
 Every probe (cold or warm) also records:
 
-- **Output tokens generated** and **tokens/sec** (generation throughput after the first token)
+- **Output tokens generated** and **tokens/sec** (output tokens divided by the full wall-clock time from request start to stream end, so buffering/batching cannot inflate the rate)
 - **Success/error** — any non-2xx response, a timeout, or a completed stream with zero content tokens observed counts as a failure for that iteration
 - **Receipt headers** (`x-vercel-id`, `cf-ray`, `x-request-id`, `anthropic-request-id`, etc.) captured from the response, for tracing a specific measured request back to the provider's own logs if a number is disputed
 
