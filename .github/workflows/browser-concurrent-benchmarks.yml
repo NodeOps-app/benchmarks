@@ -117,7 +117,11 @@ jobs:
         run: |
           . benchmarks/scripts/load-vault-secrets.sh '^(BROWSERBASE_API_KEY|BROWSERBASE_PROJECT_ID|BROWSER_USE_API_KEY|HYPERBROWSER_API_KEY|KERNEL_API_KEY|NOTTE_API_KEY|STEEL_API_KEY|TILION_API_KEY|TILION_BASE_URL|COMPUTESDK_ADMIN_API_KEY|BENCHMARKS_PLATFORM_API_KEY)'
 
-          RUN_KEY="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          # Matrix jobs at the same concurrency level share one platform run.
+          # The benchmark slug is level-independent, so the level is part of
+          # the key; otherwise a provider would register once per level in the
+          # same run and the platform rejects the duplicate with 409 Conflict.
+          RUN_KEY="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-c${{ matrix.concurrency_level }}"
           # On push (smoke test) use 3 iterations regardless of concurrency
           # level; on schedule/workflow_dispatch use the full matrix value.
           ITERS=${{ github.event_name == 'push' && '3' || matrix.iterations }}
