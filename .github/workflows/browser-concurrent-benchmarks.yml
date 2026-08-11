@@ -68,16 +68,18 @@ jobs:
           echo "Resolved ${#urls[@]} shared article URLs for all providers"
 
   bench:
-    name: Bench ${{ matrix.provider }} at c${{ matrix.concurrency_level }}
+    name: Bench ${{ matrix.provider }}
     runs-on: namespace-profile-default;permissions.additional_grant=vault/object:*:list;permissions.additional_grant=vault/object:*:describe
     permissions:
       contents: read
       id-token: write
     needs: setup
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
+        # Only the provider is a matrix dimension. Concurrency levels run
+        # sequentially inside the job, see the benchmark step for why.
         provider:
           - browserbase
           - browseruse
@@ -86,19 +88,6 @@ jobs:
           - notte
           - steel
           - tilion
-        concurrency_level: [1, 5, 10, 25, 50]
-        include:
-          # Scale iterations inversely with concurrency so total sessions ≈ 50 per level
-          - concurrency_level: 1
-            iterations: 50
-          - concurrency_level: 5
-            iterations: 10
-          - concurrency_level: 10
-            iterations: 5
-          - concurrency_level: 25
-            iterations: 2
-          - concurrency_level: 50
-            iterations: 1
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -117,24 +106,66 @@ jobs:
         run: |
           . benchmarks/scripts/load-vault-secrets.sh '^(BROWSERBASE_API_KEY|BROWSERBASE_PROJECT_ID|BROWSER_USE_API_KEY|HYPERBROWSER_API_KEY|KERNEL_API_KEY|NOTTE_API_KEY|STEEL_API_KEY|TILION_API_KEY|TILION_BASE_URL|COMPUTESDK_ADMIN_API_KEY|BENCHMARKS_PLATFORM_API_KEY)'
 
-          # Matrix jobs at the same concurrency level share one platform run.
-          # The benchmark slug is level-independent, so the level is part of
-          # the key; otherwise a provider would register once per level in the
-          # same run and the platform rejects the duplicate with 409 Conflict.
-          RUN_KEY="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-c${{ matrix.concurrency_level }}"
-          # On push (smoke test) use 3 iterations regardless of concurrency
-          # level; on schedule/workflow_dispatch use the full matrix value.
-          ITERS=${{ github.event_name == 'push' && '3' || matrix.iterations }}
-          npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/browser/browser-concurrent.bench.ts \
-            --provider ${{ matrix.provider }} \
-            --concurrency-level ${{ matrix.concurrency_level }} \
-            --iterations "$ITERS" \
-            --run-key "$RUN_KEY"
+          # Concurrency levels run one after another inside this job, never as
+          # parallel matrix jobs. Parallel level jobs all target the same
+          # provider account at once, so the c1 job would measure its baseline
+          # while 5 + 10 + 25 + 50 sibling sessions were live on that account
+          # and every level's numbers would depend on scheduling overlap.
+          #
+          # A cooldown between levels lets sessions released at the end of one
+          # level clear the provider's quota before the next level starts.
+          if [ "${{ github.event_name }}" = "push" ]; then
+            LEVELS="1 5"   # smoke test only
+            COOLDOWN=10
+          else
+            LEVELS="1 5 10 25 50"
+            COOLDOWN=60
+          fi
+
+          # Rounds per level. Session-level metrics pool every session at a
+          # level, so a handful of rounds at high concurrency already yields a
+          # large sample; the round count only needs to give the barrier
+          # wall-clock a few observations.
+          iterations_for() {
+            case "$1" in
+              1)  echo 10 ;;
+              5)  echo 10 ;;
+              10) echo 5 ;;
+              25) echo 3 ;;
+              50) echo 3 ;;
+              *)  echo 3 ;;
+            esac
+          }
+
+          status=0
+          for level in $LEVELS; do
+            if [ "${{ github.event_name }}" = "push" ]; then
+              iters=1
+            else
+              iters=$(iterations_for "$level")
+            fi
+
+            echo "::group::c${level} (${iters} rounds)"
+            # One platform run per level: the benchmark slug is
+            # level-independent, so without the level in the key a provider
+            # would register as the same participant five times and the
+            # platform rejects the duplicate with 409 Conflict.
+            RUN_KEY="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-c${level}"
+            npx tsx packages/benchsdk-runner/dist/bin.js run benchmarks/browser/browser-concurrent.bench.ts \
+              --provider ${{ matrix.provider }} \
+              --concurrency-level "$level" \
+              --iterations "$iters" \
+              --run-key "$RUN_KEY" || status=$?
+            echo "::endgroup::"
+
+            sleep "$COOLDOWN"
+          done
+          exit $status
       - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: browser-concurrent-results-${{ matrix.provider }}-c${{ matrix.concurrency_level }}
+          name: browser-concurrent-results-${{ matrix.provider }}
           path: results/browser-concurrent/
           if-no-files-found: ignore
           retention-days: 7
