@@ -169,7 +169,7 @@ jobs:
         if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
         continue-on-error: true
         run: |
-          . benchmarks/scripts/load-vault-secrets.sh '^(INGEST_URL|INGEST_SECRET)'
+          . benchmarks/scripts/load-vault-secrets.sh '^(BENCHMARKS_PLATFORM_API_KEY|BENCHMARKS_PLATFORM_URL)='
           npx tsx benchmarks/src/ingest.ts --type memory
       - name: Commit and push
         if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'

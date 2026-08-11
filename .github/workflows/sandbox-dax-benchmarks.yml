@@ -177,12 +177,6 @@ jobs:
           else
             echo "No DAX results found; skipping chart"
           fi
-      - name: Ingest results to platform
-        if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
-        continue-on-error: true
-        run: |
-          . benchmarks/scripts/load-vault-secrets.sh '^(INGEST_URL|INGEST_SECRET)'
-          npx tsx benchmarks/src/ingest.ts --type sandbox
       - name: Post results to merged PR
         if: github.event_name == 'push'
         continue-on-error: true

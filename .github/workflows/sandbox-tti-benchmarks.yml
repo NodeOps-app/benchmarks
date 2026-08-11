@@ -192,12 +192,6 @@ jobs:
           pattern: results-*
       - name: Merge results
         run: npx tsx benchmarks/src/merge-results.ts --input artifacts
-      - name: Ingest results to platform
-        if: github.event_name != 'push' && github.event.inputs.dry_run != 'true'
-        continue-on-error: true  # ingest is best-effort (see the ingest step below); don't fail the job if secrets aren't seeded yet
-        run: |
-          . benchmarks/scripts/load-vault-secrets.sh '^(INGEST_URL|INGEST_SECRET)'
-          npx tsx benchmarks/src/ingest.ts --type sandbox
       - run: pnpm run generate-svg
       - run: pnpm run generate-pricing-svg
       - name: Upload SVGs as artifacts
