@@ -289,12 +289,10 @@ function applyShape<T extends BaseParticipant>(
   shape: BenchmarkShape | undefined,
 ): BenchmarkConfig<T> {
   if (!shape) return config;
-  const kind = shape.kind ?? config.benchmarkKind;
   return {
     ...config,
     benchmarkSlug: shape.slug,
     benchmarkName: shape.name ?? shape.slug,
-    ...(kind ? { benchmarkKind: kind } : {}),
     ...(shape.staggerDelayMs !== undefined ? { staggerDelayMs: shape.staggerDelayMs } : {}),
   };
 }
@@ -371,7 +369,6 @@ export async function runBenchmark<T extends BaseParticipant>(
   if (identityIsOurs) {
     await client.upsertBenchmark(config.benchmarkSlug, {
       name: config.benchmarkName,
-      ...(config.benchmarkKind ? { kind: config.benchmarkKind } : {}),
     });
   }
 

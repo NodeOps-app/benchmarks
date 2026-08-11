@@ -36,7 +36,6 @@ const DESTROY_TIMEOUT_MS = 15_000;
 export const config = defineBenchmarkConfig({
   benchmarkSlug: 'sandbox-tti',
   benchmarkName: 'Sandbox TTI (Burst)',
-  benchmarkKind: 'sandbox',
   iterations: 2,
   concurrency: 1,
   participants: providers,

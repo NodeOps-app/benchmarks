@@ -26,7 +26,6 @@ import { writeLegacyResults } from './legacy-results.js';
 export const config = defineBenchmarkConfig({
   benchmarkSlug: 'sandbox-tti-local',
   benchmarkName: 'Sandbox TTI (local)',
-  benchmarkKind: 'sandbox',
   iterations: 100,       // total tasks per participant
   concurrency: 1,        // 1 = sequential, N = burst, N + staggerDelayMs = staggered
   participants: providers,

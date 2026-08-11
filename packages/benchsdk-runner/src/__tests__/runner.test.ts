@@ -225,7 +225,6 @@ describe('runBenchmark', () => {
     const config: BenchmarkConfig<typeof participants[number]> = {
       benchmarkSlug: 'sandbox-tti-local',
       benchmarkName: 'Sandbox TTI',
-      benchmarkKind: 'sandbox',
       iterations: 3,
       concurrency: 1,
       participants,
@@ -239,7 +238,7 @@ describe('runBenchmark', () => {
     expect(outcome.participants[1].records).toHaveLength(3);
 
     expect(calls.upsertBenchmark[0][0]).toBe('sandbox-tti-local');
-    expect(calls.upsertBenchmark[0][1]).toMatchObject({ name: 'Sandbox TTI', kind: 'sandbox' });
+    expect(calls.upsertBenchmark[0][1]).toMatchObject({ name: 'Sandbox TTI' });
     expect(calls.createRun[0][1]).toMatchObject({ totalTasks: 3, workerCount: 1, participants: ['e2b', 'modal'] });
     expect(calls.planWorkers).toHaveLength(2);
     expect(calls.runWorker).toHaveLength(2);

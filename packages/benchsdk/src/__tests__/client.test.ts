@@ -73,7 +73,7 @@ describe('createBenchmarkClient', () => {
 
     const client = createBenchmarkClient({ baseUrl: 'https://platform.test/api/v1/', apiKey: 'key_123', fetch: fetchMock as typeof fetch });
 
-    await expect(client.upsertBenchmark('scale', { name: 'Scale', kind: 'scale' })).resolves.toMatchObject({ slug: 'scale' });
+    await expect(client.upsertBenchmark('scale', { name: 'Scale' })).resolves.toMatchObject({ slug: 'scale' });
     await expect(client.createRun('scale', { totalTasks: 100, workerCount: 10, participants: ['e2b'] })).resolves.toMatchObject({
       run: { id: 'run_1' },
       participants: [{ slug: 'e2b' }],

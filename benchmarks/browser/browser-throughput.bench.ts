@@ -32,7 +32,6 @@ const throughputTimeoutMs =
 export const config = defineBenchmarkConfig({
   benchmarkSlug: 'browser-throughput',
   benchmarkName: 'Browser Throughput',
-  benchmarkKind: 'browser',
   iterations: 2,
   groupBy: 'round',
   participants: throughputProviders,

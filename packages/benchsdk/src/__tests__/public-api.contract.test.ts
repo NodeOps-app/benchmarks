@@ -259,7 +259,7 @@ const workerResource = () => ({ id: 'worker_1', benchmarkId: 'bench_1', runId: '
 const lifecycleResponse = () => ({ worker: { id: 'worker_1' }, attempt: { id: 'attempt_1' } });
 
 const overviewResponse = () => ({
-  benchmark: { id: 'bench_1', slug: 'scale', name: 'Scale', kind: 'scale' },
+  benchmark: { id: 'bench_1', slug: 'scale', name: 'Scale' },
   generatedAt: new Date().toISOString(),
   analytics: { status: 'complete', query: 'available' },
   items: [{
@@ -406,7 +406,7 @@ describe('transport layer', () => {
   it('VAL-SDK-006: sets Content-Type: application/json on all requests', async () => {
     const { calls } = await capture((c) => Promise.all([
       c.getBenchmark('scale'),
-      c.upsertBenchmark('scale', { name: 'Scale', kind: 'scale' }),
+      c.upsertBenchmark('scale', { name: 'Scale' }),
     ]));
     for (const call of calls) {
       expect(call.headers['Content-Type']).toBe('application/json');
@@ -449,7 +449,7 @@ describe('transport layer', () => {
 // ---------------------------------------------------------------------------
 describe('client method URL paths and response unwrapping', () => {
   it('VAL-SDK-011: upsertBenchmark PUT /benchmarks/{slug} → data.benchmark', async () => {
-    const { calls, result } = await capture((c) => c.upsertBenchmark('scale', { name: 'Scale', kind: 'scale' }));
+    const { calls, result } = await capture((c) => c.upsertBenchmark('scale', { name: 'Scale' }));
     expect(`${calls[0].method} ${calls[0].url}`).toBe(`PUT ${BASE}/benchmarks/scale`);
     expect(result).toMatchObject({ slug: 'scale' });
   });
@@ -1490,7 +1490,7 @@ describe('public API surface and type exports', () => {
 describe('cross-area HTTP invariants', () => {
   it('VAL-CROSS-001: HTTP URL paths are byte-identical for every client method', async () => {
     const { calls } = await capture(async (c) => {
-      await c.upsertBenchmark('scale', { name: 'Scale', kind: 'scale' });
+      await c.upsertBenchmark('scale', { name: 'Scale' });
       await c.getBenchmark('scale');
       await c.updateBenchmark('scale', { name: 'x' });
       await c.listBenchmarks();

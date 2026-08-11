@@ -67,7 +67,6 @@ const client = createBenchmarkClient({
 
 await client.upsertBenchmark('scale', {
   name: 'Scale',
-  kind: 'scale',
   config: { timeoutMs: 120_000 },
 });
 

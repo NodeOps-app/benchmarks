@@ -18,7 +18,6 @@ describeIntegration('benchmark orchestrator integration', () => {
     try {
       await client.upsertBenchmark(slug, {
         name: 'SDK Integration Smoke',
-        kind: 'integration',
         config: { source: '@computesdk/bench' },
       });
       await expect(client.getBenchmark(slug)).resolves.toMatchObject({ slug });

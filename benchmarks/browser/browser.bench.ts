@@ -23,7 +23,6 @@ const browserTimeoutMs = browserProviders.reduce((max, p) => Math.max(max, p.tim
 export const config = defineBenchmarkConfig({
   benchmarkSlug: 'browser-lifecycle',
   benchmarkName: 'Browser Lifecycle',
-  benchmarkKind: 'browser',
   iterations: 2,
   concurrency: 1,
   participants: browserProviders,

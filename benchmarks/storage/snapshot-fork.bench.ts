@@ -50,7 +50,6 @@ const participants: StorageProviderConfig[] = storageProviders.map((p) => {
 export const config = defineBenchmarkConfig({
   benchmarkSlug: 'snapshot-fork',
   benchmarkName: 'Storage Snapshot/Fork',
-  benchmarkKind: 'storage',
   iterations: 2,
   concurrency: 1,
   participants,

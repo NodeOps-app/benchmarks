@@ -43,7 +43,6 @@ const testData = crypto.randomBytes(fileSizeBytes);
 export const config = defineBenchmarkConfig({
   benchmarkSlug: 'storage-lifecycle',
   benchmarkName: 'Storage Lifecycle',
-  benchmarkKind: 'storage',
   iterations: 2,
   concurrency: 1,
   participants: storageProviders,

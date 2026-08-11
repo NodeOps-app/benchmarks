@@ -384,7 +384,6 @@ async function createPlatformRun(args: Args, perVm: number): Promise<string | nu
     const client = createBenchmarkClient({ apiKey });
     await client.upsertBenchmark(BENCHMARK_SLUG, {
       name: 'Scale',
-      kind: 'scale',
       config: { timeoutMs: BENCH_TIMEOUT_MS },
     });
     const { run } = await client.createRun(BENCHMARK_SLUG, {

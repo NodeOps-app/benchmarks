@@ -9,7 +9,6 @@ describe('defineBenchmarkConfig', () => {
     const config = defineBenchmarkConfig({
       benchmarkSlug: 'sandbox-tti-local',
       benchmarkName: 'Sandbox TTI',
-      benchmarkKind: 'sandbox',
       iterations: 5,
       concurrency: 1,
       staggerDelayMs: 0,
