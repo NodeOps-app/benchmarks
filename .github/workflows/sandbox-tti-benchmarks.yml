@@ -39,41 +39,85 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Clear old results
-        run: rm -rf results/
       - name: Run benchmark
         env:
           CREATEOS_SANDBOX_API_KEY: ${{ secrets.CREATEOS_SANDBOX_API_KEY }}
         run: |
-          npx tsx benchmarks/sandbox/tti.bench.ts \
-            --provider ${{ matrix.provider }} \
-            --iterations ${{ github.event.inputs.iterations || '100' }} \
-            --concurrency ${{ github.event.inputs.concurrency || '100' }}
-      - name: Summary
-        if: always()
-        run: |
-          node -e "
-          const fs = require('fs');
-          const latest = 'results/burst_tti/latest.json';
-          if (!fs.existsSync(latest)) { console.log('No results found'); process.exit(0); }
-          const data = JSON.parse(fs.readFileSync(latest, 'utf-8'));
-          const rows = [];
-          for (const r of data.results) {
-            const times = r.iterations.filter(i => !i.error).map(i => i.ttiMs).sort((a,b) => a-b);
-            if (!times.length) { rows.push({ provider: r.provider, ok: 0, total: r.iterations.length }); continue; }
-            const pct = p => times[Math.min(Math.ceil(p/100*times.length)-1, times.length-1)];
-            const avg = times.reduce((a,b) => a+b, 0) / times.length;
-            rows.push({ provider: r.provider, ok: times.length, total: r.iterations.length, min: times[0], p50: pct(50), p90: pct(90), p95: pct(95), p99: pct(99), max: times[times.length-1], avg });
+          npx tsx -e "
+          import { providers } from './benchmarks/sandbox/providers.ts';
+
+          const ITERATIONS = ${{ github.event.inputs.iterations || '100' }};
+          const CONCURRENCY = ${{ github.event.inputs.concurrency || '100' }};
+          const PROVIDER = '${{ matrix.provider }}';
+          const TIMEOUT = 120_000;
+          const CMD_TIMEOUT = 30_000;
+          const DESTROY_TIMEOUT = 15_000;
+
+          const provider = providers.find(p => p.name === PROVIDER);
+          if (!provider) { console.error('Provider not found:', PROVIDER); process.exit(1); }
+
+          function withTimeout(p, ms, msg) {
+            return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error(msg)), ms))]);
           }
-          rows.sort((a,b) => (a.p50||Infinity) - (b.p50||Infinity));
-          const ms = v => v !== undefined ? v.toFixed(0) + ' ms' : 'FAIL';
-          const hdr = ['#', 'Provider', 'Ok/Total', 'Min', 'P50', 'P90', 'P95', 'P99', 'Max', 'Avg'];
-          const sep = hdr.map(h => '-'.repeat(h.length > 8 ? h.length : 8));
+
+          console.log('Provider:', PROVIDER);
+          console.log('Iterations:', ITERATIONS, '| Concurrency:', CONCURRENCY);
           console.log('');
-          console.log(hdr.join(' | '));
-          console.log(sep.join(' | '));
-          rows.forEach((r, i) => {
-            console.log([i+1, r.provider, r.ok+'/'+r.total, ms(r.min), ms(r.p50), ms(r.p90), ms(r.p95), ms(r.p99), ms(r.max), ms(r.avg)].join(' | '));
-          });
+
+          const results = [];
+
+          // Run in batches of CONCURRENCY
+          for (let batch = 0; batch < ITERATIONS; batch += CONCURRENCY) {
+            const batchSize = Math.min(CONCURRENCY, ITERATIONS - batch);
+            const promises = Array.from({ length: batchSize }, async (_, j) => {
+              const i = batch + j;
+              const start = performance.now();
+              try {
+                const compute = provider.createCompute();
+                const sandbox = await withTimeout(
+                  compute.sandbox.create(provider.sandboxOptions),
+                  provider.timeout ?? TIMEOUT,
+                  'Sandbox creation timed out'
+                );
+                try {
+                  const result = await withTimeout(
+                    sandbox.runCommand('node -v'),
+                    CMD_TIMEOUT,
+                    'Command timed out'
+                  );
+                  const ttiMs = performance.now() - start;
+                  if (result.exitCode !== 0) throw new Error('exit code ' + result.exitCode);
+                  console.log('  [' + (i+1) + '/' + ITERATIONS + '] ' + ttiMs.toFixed(0) + ' ms');
+                  return { ttiMs };
+                } finally {
+                  await withTimeout(sandbox.destroy(), provider.destroyTimeoutMs ?? DESTROY_TIMEOUT, 'Destroy timeout').catch(() => {});
+                }
+              } catch (err) {
+                const ttiMs = performance.now() - start;
+                console.log('  [' + (i+1) + '/' + ITERATIONS + '] FAILED: ' + err.message);
+                return { ttiMs, error: err.message };
+              }
+            });
+            results.push(...await Promise.all(promises));
+          }
+
+          // Compute stats
+          const ok = results.filter(r => !r.error).map(r => r.ttiMs).sort((a, b) => a - b);
+          const pct = p => ok[Math.min(Math.ceil(p / 100 * ok.length) - 1, ok.length - 1)];
+          const avg = ok.reduce((a, b) => a + b, 0) / ok.length;
+          const ms = v => v !== undefined ? v.toFixed(0) + ' ms' : 'FAIL';
+
+          console.log('');
+          console.log('='.repeat(70));
+          console.log('  Results: ' + PROVIDER + ' (' + ok.length + '/' + results.length + ' succeeded)');
+          console.log('='.repeat(70));
+          console.log('');
+          console.log('  # | Provider | Ok/Total | Min      | P50      | P90      | P95      | P99      | Max      | Avg');
+          console.log('  - | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | --------');
+          if (ok.length > 0) {
+            console.log('  1 | ' + [PROVIDER, ok.length+'/'+results.length, ms(ok[0]), ms(pct(50)), ms(pct(90)), ms(pct(95)), ms(pct(99)), ms(ok[ok.length-1]), ms(avg)].join(' | '));
+          } else {
+            console.log('  1 | ' + PROVIDER + ' | 0/' + results.length + ' | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL');
+          }
           console.log('');
           "
