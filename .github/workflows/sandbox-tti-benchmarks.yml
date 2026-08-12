@@ -43,13 +43,12 @@ jobs:
         env:
           CREATEOS_SANDBOX_API_KEY: ${{ secrets.CREATEOS_SANDBOX_API_KEY }}
         run: |
-          npx tsx -e "
+          cat > /tmp/bench.mts << 'BENCH'
           import { providers } from './benchmarks/sandbox/providers.ts';
 
-          (async () => {
-          const ITERATIONS = ${{ github.event.inputs.iterations || '100' }};
-          const CONCURRENCY = ${{ github.event.inputs.concurrency || '100' }};
-          const PROVIDER = '${{ matrix.provider }}';
+          const ITERATIONS = parseInt(process.env.BENCH_ITERATIONS || '100');
+          const CONCURRENCY = parseInt(process.env.BENCH_CONCURRENCY || '100');
+          const PROVIDER = process.env.BENCH_PROVIDER || 'createos';
           const TIMEOUT = 120_000;
           const CMD_TIMEOUT = 30_000;
           const DESTROY_TIMEOUT = 15_000;
@@ -57,17 +56,16 @@ jobs:
           const provider = providers.find(p => p.name === PROVIDER);
           if (!provider) { console.error('Provider not found:', PROVIDER); process.exit(1); }
 
-          function withTimeout(p, ms, msg) {
-            return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error(msg)), ms))]);
+          function withTimeout<T>(p: Promise<T>, ms: number, msg: string): Promise<T> {
+            return Promise.race([p, new Promise<T>((_, rej) => setTimeout(() => rej(new Error(msg)), ms))]);
           }
 
           console.log('Provider:', PROVIDER);
           console.log('Iterations:', ITERATIONS, '| Concurrency:', CONCURRENCY);
           console.log('');
 
-          const results = [];
+          const results: Array<{ ttiMs: number; error?: string }> = [];
 
-          // Run in batches of CONCURRENCY
           for (let batch = 0; batch < ITERATIONS; batch += CONCURRENCY) {
             const batchSize = Math.min(CONCURRENCY, ITERATIONS - batch);
             const promises = Array.from({ length: batchSize }, async (_, j) => {
@@ -88,38 +86,41 @@ jobs:
                   );
                   const ttiMs = performance.now() - start;
                   if (result.exitCode !== 0) throw new Error('exit code ' + result.exitCode);
-                  console.log('  [' + (i+1) + '/' + ITERATIONS + '] ' + ttiMs.toFixed(0) + ' ms');
+                  console.log(`  [${i+1}/${ITERATIONS}] ${ttiMs.toFixed(0)} ms`);
                   return { ttiMs };
                 } finally {
                   await withTimeout(sandbox.destroy(), provider.destroyTimeoutMs ?? DESTROY_TIMEOUT, 'Destroy timeout').catch(() => {});
                 }
-              } catch (err) {
+              } catch (err: any) {
                 const ttiMs = performance.now() - start;
-                console.log('  [' + (i+1) + '/' + ITERATIONS + '] FAILED: ' + err.message);
+                console.log(`  [${i+1}/${ITERATIONS}] FAILED: ${err.message}`);
                 return { ttiMs, error: err.message };
               }
             });
             results.push(...await Promise.all(promises));
           }
 
-          // Compute stats
           const ok = results.filter(r => !r.error).map(r => r.ttiMs).sort((a, b) => a - b);
-          const pct = p => ok[Math.min(Math.ceil(p / 100 * ok.length) - 1, ok.length - 1)];
-          const avg = ok.reduce((a, b) => a + b, 0) / ok.length;
-          const ms = v => v !== undefined ? v.toFixed(0) + ' ms' : 'FAIL';
+          const pct = (p: number) => ok[Math.min(Math.ceil(p / 100 * ok.length) - 1, ok.length - 1)];
+          const avg = ok.length > 0 ? ok.reduce((a, b) => a + b, 0) / ok.length : 0;
+          const ms = (v: number | undefined) => v !== undefined ? v.toFixed(0) + ' ms' : 'FAIL';
 
           console.log('');
           console.log('='.repeat(70));
-          console.log('  Results: ' + PROVIDER + ' (' + ok.length + '/' + results.length + ' succeeded)');
+          console.log(`  Results: ${PROVIDER} (${ok.length}/${results.length} succeeded)`);
           console.log('='.repeat(70));
           console.log('');
           console.log('  # | Provider | Ok/Total | Min      | P50      | P90      | P95      | P99      | Max      | Avg');
           console.log('  - | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | --------');
           if (ok.length > 0) {
-            console.log('  1 | ' + [PROVIDER, ok.length+'/'+results.length, ms(ok[0]), ms(pct(50)), ms(pct(90)), ms(pct(95)), ms(pct(99)), ms(ok[ok.length-1]), ms(avg)].join(' | '));
+            console.log(`  1 | ${[PROVIDER, ok.length+'/'+results.length, ms(ok[0]), ms(pct(50)), ms(pct(90)), ms(pct(95)), ms(pct(99)), ms(ok[ok.length-1]), ms(avg)].join(' | ')}`);
           } else {
-            console.log('  1 | ' + PROVIDER + ' | 0/' + results.length + ' | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL');
+            console.log(`  1 | ${PROVIDER} | 0/${results.length} | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL`);
           }
           console.log('');
-          })();
-          "
+          BENCH
+
+          BENCH_ITERATIONS=${{ github.event.inputs.iterations || '100' }} \
+          BENCH_CONCURRENCY=${{ github.event.inputs.concurrency || '100' }} \
+          BENCH_PROVIDER=${{ matrix.provider }} \
+          npx tsx /tmp/bench.mts
