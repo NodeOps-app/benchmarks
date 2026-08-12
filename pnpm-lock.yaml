@@ -30,8 +30,8 @@ importers:
         specifier: workspace:*
         version: link:packages/benchsdk-runner
       '@bhautikin/ccos':
-        specifier: ^0.1.6
-        version: 0.1.6
+        specifier: ^0.1.7
+        version: 0.1.7
       '@codesandbox/sdk':
         specifier: ^2.4.2
         version: 2.4.2(@hey-api/openapi-ts@0.99.0(magicast@0.3.5)(typescript@6.0.3))(@xterm/xterm@5.5.0)(ink@7.1.1(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))
@@ -493,9 +493,13 @@ packages:
     peerDependencies:
       typescript: ^5.0.0
 
-  '@bhautikin/ccos@0.1.6':
-    resolution: {integrity: sha512-GV51lcJPuHpQ6XdgDDXEDn4tn8EJfRqNkMefEh37gQpLqYggsL25gUYmnbkZIDTBH6aKZ2wjSX+zZQB7NxJjpQ==}
+  '@bhautikin/ccos@0.1.7':
+    resolution: {integrity: sha512-jKp7FOBjnOXDD9BdpRLKyM3OxiPFsEPmNh9UtsZZCv3XRfUko0j7kVhrKRKb22C7LsG846ytP2pR4Q4f6cYjiQ==}
     engines: {node: '>=22'}
+
+  '@bhautikin/createos-sandbox@0.7.2':
+    resolution: {integrity: sha512-eBIBNlBKOvon7G4IWGIAiwbWFTr2EnkB+x3PphmVKJl+0jEH27pkWibuDFpCGNoX4wFwadvBETdel8HG5rG5hA==}
+    engines: {node: '>=20'}
 
   '@blaxel/core@0.3.6':
     resolution: {integrity: sha512-+qiSDp87S9sgfnqsnMUjlBYCPvRVq8PslRymeA2oAzeAxojNib+XPJLDERY5Vwe72cycn0HYTYalpBM3xJI7Rw==}
@@ -714,6 +718,9 @@ packages:
 
   '@computesdk/provider@2.1.4':
     resolution: {integrity: sha512-abTZS8kpif4QpLZ7Jzo6hmlje2b3YB4VRC8hVkrb/tKXwt0QcU7Nao7tM1phRru0HxVrfHycb/vZtdJSlNFGeA==}
+
+  '@computesdk/provider@2.1.5':
+    resolution: {integrity: sha512-y1vmqZui7pQDzfCrZErUmNi6Ny7x76p8sz4J1iPl+ueuLX/teysyrrng6B3OZCiyrknzB4AtLXlDkzWmNnP8DA==}
 
   '@computesdk/quilt@1.0.2':
     resolution: {integrity: sha512-9AaYSE6haZBNoB8pVjqSVtrgSBX6KmuPJblsDdiWvscbvuAfZ/2/IRCdmT7wSF0S1b2vC2WMm2I+4+6i+0CpRA==}
@@ -1504,10 +1511,6 @@ packages:
   '@nodelib/fs.walk@1.2.8':
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
-
-  '@nodeops-createos/sandbox@0.7.1':
-    resolution: {integrity: sha512-6bGA3wNe8OZ6pmcH2AzVA7grAalqzHGBrxY0DQkHTJ8JR/oSWRf/Xhdd0hNZYMDbkQQxwumRfbtfSZVot10/Lg==}
-    engines: {node: '>=20'}
 
   '@northflank/js-client@0.9.5':
     resolution: {integrity: sha512-yo8DvsuZnsQLczccYJJtQQ3KNjKeCUaQLNBIKgjDbYcRfz9qTt5E6Nb3SDvC6x0T3SsB6RZKliTjQ6iGJ/ST/g==}
@@ -5864,10 +5867,15 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@bhautikin/ccos@0.1.6':
+  '@bhautikin/ccos@0.1.7':
     dependencies:
-      '@computesdk/provider': 2.1.4
-      '@nodeops-createos/sandbox': 0.7.1
+      '@bhautikin/createos-sandbox': 0.7.2
+      '@computesdk/provider': 2.1.5
+
+  '@bhautikin/createos-sandbox@0.7.2':
+    optionalDependencies:
+      '@types/node': 26.1.1
+      undici: 7.28.0
 
   '@blaxel/core@0.3.6(@hey-api/openapi-ts@0.99.0(magicast@0.3.5)(typescript@6.0.3))(bufferutil@4.1.0)(utf-8-validate@6.0.6)':
     dependencies:
@@ -6353,6 +6361,12 @@ snapshots:
       computesdk: 4.1.4
 
   '@computesdk/provider@2.1.4':
+    dependencies:
+      '@computesdk/cmd': 0.4.1
+      computesdk: 4.1.4
+      daemond: 0.1.4
+
+  '@computesdk/provider@2.1.5':
     dependencies:
       '@computesdk/cmd': 0.4.1
       computesdk: 4.1.4
@@ -7105,11 +7119,6 @@ snapshots:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.20.1
-
-  '@nodeops-createos/sandbox@0.7.1':
-    optionalDependencies:
-      '@types/node': 26.1.1
-      undici: 7.28.0
 
   '@northflank/js-client@0.9.5':
     dependencies:
