@@ -47,11 +47,29 @@ jobs:
             --provider ${{ matrix.provider }} \
             --iterations ${{ github.event.inputs.iterations || '10' }} \
             --concurrency ${{ github.event.inputs.concurrency || '10' }}
-      - name: Upload results
+      - name: Summary
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: results-${{ matrix.provider }}
-          path: results/
-          if-no-files-found: ignore
-          retention-days: 7
+        run: |
+          node -e "
+          const fs = require('fs');
+          const latest = 'results/burst_tti/latest.json';
+          if (!fs.existsSync(latest)) { console.log('No results found'); process.exit(0); }
+          const data = JSON.parse(fs.readFileSync(latest, 'utf-8'));
+          for (const r of data.results) {
+            const times = r.iterations.filter(i => !i.error).map(i => i.ttiMs).sort((a,b) => a-b);
+            if (!times.length) { console.log(r.provider + ': all failed'); continue; }
+            const pct = p => times[Math.min(Math.ceil(p/100*times.length)-1, times.length-1)];
+            const avg = times.reduce((a,b) => a+b, 0) / times.length;
+            console.log('');
+            console.log('Provider: ' + r.provider);
+            console.log('  Iterations: ' + r.iterations.length + ' (' + times.length + ' ok)');
+            console.log('  Min:    ' + times[0].toFixed(0) + ' ms');
+            console.log('  P50:    ' + pct(50).toFixed(0) + ' ms');
+            console.log('  Median: ' + pct(50).toFixed(0) + ' ms');
+            console.log('  P90:    ' + pct(90).toFixed(0) + ' ms');
+            console.log('  P95:    ' + pct(95).toFixed(0) + ' ms');
+            console.log('  P99:    ' + pct(99).toFixed(0) + ' ms');
+            console.log('  Max:    ' + times[times.length-1].toFixed(0) + ' ms');
+            console.log('  Avg:    ' + avg.toFixed(0) + ' ms');
+          }
+          "
