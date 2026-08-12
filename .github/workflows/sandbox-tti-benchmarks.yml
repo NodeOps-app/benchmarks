@@ -43,7 +43,7 @@ jobs:
         env:
           CREATEOS_SANDBOX_API_KEY: ${{ secrets.CREATEOS_SANDBOX_API_KEY }}
         run: |
-          cat > /tmp/bench.mts << 'BENCH'
+          cat > bench-run.mts << 'BENCH'
           import { providers } from './benchmarks/sandbox/providers.ts';
 
           const ITERATIONS = parseInt(process.env.BENCH_ITERATIONS || '100');
@@ -123,4 +123,4 @@ jobs:
           BENCH_ITERATIONS=${{ github.event.inputs.iterations || '100' }} \
           BENCH_CONCURRENCY=${{ github.event.inputs.concurrency || '100' }} \
           BENCH_PROVIDER=${{ matrix.provider }} \
-          npx tsx /tmp/bench.mts
+          npx tsx bench-run.mts
