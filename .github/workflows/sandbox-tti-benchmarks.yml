@@ -65,6 +65,7 @@ jobs:
           console.log('');
 
           const results: Array<{ ttiMs: number; error?: string }> = [];
+          const sandboxes: Array<{ destroy(): Promise<unknown> }> = [];
 
           for (let batch = 0; batch < ITERATIONS; batch += CONCURRENCY) {
             const batchSize = Math.min(CONCURRENCY, ITERATIONS - batch);
@@ -78,6 +79,7 @@ jobs:
                   provider.timeout ?? TIMEOUT,
                   'Sandbox creation timed out'
                 );
+                sandboxes.push(sandbox);
                 try {
                   const result = await withTimeout(
                     sandbox.runCommand('node -v'),
@@ -99,6 +101,11 @@ jobs:
             });
             results.push(...await Promise.all(promises));
           }
+
+          // Cleanup sweep: retry destroy on all tracked sandboxes
+          console.log(`\n  Cleanup: destroying ${sandboxes.length} sandboxes...`);
+          await Promise.allSettled(sandboxes.map(s => s.destroy().catch(() => {})));
+          console.log('  Cleanup complete.');
 
           const ok = results.filter(r => !r.error).map(r => r.ttiMs).sort((a, b) => a - b);
           const pct = (p: number) => ok[Math.min(Math.ceil(p / 100 * ok.length) - 1, ok.length - 1)];
