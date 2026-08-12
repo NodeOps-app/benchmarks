@@ -82,10 +82,10 @@ jobs:
           # - sail
           # - sandbox0
           # - superserve
-          - tenki
-          - tensorlake
-          - upstash
-          - vercel
+          # - tenki
+          # - tensorlake
+          # - upstash
+          # - vercel
     steps:
       - uses: actions/checkout@v4
         if: env.SHOULD_RUN == 'true'

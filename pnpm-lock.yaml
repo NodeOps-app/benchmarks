@@ -29,6 +29,9 @@ importers:
       '@benchsdk/runner':
         specifier: workspace:*
         version: link:packages/benchsdk-runner
+      '@bhautikin/ccos':
+        specifier: ^0.1.6
+        version: 0.1.6
       '@codesandbox/sdk':
         specifier: ^2.4.2
         version: 2.4.2(@hey-api/openapi-ts@0.99.0(magicast@0.3.5)(typescript@6.0.3))(@xterm/xterm@5.5.0)(ink@7.1.1(bufferutil@4.1.0)(react@19.2.8)(utf-8-validate@6.0.6))
@@ -65,9 +68,6 @@ importers:
       '@computesdk/collimate':
         specifier: ^0.1.1
         version: 0.1.1
-      '@computesdk/createos-sandbox':
-        specifier: ^0.1.4
-        version: 0.1.4
       '@computesdk/daytona':
         specifier: ^1.7.32
         version: 1.7.32(ws@8.21.1(bufferutil@4.1.0)(utf-8-validate@6.0.6))
@@ -493,6 +493,10 @@ packages:
     peerDependencies:
       typescript: ^5.0.0
 
+  '@bhautikin/ccos@0.1.6':
+    resolution: {integrity: sha512-GV51lcJPuHpQ6XdgDDXEDn4tn8EJfRqNkMefEh37gQpLqYggsL25gUYmnbkZIDTBH6aKZ2wjSX+zZQB7NxJjpQ==}
+    engines: {node: '>=22'}
+
   '@blaxel/core@0.3.6':
     resolution: {integrity: sha512-+qiSDp87S9sgfnqsnMUjlBYCPvRVq8PslRymeA2oAzeAxojNib+XPJLDERY5Vwe72cycn0HYTYalpBM3xJI7Rw==}
     engines: {node: '>=18'}
@@ -656,10 +660,6 @@ packages:
 
   '@computesdk/collimate@0.1.1':
     resolution: {integrity: sha512-i967Jx9M7pHiJZEDKQLgSdwleNiekU3D726ot9zdMw6J8zboueDGPgiaVhR7cqFtl91hHRh2tR9HGXRLt5WNFw==}
-
-  '@computesdk/createos-sandbox@0.1.4':
-    resolution: {integrity: sha512-Of+pNRXhcHvkYhwAe/5uQXnKzPPGsjFp3RvNHsxlcw2KMhnrlplLYNPzCHe/Y6H8ezWDj2rmUWf7hL+usVoorQ==}
-    engines: {node: '>=22'}
 
   '@computesdk/daytona@1.7.32':
     resolution: {integrity: sha512-kAaUAp/cjkMhbfdiP0CMB5oH3wxYFNe4YrJ7ptOVfVx55pZq83T59Axk7D2CZMiUNuwB8RVEhclMbGKeVIhaVg==}
@@ -5864,6 +5864,11 @@ snapshots:
       - supports-color
       - utf-8-validate
 
+  '@bhautikin/ccos@0.1.6':
+    dependencies:
+      '@computesdk/provider': 2.1.4
+      '@nodeops-createos/sandbox': 0.7.1
+
   '@blaxel/core@0.3.6(@hey-api/openapi-ts@0.99.0(magicast@0.3.5)(typescript@6.0.3))(bufferutil@4.1.0)(utf-8-validate@6.0.6)':
     dependencies:
       '@hey-api/client-fetch': 0.10.2(@hey-api/openapi-ts@0.99.0(magicast@0.3.5)(typescript@6.0.3))
@@ -6220,11 +6225,6 @@ snapshots:
     dependencies:
       '@computesdk/provider': 2.1.4
       computesdk: 4.1.4
-
-  '@computesdk/createos-sandbox@0.1.4':
-    dependencies:
-      '@computesdk/provider': 2.1.4
-      '@nodeops-createos/sandbox': 0.7.1
 
   '@computesdk/daytona@1.7.32(ws@8.21.1(bufferutil@4.1.0)(utf-8-validate@6.0.6))':
     dependencies:
