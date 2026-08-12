@@ -47,15 +47,6 @@ jobs:
             --provider ${{ matrix.provider }} \
             --iterations ${{ github.event.inputs.iterations || '10' }} \
             --concurrency ${{ github.event.inputs.concurrency || '10' }}
-      - name: Print results
-        if: always()
-        run: |
-          echo "=== Benchmark Results ==="
-          if [ -d results ]; then
-            find results -name '*.json' -exec echo "--- {} ---" \; -exec cat {} \;
-          else
-            echo "No results directory found"
-          fi
       - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4
