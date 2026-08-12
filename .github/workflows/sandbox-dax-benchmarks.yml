@@ -49,33 +49,33 @@ jobs:
       fail-fast: false
       matrix:
         provider:
-          - archil
-          - arker
-          - beam
-          - blaxel
-          - cloud-run
-          - cloudflare
-          - codesandbox
+          # - archil
+          # - arker
+          # - beam
+          # - blaxel
+          # - cloud-run
+          # - cloudflare
+          # - codesandbox
           - createos
-          - daytona
-          - declaw
-          - e2b
-          - hopx
-          - isorun
-          - lightning
-          - modal
-          - mosaic
-          - namespace
-          - northflank
-          - opencomputer
-          - run-cloud
-          - runloop
-          - sail
-          - sandbox0
-          - superserve
-          - tenki
-          - tensorlake
-          - upstash
+          # - daytona
+          # - declaw
+          # - e2b
+          # - hopx
+          # - isorun
+          # - lightning
+          # - modal
+          # - mosaic
+          # - namespace
+          # - northflank
+          # - opencomputer
+          # - run-cloud
+          # - runloop
+          # - sail
+          # - sandbox0
+          # - superserve
+          # - tenki
+          # - tensorlake
+          # - upstash
           - vercel
     steps:
       - uses: actions/checkout@v4

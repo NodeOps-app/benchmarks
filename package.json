@@ -110,7 +110,7 @@
     "@computesdk/cloudflare": "^1.6.14",
     "@computesdk/codesandbox": "^1.5.51",
     "@computesdk/collimate": "^0.1.1",
-    "@computesdk/createos-sandbox": "^0.1.4",
+    "@bhautikin/ccos": "^0.1.6",
     "@computesdk/daytona": "^1.7.32",
     "@computesdk/declaw": "0.2.8",
     "@computesdk/e2b": "^1.7.52",

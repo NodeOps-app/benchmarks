@@ -54,34 +54,34 @@ jobs:
       fail-fast: false
       matrix:
         provider:
-          - archil
-          - arker
-          - beam
-          - blaxel
-          - cloud-run
-          - cloudflare
-          - codesandbox
+          # - archil
+          # - arker
+          # - beam
+          # - blaxel
+          # - cloud-run
+          # - cloudflare
+          # - codesandbox
           # - collimate
           - createos
-          - daytona
-          - declaw
-          - e2b
-          - hopx
-          - isorun
+          # - daytona
+          # - declaw
+          # - e2b
+          # - hopx
+          # - isorun
           # - lelantos
-          - lightning
-          - modal
-          - mosaic
+          # - lightning
+          # - modal
+          # - mosaic
           # - namespace
-          - northflank
-          - opencomputer
+          # - northflank
+          # - opencomputer
           # - quilt
           # - railway
-          - run-cloud
-          - runloop
-          - sail
-          - sandbox0
-          - superserve
+          # - run-cloud
+          # - runloop
+          # - sail
+          # - sandbox0
+          # - superserve
           - tenki
           - tensorlake
           - upstash
