@@ -55,21 +55,23 @@ jobs:
           const latest = 'results/burst_tti/latest.json';
           if (!fs.existsSync(latest)) { console.log('No results found'); process.exit(0); }
           const data = JSON.parse(fs.readFileSync(latest, 'utf-8'));
+          const rows = [];
           for (const r of data.results) {
             const times = r.iterations.filter(i => !i.error).map(i => i.ttiMs).sort((a,b) => a-b);
-            if (!times.length) { console.log(r.provider + ': all failed'); continue; }
+            if (!times.length) { rows.push({ provider: r.provider, ok: 0, total: r.iterations.length }); continue; }
             const pct = p => times[Math.min(Math.ceil(p/100*times.length)-1, times.length-1)];
             const avg = times.reduce((a,b) => a+b, 0) / times.length;
-            console.log('');
-            console.log('Provider: ' + r.provider);
-            console.log('  Iterations: ' + r.iterations.length + ' (' + times.length + ' ok)');
-            console.log('  Min:    ' + times[0].toFixed(0) + ' ms');
-            console.log('  P50:    ' + pct(50).toFixed(0) + ' ms');
-            console.log('  Median: ' + pct(50).toFixed(0) + ' ms');
-            console.log('  P90:    ' + pct(90).toFixed(0) + ' ms');
-            console.log('  P95:    ' + pct(95).toFixed(0) + ' ms');
-            console.log('  P99:    ' + pct(99).toFixed(0) + ' ms');
-            console.log('  Max:    ' + times[times.length-1].toFixed(0) + ' ms');
-            console.log('  Avg:    ' + avg.toFixed(0) + ' ms');
+            rows.push({ provider: r.provider, ok: times.length, total: r.iterations.length, min: times[0], p50: pct(50), p90: pct(90), p95: pct(95), p99: pct(99), max: times[times.length-1], avg });
           }
+          rows.sort((a,b) => (a.p50||Infinity) - (b.p50||Infinity));
+          const ms = v => v !== undefined ? v.toFixed(0) + ' ms' : 'FAIL';
+          const hdr = ['#', 'Provider', 'Ok/Total', 'Min', 'P50', 'P90', 'P95', 'P99', 'Max', 'Avg'];
+          const sep = hdr.map(h => '-'.repeat(h.length > 8 ? h.length : 8));
+          console.log('');
+          console.log(hdr.join(' | '));
+          console.log(sep.join(' | '));
+          rows.forEach((r, i) => {
+            console.log([i+1, r.provider, r.ok+'/'+r.total, ms(r.min), ms(r.p50), ms(r.p90), ms(r.p95), ms(r.p99), ms(r.max), ms(r.avg)].join(' | '));
+          });
+          console.log('');
           "
