@@ -46,6 +46,7 @@ jobs:
           npx tsx -e "
           import { providers } from './benchmarks/sandbox/providers.ts';
 
+          (async () => {
           const ITERATIONS = ${{ github.event.inputs.iterations || '100' }};
           const CONCURRENCY = ${{ github.event.inputs.concurrency || '100' }};
           const PROVIDER = '${{ matrix.provider }}';
@@ -120,4 +121,5 @@ jobs:
             console.log('  1 | ' + PROVIDER + ' | 0/' + results.length + ' | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL');
           }
           console.log('');
+          })();
           "
