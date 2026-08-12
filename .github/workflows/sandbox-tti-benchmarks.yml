@@ -103,19 +103,47 @@ jobs:
           const ok = results.filter(r => !r.error).map(r => r.ttiMs).sort((a, b) => a - b);
           const pct = (p: number) => ok[Math.min(Math.ceil(p / 100 * ok.length) - 1, ok.length - 1)];
           const avg = ok.length > 0 ? ok.reduce((a, b) => a + b, 0) / ok.length : 0;
-          const ms = (v: number | undefined) => v !== undefined ? v.toFixed(0) + ' ms' : 'FAIL';
+          const successRate = ok.length / results.length;
+
+          // Composite score: weighted timing score × success rate (same as scoring.ts)
+          const CEILING = 10_000;
+          const scoreMetric = (v: number) => Math.max(0, 100 * (1 - v / CEILING));
+          let compositeScore = 0;
+          if (ok.length > 0) {
+            const timingScore = 0.60 * scoreMetric(pct(50)) + 0.25 * scoreMetric(pct(95)) + 0.15 * scoreMetric(pct(99));
+            compositeScore = Math.round(timingScore * successRate * 100) / 100;
+          }
+
+          const pad = (s: string, n: number) => s.padEnd(n);
+          const ms = (v: number) => (v.toFixed(0) + ' ms').padStart(8);
 
           console.log('');
-          console.log('='.repeat(70));
+          console.log('='.repeat(90));
           console.log(`  Results: ${PROVIDER} (${ok.length}/${results.length} succeeded)`);
-          console.log('='.repeat(70));
+          console.log('='.repeat(90));
           console.log('');
-          console.log('  # | Provider | Ok/Total | Min      | P50      | P90      | P95      | P99      | Max      | Avg');
-          console.log('  - | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | --------');
+          const hdr = [
+            pad('#', 3), pad('Provider', 12), pad('Ok/Total', 10), pad('Score', 8),
+            pad('Min', 10), pad('P50', 10), pad('P90', 10), pad('P95', 10),
+            pad('P99', 10), pad('Max', 10), pad('Avg', 10),
+          ].join(' | ');
+          const sep = [
+            '-'.repeat(3), '-'.repeat(12), '-'.repeat(10), '-'.repeat(8),
+            '-'.repeat(10), '-'.repeat(10), '-'.repeat(10), '-'.repeat(10),
+            '-'.repeat(10), '-'.repeat(10), '-'.repeat(10),
+          ].join(' | ');
+          console.log(`  ${hdr}`);
+          console.log(`  ${sep}`);
           if (ok.length > 0) {
-            console.log(`  1 | ${[PROVIDER, ok.length+'/'+results.length, ms(ok[0]), ms(pct(50)), ms(pct(90)), ms(pct(95)), ms(pct(99)), ms(ok[ok.length-1]), ms(avg)].join(' | ')}`);
+            const row = [
+              pad('1', 3), pad(PROVIDER, 12), pad(`${ok.length}/${results.length}`, 10),
+              pad(compositeScore.toFixed(1), 8),
+              ms(ok[0]), ms(pct(50)), ms(pct(90)), ms(pct(95)), ms(pct(99)),
+              ms(ok[ok.length - 1]), ms(avg),
+            ].join(' | ');
+            console.log(`  ${row}`);
           } else {
-            console.log(`  1 | ${PROVIDER} | 0/${results.length} | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL`);
+            console.log(`  ${pad('1', 3)} | ${pad(PROVIDER, 12)} | ${pad('0/'+results.length, 10)} | ${pad('0.0', 8)} | ${'FAIL'.padStart(8)} | ${'FAIL'.padStart(8)} | ${'FAIL'.padStart(8)} | ${'FAIL'.padStart(8)} | ${'FAIL'.padStart(8)} | ${'FAIL'.padStart(8)} | ${'FAIL'.padStart(8)}`);
           }
           console.log('');
           BENCH
