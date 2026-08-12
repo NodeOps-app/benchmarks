@@ -23,7 +23,7 @@ permissions:
 jobs:
   bench:
     name: Bench ${{ matrix.provider }}
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-default
     timeout-minutes: 30
     strategy:
       fail-fast: false
