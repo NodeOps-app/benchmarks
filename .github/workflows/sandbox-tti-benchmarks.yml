@@ -30,6 +30,7 @@ jobs:
       matrix:
         provider:
           - createos
+          - isorun
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -42,6 +43,7 @@ jobs:
       - name: Run benchmark
         env:
           CREATEOS_SANDBOX_API_KEY: ${{ secrets.CREATEOS_SANDBOX_API_KEY }}
+          ISORUN_API_KEY: ${{ secrets.ISORUN_API_KEY }}
         run: |
           cat > bench-run.mts << 'BENCH'
           import { providers } from './benchmarks/sandbox/providers.ts';
