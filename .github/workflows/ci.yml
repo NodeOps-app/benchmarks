@@ -42,6 +42,9 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Test direct DAX runner
+        run: node --import tsx --test benchmarks/sandbox/dax-runner.test.ts
+
       - name: Test
         run: pnpm --filter @benchsdk/client run test
 

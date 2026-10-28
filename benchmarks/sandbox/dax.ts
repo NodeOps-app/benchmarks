@@ -1,7 +1,7 @@
 /**
  * Dax result types, summarization, and the legacy `results/sandbox-dax/` JSON
  * writer. The workload (build execution + phase parsing) lives in
- * dax.bench.ts.
+ * dax-workload.ts.
  */
 import fs from 'fs';
 import os from 'os';
