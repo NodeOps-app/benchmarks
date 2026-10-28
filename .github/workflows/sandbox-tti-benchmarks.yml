@@ -73,9 +73,11 @@ jobs:
             const batchSize = Math.min(CONCURRENCY, ITERATIONS - batch);
             const promises = Array.from({ length: batchSize }, async (_, j) => {
               const i = batch + j;
-              const start = performance.now();
+              let start: number | undefined;
               try {
                 const compute = provider.createCompute();
+                // TTI starts at sandbox creation, after SDK client setup.
+                start = performance.now();
                 const sandbox = await withTimeout(
                   compute.sandbox.create(provider.sandboxOptions),
                   provider.timeout ?? TIMEOUT,
@@ -96,7 +98,7 @@ jobs:
                   await withTimeout(sandbox.destroy(), provider.destroyTimeoutMs ?? DESTROY_TIMEOUT, 'Destroy timeout').catch(() => {});
                 }
               } catch (err: any) {
-                const ttiMs = performance.now() - start;
+                const ttiMs = start === undefined ? 0 : performance.now() - start;
                 console.log(`  [${i+1}/${ITERATIONS}] FAILED: ${err.message}`);
                 return { ttiMs, error: err.message };
               }
